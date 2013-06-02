@@ -1,5 +1,5 @@
 package animation {
-    import common.models.Collection;
+    import animation.library.AnimationLibrary;
 
     import dzyga.pool.IReusable;
 
@@ -29,7 +29,7 @@ package animation {
 
         public function _currentPreset():AnimationPart {
             if (_updateCurrent || !__currentPreset) {
-                __currentPreset = Collection.findClassInstance(_presetList, AnimationPart, _state, _subState);
+                __currentPreset = AnimationLibrary.findClassInstance(_presetList, AnimationPart, _state, _subState);
                 _updateCurrent = false;
             }
             return __currentPreset;

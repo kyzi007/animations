@@ -269,7 +269,9 @@ package animation {
                             _nextAnimPartShedule = EnterFrame.scheduleAction(timeToNext, nextToTime);
                         }
 
-                        setPosition(_x,  _y);
+                        if(_objectType != AssetTypes.WORKER && _objectType != AssetTypes.NPC ){
+                            setPosition(_x,  _y);
+                        }
 
                         _loopCount = _animationQuery.loopCount;
                         _loop = _animationQuery.loopCount == 0;

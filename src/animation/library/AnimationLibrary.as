@@ -4,13 +4,9 @@ package animation.library {
     import animation.graphic.AnimationsList;
     import animation.graphic.RotateEnum;
 
-    import common.models.Collection;
-
     import dzyga.pool.Pool;
 
     import flash.display.MovieClip;
-
-    import umerkiCommon.enums.ExistEnum;
 
     import log.logServer.KLog;
 
@@ -80,7 +76,7 @@ package animation.library {
          */
         public static function getAnimationQueryInstance(assetName:String, animationName:String, step:uint = 1):AnimationModel {
             var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-            var presets:* = Collection.findInPath(_animationPresetList, assetName, step, animationName);
+            var presets:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             if (!presets) {
                 CONFIG::debug{
@@ -94,6 +90,16 @@ package animation.library {
             return animationData;
         }
 
+        public static function findInPath(obj:Object, ...keys):* {
+            var res:* = obj;
+            for (var i:int = 0; i < keys.length; i++) {
+                var key:String = keys[i];
+                res = res.hasOwnProperty(key) ? res[key] : null;
+                if (res == null || res == undefined) return null;
+            }
+            return res;
+        }
+
         public static function getInteractAnimationById(asset:String, id:String):String {
             var result:String = _interactAnimations[id];
             if (!result) {
@@ -105,6 +111,21 @@ package animation.library {
                 return AnimationsList.INTERACT;
             }
             return result;
+        }
+
+        public static function findClassInstance(obj:Object, classId:Class, ...keys):* {
+            if (!obj) {
+                return null;
+            }
+            var res:* = obj;
+            if (res is classId) return res;
+            for (var i:int = 0; i < keys.length; i++) {
+                var key:String = keys[i];
+                res = res.hasOwnProperty(key) ? res[key] : null;
+                if (res == null || res == undefined) return null;
+                if (res is classId) return res;
+            }
+            return null;
         }
 
         private static function parseClipFrame(clipData:Object, clip:MovieClip, assetName:String):Object {
@@ -147,7 +168,7 @@ package animation.library {
                         trace('аа, шото пошло не так в парсинге клипа');
                     }
 
-                    var otherRotate:AnimationPart = Collection.findClassInstance(result, AnimationPart, shotName, state, subState) as AnimationPart;
+                    var otherRotate:AnimationPart = findClassInstance(result, AnimationPart, shotName, state, subState) as AnimationPart;
                     if (otherRotate) {
                         otherRotate.addSupportRotate(rotation);
                         continue;
