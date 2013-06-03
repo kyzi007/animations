@@ -34,21 +34,18 @@ package animation {
         protected var _nextAssetData:AssetData;
         protected var _animationQuery:AnimationModel;
         protected var _isLoadComplete:Boolean;
-
+        protected var _rotate:String = RotateEnum.NONE;
+        protected var _shadowAssetData:AssetData;
+        protected var _preloader:AssetData;
         private var _nextAnimPartShedule:Action;
         private var _isDie:Boolean = false;
         private var _alphaAction:Action;
         private var _targetAlpha:Number;
         private var _startAlpha:Number;
         private var _currentAnimationPreset:AnimationPart;
-
         private var _isFinishToEndCurrent:Boolean;
-        protected var _rotate:String = RotateEnum.NONE;
-        protected var _shadowAssetData:AssetData;
-        protected var _preloader:AssetData;
         private var _x:int;
         private var _y:int;
-
 
         public function showName():void {
             var tf:TextField = new TextField();
@@ -76,19 +73,19 @@ package animation {
         }
 
         /*public function higliteCell(on:Boolean):void {
-            if (on) {
-                var f:GlowFilter = new GlowFilter(0xffffff * Math.random(), 3, 3, 1, 20, 1, true);
-                _bitmap.filters = [f];
-                _cell.view.filters = [f];
-                if (alpha == 1) {
-                    alpha = 0.5;
-                }
-            } else {
-                _bitmap.filters = [];
-                _cell.view.filters = [];
-                alpha = 1;
-            }
-        }*/
+         if (on) {
+         var f:GlowFilter = new GlowFilter(0xffffff * Math.random(), 3, 3, 1, 20, 1, true);
+         _bitmap.filters = [f];
+         _cell.view.filters = [f];
+         if (alpha == 1) {
+         alpha = 0.5;
+         }
+         } else {
+         _bitmap.filters = [];
+         _cell.view.filters = [];
+         alpha = 1;
+         }
+         }*/
 
         public override function hitTest(x:Number, y:Number):Boolean {
             return _state.value == AssetViewStateEnum.STATE_PRELOADER ? true : super.hitTest(x, y);
@@ -152,7 +149,10 @@ package animation {
             //stop(true);
         }
 
-
+        public function setPosition(x:int, y:int):void {
+            this.x = x;
+            this.y = y;
+        }
 
         protected function clearAssetCallback(assetData:AssetData):void {
             if (assetData) {
@@ -181,6 +181,7 @@ package animation {
         }
 
         protected function setMovieState(value:String):void {
+
             if (_isDie) {
                 return;
             }
@@ -246,11 +247,11 @@ package animation {
 
                     if (!_nextAssetData.isRenderFinish) {
                         _nextAssetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onGenerateAnimation);
-                        if (!_assetData) {
+                        if (!_assetData && _preloader) {
                             setMovieState(AssetViewStateEnum.STATE_PRELOADER);
                         }
                     } else {
-                        clearAssetCallback(_assetData);
+                        //clearAssetCallback(_assetData);
 
                         // TODO fixme
                         if (!_animationQuery._currentPreset()) {
@@ -270,8 +271,8 @@ package animation {
                             _nextAnimPartShedule = EnterFrame.scheduleAction(timeToNext, nextToTime);
                         }
 
-                        if(_objectType != AssetTypes.WORKER && _objectType != AssetTypes.NPC ){
-                            setPosition(_x,  _y);
+                        if (_objectType != AssetTypes.WORKER && _objectType != AssetTypes.NPC) {
+                            setPosition(_x, _y);
                         }
 
                         _loopCount = _animationQuery.loopCount;
@@ -330,9 +331,9 @@ package animation {
             } else {
                 dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
             }
-           if(_animationQuery) {
-               setAnimation(_animationQuery);
-           }
+            if (_animationQuery) {
+                setAnimation(_animationQuery);
+            }
         }
 
         private function onRenderFinish():void {
@@ -368,12 +369,6 @@ package animation {
             return _assetName;
         }
 
-        public function setPosition(x:int,  y:int):void
-        {
-            this.x = x;
-            this.y = y;
-        }
-
         override public function set x(value:Number):void {
             super.x = _x = value;
         }
@@ -391,8 +386,6 @@ package animation {
             _targetAlpha = value;
             _startAlpha = alpha;
         }
-
-
 
         protected function get isBitmap():Boolean {
             return true;
