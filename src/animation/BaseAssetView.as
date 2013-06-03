@@ -330,7 +330,9 @@ package animation {
             } else {
                 dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
             }
-            setAnimation(_animationQuery);
+           if(_animationQuery) {
+               setAnimation(_animationQuery);
+           }
         }
 
         private function onRenderFinish():void {
@@ -368,8 +370,16 @@ package animation {
 
         public function setPosition(x:int,  y:int):void
         {
-            this.x = _x = x;
-            this.y = _y = y;
+            this.x = x;
+            this.y = y;
+        }
+
+        override public function set x(value:Number):void {
+            super.x = _x = value;
+        }
+
+        override public function set y(value:Number):void {
+            super.y = _y = value;
         }
 
         public function set contentAlpha(value:Number):void {
