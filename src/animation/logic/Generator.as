@@ -56,7 +56,7 @@ package animation.logic {
         private var _preloadList:Array;
         private var _step:uint = 1;
         private var _rotateEnum:RotateEnum = new RotateEnum();
-        private var _cachedAnimationList:Vector.<String>;
+        private var _baseAnimations:Array;
 
         /**
          * попытка уничтожить все созданное
@@ -176,11 +176,6 @@ package animation.logic {
             return assetData;
         }
 
-        public function setCachedAnimationList(value:Vector.<String>):void
-        {
-            _cachedAnimationList = value;
-        }
-
         /**
          * при создании запускает рендеринг для основных анимаций
          * @return
@@ -188,27 +183,21 @@ package animation.logic {
         public function preCache():Number {
             if (_isBitmapGenerate && !AnimationSettings.previewMode) {
 
-                if (_cachedAnimationList) {
+                if (_baseAnimations) {
                     // перебираем все части анимации которые должны быть закешены при старте
                     var preloadFullList:Array = [];
                     _preloadList = [];
-                    for each (var animationShotName:String in _cachedAnimationList) {
+                    for each (var animationShotName:String in _baseAnimations) {
                         if (AnimationLibrary.hasAnimationQuery(_assetName, animationShotName)) {
                             var animationList:AnimationModel = AnimationLibrary.getAnimationQueryInstance(_assetName, animationShotName);
                             while (!animationList.isListEnd) {
                                 preloadFullList.push(animationList.fullPartAnimationName);
                                 animationList.nextPreset();
                             }
-                        } else {
+                        }/* else {
                             preloadFullList.push(animationShotName);
-                        }
+                        }*/
                     }
-
-                    /*if (_assetType == GameObject.HELPER) {
-                        if (Player.instance.getResource(ExploreFog.HACK_MAGIC_FOREST_CLEARING_RES).quantity == 0) {
-                            preloadFullList.push(AnimationsList.MAGIC_WOOD);
-                        }
-                    }*/
 
                     for (var i:int = 0; i < preloadFullList.length; i++) {
                         var assetData:AssetData = _animations[preloadFullList[i]];
@@ -317,5 +306,9 @@ package animation.logic {
         }
 
         public function get rotate():String {return _rotateEnum.value;}
+
+        public function set baseAnimations(baseAnimations:Array):void {
+            _baseAnimations = baseAnimations;
+        }
     }
 }

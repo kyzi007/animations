@@ -20,9 +20,10 @@ package animation {
     import log.logServer.KLog;
 
     public class BaseAssetView extends AssetMovieClip {
-        public function BaseAssetView(name:String, type:String = AssetTypes.ITEM, text:String = null) {
+        public function BaseAssetView(name:String, type:String = AssetTypes.ITEM, baseAnimations:Array = null, text:String = null) {
             super(name, type);
             _generator = new Generator(name, type, isBitmap, text);
+            _generator.baseAnimations = baseAnimations;
             setMovieState(AssetViewStateEnum.STATE_PRELOADER);
             SWFLibraryTemp.loadSource(_assetName, url, type, onAssetLoaded);
         }
