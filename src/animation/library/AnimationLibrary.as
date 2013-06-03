@@ -78,12 +78,13 @@ package animation.library {
             var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
             var presets:* = findInPath(_animationPresetList, assetName, step, animationName);
 
-            if (!presets) {
-                CONFIG::debug{
+            CONFIG::debug{
+                if (!presets) {
                     KLog.log('AnimationLibrary : getAnimationQueryInstance invalid animation ( ' + assetName + '/' + animationName + '/' + step + ' )', KLog.CRITICAL);
                     return null;
                 }
             }
+
             animationData.step = step;
             animationData.setPresetList(presets);
             animationData.shotName = animationName;
@@ -153,7 +154,7 @@ package animation.library {
                         rotation = states[2] ? states[2] : '';
                     } else {
                         var index:int = name.indexOf('_');
-                        if(index != -1){
+                        if (index != -1) {
                             nameParse = [name.slice(0, index), name.slice(index, name.length)];
                         } else {
                             nameParse = [name, RotateEnum.NONE];
@@ -164,7 +165,7 @@ package animation.library {
                         rotation = nameParse[1];
                     }
 
-                    if(!new RotateEnum().isExists(rotation)){
+                    if (!new RotateEnum().isExists(rotation)) {
                         trace('аа, шото пошло не так в парсинге клипа');
                     }
 

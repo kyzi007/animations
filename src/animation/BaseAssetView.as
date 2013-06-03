@@ -43,7 +43,7 @@ package animation {
         private var _currentAnimationPreset:AnimationPart;
 
         private var _isFinishToEndCurrent:Boolean;
-        private var _rotate:String = RotateEnum.NONE;
+        protected var _rotate:String = RotateEnum.NONE;
         protected var _shadowAssetData:AssetData;
         protected var _preloader:AssetData;
         private var _x:int;
