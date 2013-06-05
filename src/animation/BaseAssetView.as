@@ -420,7 +420,7 @@ package animation {
             //if (value == _rotate) return;
             _rotate = value;
             _generator.setRotate(_rotate);
-            if (_animationQuery && _animationQuery._currentPreset().isRotateSupport(value)) {
+            if (_animationQuery && _animationQuery._currentPreset() && _animationQuery._currentPreset().isRotateSupport(value)) {
                 setAnimation(_animationQuery);
             }
         }
