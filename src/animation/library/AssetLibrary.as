@@ -115,13 +115,13 @@ package animation.library {
          */
         public static function getSourceByAssetName(name:String):DisplayObject {
             var clip:MovieClip;
-            if(_cachedMcByName[name]){
+           /* if(_cachedMcByName[name]){
                 clip = _cachedMcByName[name];
                 if(!_cachedMcNameList[name]){
                     delete _cachedMcByName[name];
                 }
                 return clip;
-            }
+            }*/
             if (!_sourceByName[name]) {
                 return null;
             } else {

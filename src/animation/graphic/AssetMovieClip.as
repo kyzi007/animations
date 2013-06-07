@@ -126,6 +126,7 @@ package animation.graphic {
                     _tempForFreeze = _bitmap.bitmapData.clone();
                     _bitmap.bitmapData = _tempForFreeze;
                     _bitmap.bitmapData.applyFilter(_tempForFreeze, _bitmap.getBounds(_bitmap), _bitmap.getBounds(_bitmap).topLeft, freezColorMatrix.filter);
+                    _bitmap.smoothing = true;
 
                 } catch (err:Error) {
 
