@@ -67,9 +67,6 @@ package animation.library {
             CONFIG::debug{ KLog.log("WyseDrawInstruct : init  " + _query.animation, KLog.METHODS); }
 
             _source.gotoAndStop(_query.step);
-            if(_query.name.indexOf("Tycoon_Chair_03")){
-                trace()
-            }
 
             _timline = _assetData.frames;
 

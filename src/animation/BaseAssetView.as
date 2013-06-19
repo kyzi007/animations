@@ -44,8 +44,8 @@ package animation {
         private var _startAlpha:Number;
         private var _currentAnimationPreset:AnimationPart;
         private var _isFinishToEndCurrent:Boolean;
-        private var _x:int;
-        private var _y:int;
+        protected var _x:int;
+        protected var _y:int;
 
         public function showName():void {
             var tf:TextField = new TextField();
@@ -284,10 +284,6 @@ package animation {
                         } else {
                             //gotoAndStop(_animationQuery.startFrame);
                             gotoAndStop(0);
-                        }
-
-                        if (!timeToNext && !_loopCount) {
-                            trace()
                         }
 
                         CONFIG::debug{ KLog.log("AssetView : setMovieState  " + _animationQuery.fullPartAnimationName + " " + timeToNext + "  " + _loopCount, KLog.DEBUG); }

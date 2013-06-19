@@ -85,9 +85,6 @@ package animation.logic {
          * @param cache
          */
         public function getAnimation(name:String, cache:Boolean = false):AssetData {
-            if (!name) {
-                trace()
-            }
             var assetData:AssetData = _animations[name + _step + _rotateEnum.value];
             if (!assetData || assetData.isDestroyed) {
 
@@ -194,7 +191,8 @@ package animation.logic {
                                 preloadFullList.push(animationList.fullPartAnimationName);
                                 animationList.nextPreset();
                             }
-                        }/* else {
+                        }
+                        /* else {
                             preloadFullList.push(animationShotName);
                         }*/
                     }
