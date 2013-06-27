@@ -185,7 +185,7 @@ package animation.library {
         }
 
         public function get fullAnimationName():String {
-            return _name + '_' + (_isFullAnimation ? 'anim' : 'one frame') + '__' + animation;
+            return _name + '_' + (_isFullAnimation ? 'anim' : 'one frame') + '__' + animation+' '+_step;
         }
 
         public function get isAutoClear():Boolean {
