@@ -19,6 +19,7 @@ package animation {
 
     import log.logServer.KLog;
 
+
     public class BaseAssetView extends AssetMovieClip {
         public function BaseAssetView(name:String, type:String = AssetTypes.ITEM, baseAnimations:Array = null, text:String = null) {
             super(name, type);
@@ -37,15 +38,15 @@ package animation {
         protected var _rotate:String = RotateEnum.NONE;
         protected var _shadowAssetData:AssetData;
         protected var _preloader:AssetData;
+        protected var _x:int;
+        protected var _y:int;
         private var _nextAnimPartShedule:Action;
-        private var _isDie:Boolean = false;
+        protected var _isDie:Boolean = false;
         private var _alphaAction:Action;
         private var _targetAlpha:Number;
         private var _startAlpha:Number;
         private var _currentAnimationPreset:AnimationPart;
         private var _isFinishToEndCurrent:Boolean;
-        protected var _x:int;
-        protected var _y:int;
 
         public function showName():void {
             var tf:TextField = new TextField();
@@ -72,21 +73,6 @@ package animation {
             return _rect;
         }
 
-        /*public function higliteCell(on:Boolean):void {
-         if (on) {
-         var f:GlowFilter = new GlowFilter(0xffffff * Math.random(), 3, 3, 1, 20, 1, true);
-         _bitmap.filters = [f];
-         _cell.view.filters = [f];
-         if (alpha == 1) {
-         alpha = 0.5;
-         }
-         } else {
-         _bitmap.filters = [];
-         _cell.view.filters = [];
-         alpha = 1;
-         }
-         }*/
-
         public override function hitTest(x:Number, y:Number):Boolean {
             return _state.value == AssetViewStateEnum.STATE_PRELOADER ? true : super.hitTest(x, y);
         }
@@ -101,7 +87,7 @@ package animation {
         }
 
         public function nextToTime():void {
-            CONFIG::debug{ KLog.log("AssetView : nextToTime  ", KLog.DEBUG); }
+            CONFIG::debug{ KLog.log("AssetView : nextToTime  "+_assetName, KLog.DEBUG); }
             stop();
             //next();
         }
@@ -164,7 +150,7 @@ package animation {
 
         override protected function finishAnimation():void {
             //super.finishAnimation();
-            CONFIG::debug{ KLog.log("AssetView : finishAnimation  ", KLog.DEBUG); }
+            CONFIG::debug{ KLog.log("AssetView : finishAnimation  "+_assetName, KLog.DEBUG); }
             next();
         }
 
@@ -181,11 +167,7 @@ package animation {
         }
 
         protected function setMovieState(value:String):void {
-
             if (_isDie) {
-                return;
-            }
-            if (!_generator.isPreloadAnimations && value != AssetViewStateEnum.STATE_PRELOADER) {
                 return;
             }
 
@@ -213,10 +195,6 @@ package animation {
 
                 case AssetViewStateEnum.STATE_PLAY:
                     if (!_isLoadComplete) return;
-                    if (!_generator.isPreloadAnimations) {
-                        setMovieState(AssetViewStateEnum.STATE_PRELOADER);
-                        return;
-                    }
                     if (!_animationQuery._currentPreset()) {
                         CONFIG::debug{ KLog.log("AssetView : setMovieState  " + 'invalid animation ' + _assetName + ' ' + _animationQuery.fullPartAnimationName, KLog.CRITICAL); }
                         return;
@@ -228,7 +206,6 @@ package animation {
                     } else {
                         _nextAssetData = _generator.getFirstFrame(_animationQuery.fullPartAnimationName);
                     }
-
                     var shadowAnimationQuery:AnimationModel = AnimationLibrary.getAnimationQueryInstance(_assetName, 'shadow');
                     if (shadowAnimationQuery._currentPreset()) {
                         _generator.rotationLogicOn = shadowAnimationQuery._currentPreset().isRotateSupport(_rotate);
@@ -286,7 +263,7 @@ package animation {
                             gotoAndStop(0);
                         }
 
-                        CONFIG::debug{ KLog.log("AssetView : setMovieState  " + _animationQuery.fullPartAnimationName + " " + timeToNext + "  " + _loopCount, KLog.DEBUG); }
+                        CONFIG::debug{ KLog.log("AssetView : setMovieState  "+_assetName +" " + _animationQuery.fullPartAnimationName + " " + timeToNext + "  " + _loopCount, KLog.DEBUG); }
                     }
                     break;
 
@@ -294,6 +271,18 @@ package animation {
                     setMovieState(AssetViewStateEnum.STATE_PRELOADER);
                     filters = [new GlowFilter(0xfff000, 1, 10, 10, 10, 1, true)];
                     break;
+            }
+        }
+
+        protected function onAssetLoaded(data:*):void {
+            if (_isDie) return;
+            _isLoadComplete = true;
+            dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
+
+            dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
+
+            if (_animationQuery) {
+                setAnimation(_animationQuery);
             }
         }
 
@@ -317,22 +306,7 @@ package animation {
             }
         }
 
-        private function onAssetLoaded(data:*):void {
-            if (_isDie) return;
-            _isLoadComplete = true;
-            dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
-            if (_generator.preCache() != 0) {
-                _generator.setAllLoadCallback(onRenderFinish);
-                dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
-            } else {
-                dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
-            }
-            if (_animationQuery) {
-                setAnimation(_animationQuery);
-            }
-        }
-
-        private function onRenderFinish():void {
+        protected function onRenderFinish():void {
             dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
             if (!_animationQuery) {
                 playDefault();
@@ -345,11 +319,11 @@ package animation {
             setShadowTimline(_shadowAssetData.frames);
         }
 
-        public function set allCache(value:Boolean):void {
-            if (value) {
-                _generator.preCacheAll();
-            }
-        }
+        /*public function set allCache(value:Boolean):void {
+         if (value) {
+         _generator.preCacheAll();
+         }
+         }*/
 
         public function get animationRendered():Boolean {
             return _state.value == AssetViewStateEnum.STATE_PRELOADER ? false : (_nextAssetData ? _nextAssetData.isRenderFinish : _assetData.isRenderFinish);

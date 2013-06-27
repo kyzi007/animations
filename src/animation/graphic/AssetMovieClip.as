@@ -141,7 +141,6 @@ package animation.graphic {
                 _shadowBitmap.y = _shadowTimline[0].y;
                 _shadowBitmap.smoothing = true;
             }
-            CONFIG::debug{ KLog.log("AssetMovieClip : updateShadow  "+ "shadow invalid", KLog.CRITICAL); }
         }
 
         private function clearAnimation():void {

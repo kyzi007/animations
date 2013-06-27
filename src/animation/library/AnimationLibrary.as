@@ -48,6 +48,7 @@ package animation.library {
         public static function parseWyseClip(clip:MovieClip, assetName:String):void {
             _animationPresetList[assetName] = [];
             clip.gotoAndStop(1);
+
             var data:Object = clip['animationData'];
             for (var frame:int = 1; frame < clip.totalFrames + 1; frame++) {
                 var clipData:Object = data && data[frame - 1] ? data[frame - 1] : {};
@@ -75,12 +76,15 @@ package animation.library {
          * _animationPresetList имя ассета / степ / анимация / часть анимации / случайный вариант части
          */
         public static function getAnimationQueryInstance(assetName:String, animationName:String, step:uint = 1):AnimationModel {
+            if (assetName == "npc_angree_tree") {
+                trace()
+            }
             var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
             var presets:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             CONFIG::debug{
                 if (!presets) {
-                    KLog.log('AnimationLibrary : getAnimationQueryInstance invalid animation ( ' + assetName + '/' + animationName + '/' + step + ' )', KLog.CRITICAL);
+                    KLog.log('AnimationLibrary : getAnimationQueryInstance invalid animation ( ' + assetName + '/' + animationName + '/' + step + ' )', KLog.ERROR);
                     return null;
                 }
             }

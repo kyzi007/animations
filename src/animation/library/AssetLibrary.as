@@ -35,17 +35,8 @@ package animation.library {
             var assetData:AssetData = findAnimation(query.name, query.animation, query.isFullAnimation, query.isAutoClear, query.step, query.rotate, query.position);
 
             if (!assetData) {
-                if(query.preRender){
-                    registerCachedAssetSourceName(query.name);
-                }
                 assetData = new AssetData(query);
                 var source:* = getSourceClassByAssetName(query.name);
-                /*if (!source) {
-                    source = Library.instance.getClass(query.name);
-                    if(source) {
-                        registerAsset(query.name, source);
-                    }
-                }*/
                 if (source) {
                     onAssetLoaded(source, [assetData]);
                 } else {
@@ -71,10 +62,12 @@ package animation.library {
         }
 
         public static function registerCachedAssetSourceName(name:String):void{
+            CONFIG::debug{ KLog.log("AssetLibrary : registerCachedAssetSourceName  "+ name, KLog.DEBUG); }
             _cachedMcNameList[name] = true;
         }
 
         public static function removeCachedAssetSource(name : String) : void {
+            CONFIG::debug{ KLog.log("AssetLibrary : removeCachedAssetSource  "+ name, KLog.DEBUG); }
             delete _cachedMcNameList[name];
             delete _cachedMcByName[name];
         }
@@ -115,13 +108,13 @@ package animation.library {
          */
         public static function getSourceByAssetName(name:String):DisplayObject {
             var clip:MovieClip;
-           /* if(_cachedMcByName[name]){
+            if(_cachedMcByName[name]){
                 clip = _cachedMcByName[name];
                 if(!_cachedMcNameList[name]){
                     delete _cachedMcByName[name];
                 }
                 return clip;
-            }*/
+            }
             if (!_sourceByName[name]) {
                 return null;
             } else {
@@ -137,6 +130,7 @@ package animation.library {
          * @param assetName
          */
         public static function removeAllByName(assetName:String):void {
+            CONFIG::debug{ KLog.log("AssetLibrary : removeAllByName  "+ assetName, KLog.DEBUG); }
             var assetsByName:Object = _collectionByName[assetName];
             if (assetName) {
                 for each (var assetData:AssetData in assetsByName) {

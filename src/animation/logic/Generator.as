@@ -177,13 +177,14 @@ package animation.logic {
          * при создании запускает рендеринг для основных анимаций
          * @return
          */
-        public function preCache():Number {
+        // TODO запускать все стейты для врагов
+        public function getPreCacheQueryList():Array {
             if (_isBitmapGenerate && !AnimationSettings.previewMode) {
-
                 if (_baseAnimations) {
                     // перебираем все части анимации которые должны быть закешены при старте
                     var preloadFullList:Array = [];
                     _preloadList = [];
+                    var names:Array = [];
                     for each (var animationShotName:String in _baseAnimations) {
                         if (AnimationLibrary.hasAnimationQuery(_assetName, animationShotName)) {
                             var animationList:AnimationModel = AnimationLibrary.getAnimationQueryInstance(_assetName, animationShotName);
@@ -192,46 +193,33 @@ package animation.logic {
                                 animationList.nextPreset();
                             }
                         }
-                        /* else {
-                            preloadFullList.push(animationShotName);
-                        }*/
                     }
 
                     for (var i:int = 0; i < preloadFullList.length; i++) {
                         var assetData:AssetData = _animations[preloadFullList[i]];
                         if (!assetData || assetData.isDestroyed) {
-                            _preloadList.push(preloadFullList[i]);
+                            names.push(preloadFullList[i]);
                         }
                     }
-                    animationRenderCallback();
                 }
             }
-            return _preloadList ? _preloadList.length : 0;
-        }
 
-        public function preCacheAll():void {
-            if (_isBitmapGenerate) {
-                _preloadList = [];
-                var preloadFullList:Array = AnimationLibrary['_animationPresetList'][_assetName];
-                for (var i:int = 0; i < preloadFullList.length; i++) {
-                    var step:Object = preloadFullList[i];
-                    if (step) {
-                        var animations:Object = step['animations'];
-                        for each (var animationShotName:String in animations) {
-                            if (AnimationLibrary.hasAnimationQuery(_assetName, animationShotName)) {
-                                var animationList:AnimationModel = AnimationLibrary.getAnimationQueryInstance(_assetName, animationShotName);
-                                while (!animationList.isListEnd) {
-                                    _preloadList.push(animationList.fullPartAnimationName);
-                                    animationList.nextPreset();
-                                }
-                            } else {
-                                _preloadList.push(animationShotName);
-                            }
-                        }
-                    }
-                }
-                animationRenderCallback();
+            for each (var name:String in names) {
+                var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
+                query.setAssetName(_assetName)
+                        .setObjectType(_assetType)
+                        .setSourceType(AssetTypes.TILE ? AssetSprite.SOURCE_PNG : AssetSprite.SOURCE_PNG)
+                        .setAnimationName(name)
+                        .setIsCheckDuplicateData(_isWorker ? AssetDataGetQuery.CHECK_DUPLICATE_NONE : AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME)
+                        .setIsFullAnimation(true)
+                        .setIsBitmapRendering(_isBitmapGenerate)
+                        .setStep(_step)
+                        .setRotate(rotationLogicOn ? _rotateEnum.value : RotateEnum.NONE)
+                        .setIsAutoClear(false);
+                _preloadList.push(query);
             }
+
+            return _preloadList;
         }
 
         public function removeAllLoadCallbacks():void {
@@ -258,23 +246,6 @@ package animation.logic {
             cleanUp();
         }
 
-        private function animationRenderCallback(e:* = null):void {
-            if (!_preloadList) return;
-            if (_preloadList && _preloadList.length == 0 && _allLoadCallback != null) {
-                _allLoadCallback();
-                AssetLibrary.removeCachedAssetSource(name);
-                return;
-            }
-            var name:String = _preloadList.shift();
-
-            var data:AssetData = getAnimation(name, true);
-            if (data.isRenderFinish) {
-                animationRenderCallback();
-            } else {
-                data.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, animationRenderCallback);
-            }
-        }
-
         private function clearAnimation(name:String):void {
             if (_animations[name + _step]) {
                 AssetData(_animations[name + _step]).useCount--;
@@ -287,10 +258,6 @@ package animation.logic {
                 AssetData(_oneFrame[name + _step]).useCount--;
                 delete _oneFrame[name + _step];
             }
-        }
-
-        public function get isPreloadAnimations():Boolean {
-            return _preloadList ? _preloadList.length == 0 : true;
         }
 
         internal function get isTile():Boolean {return _isTile;}
