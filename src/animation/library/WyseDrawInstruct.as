@@ -2,11 +2,18 @@ package animation.library {
 
     import animation.AssetTypes;
 
+    import com.adobe.images.PNGEncoder;
+    import com.adobe.serialization.json.JSON;
+
     import flash.display.BitmapData;
     import flash.display.MovieClip;
     import flash.display.Sprite;
+    import flash.filesystem.File;
+    import flash.filesystem.FileMode;
+    import flash.filesystem.FileStream;
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
+    import flash.utils.ByteArray;
 
     import log.logServer.KLog;
 
@@ -19,6 +26,18 @@ package animation.library {
         private var _matrix:Matrix = new Matrix();
         private var _render:MovieClip = null;
         private var _timline:Vector.<AssetFrame>;
+        private var _json:Object;
+
+       /* override public function finish():void {
+            var file:File = File.desktopDirectory;
+            file = file.resolvePath("assets/" + _assetData.name + "__" + _query.animation + ".json");
+            var fileStream:FileStream = new FileStream();
+            fileStream.open(file, FileMode.WRITE);
+            fileStream.writeMultiByte(JSON.encode(_json), "utf-8");
+            fileStream.close();
+
+            super.finish();
+        }*/
 
         override protected function drawFrame(frame:int):Boolean {
             if (!_render) {
@@ -28,9 +47,6 @@ package animation.library {
             _render.gotoAndStop(frame + 1);
             var bitmap:BitmapData;
 
-            /*if (frames.length > frame && frames[frame].dublicate != -1) {
-             bitmap = frames[_assetData[frame].dublicate].bitmap;
-             } else {*/
             var stateRect:Rectangle = _render.getBounds(_source);
 
             stateRect.top = Math.floor(stateRect.top);
@@ -43,20 +59,23 @@ package animation.library {
 
             bitmap = new BitmapData(stateRect.width, stateRect.height, true, 0);
             bitmap.draw(_source, _matrix);
-            //}
 
-            /*if (frames.length > frame) {
-             frames[frame].bitmap = bitmap;
-             } else {
-             var duplicateFrame:int = checkDuplicateData(bitmap, stateRect, frame);
+            /* var duplicateFrame:int = checkDuplicateData(bitmap, stateRect, frame);
              if (duplicateFrame != -1) {
              bitmap.dispose();
-             frames[frame] = new AssetFrame(stateRect.x, stateRect.y, frames[duplicateFrame].bitmap);
-             frames[frame].dublicate = duplicateFrame;
+             _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, _timline[duplicateFrame].bitmap);
+             _timline[frame].dublicate = duplicateFrame;
              } else {*/
             _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, bitmap);
-            //}
-            //}
+            /*var ba:ByteArray = PNGEncoder.encode(_timline[frame].bitmap);
+            var file:File = File.desktopDirectory;
+            file = file.resolvePath("assets/" + _assetData.name + "__" + _query.animation + frame + ".png");
+
+            var fileStream:FileStream = new FileStream();
+            fileStream.open(file, FileMode.WRITE);
+            fileStream.writeBytes(ba);
+            fileStream.close();*/
+            // }
 
             return (frame + 1 == _totalFrames)
         }
@@ -83,6 +102,20 @@ package animation.library {
                 falled();
                 CONFIG::debug{ KLog.log("WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR); }
             }
+            /*var file:File = File.desktopDirectory;
+            file = file.resolvePath("assets/" + _assetData.name + "__" + _query.animation + ".json");
+            var fileStream:FileStream = new FileStream();
+
+            if (!file.exists) {
+                fileStream.open(file, FileMode.WRITE);
+                fileStream.close();
+                _json = {};
+            } else {
+                fileStream.open(file, FileMode.READ);
+                var str:String = fileStream.readMultiByte(fileStream.bytesAvailable, "utf-8");
+                fileStream.close();
+                _json = JSON.decode(str);
+            }*/
         }
 
         private function hideClips():void {

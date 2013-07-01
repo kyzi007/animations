@@ -91,7 +91,7 @@ package animation.logic {
                 var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
                 query.setAssetName(_assetName)
                         .setObjectType(_assetType)
-                        .setSourceType(AssetTypes.TILE ? AssetSprite.SOURCE_PNG : AssetSprite.SOURCE_PNG)
+                        .setSourceType(_assetType == AssetTypes.TILE ? AssetSprite.SOURCE_PNG : AssetSprite.SOURCE_SWF)
                         .setAnimationName(name)
                         .setIsCheckDuplicateData(_isWorker ? AssetDataGetQuery.CHECK_DUPLICATE_NONE : AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME)
                         .setIsFullAnimation(true)
@@ -133,8 +133,7 @@ package animation.logic {
 
                 var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
                 query.setAssetName(_assetName)
-                        .setObjectType(_assetType)
-                        .setSourceType(AssetTypes.TILE ? AssetSprite.SOURCE_PNG : AssetSprite.SOURCE_PNG)
+                        .setObjectType(_assetType).setSourceType(_assetType == AssetTypes.TILE ? AssetSprite.SOURCE_PNG : AssetSprite.SOURCE_SWF)
                         .setAnimationName(name)
                         .setText(_text)
                         .setStep(_step)
