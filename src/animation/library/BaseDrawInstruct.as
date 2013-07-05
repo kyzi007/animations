@@ -17,18 +17,17 @@ package animation.library {
 
         public static const FINISH:String = 'finish';
         public static const FALLED:String = 'falled';
-
         protected static const TEXT_MC_NAME:String = 'textMc';
         protected static const TEXT_NAME:String = 'text';
         protected static const TEXT_SHADOW_NAME:String = 'shadowText';
-
+        public var dispather:SimpleEventDispatcher = new SimpleEventDispatcher();
         protected var _currentFrame:int = 0;
         protected var _totalFrames:int = 0;
         protected var _query:AssetDataGetQuery;
         protected var _source:*;
         protected var _assetData:AssetData;
-        public var dispather:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _falled:Boolean;
+        private var _inited:Boolean;
 
         public function execute():Boolean {
             var complete:Boolean = drawFrame(_currentFrame);
@@ -37,7 +36,8 @@ package animation.library {
         }
 
         public function finish():void {
-            if(!_falled){
+            _source = null;
+            if (!_falled) {
                 dispather.dispatchEvent(FINISH);
                 _assetData.finishRender();
             }
@@ -132,14 +132,14 @@ package animation.library {
          * @return boolean flag - is this finished
          */
         protected function drawFrame(i:int):Boolean {
-            throw new Error('mast be override');
+            return true;
         }
 
         /**
          * parse clip
          */
         protected function init():void {
-
+            _inited = true;
         }
 
         public function get name():String {

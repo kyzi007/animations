@@ -55,6 +55,7 @@ package animation.library {
             _isRenderFinish = true;
             _renderAction = null;
             update();
+            nextByStack();
         }
 
         public function falledRender() : void {
@@ -63,6 +64,16 @@ package animation.library {
             _renderAction = null;
             _isFalled = true;
             update();
+            nextByStack();
+        }
+
+        private function nextByStack():void {
+            _renderedAndLock[name] = false;
+            if(_stack[name]){
+                var data:Array = _stack[name].shift();
+                AssetData(data[0]).startRender(data[1]);
+                if(_stack[name].length == 0) _stack[name] = null;
+            }
         }
 
         public function getMovie(parent:*):MovieClip {
@@ -104,8 +115,22 @@ package animation.library {
             return instruct;
         }
 
+        private static var _renderedAndLock:Object = {};
+        private static var _stack:Object = {};
+
         public function startRender(source:DisplayObject):void {
             if (_isRenderWork) return;
+
+            if(_renderedAndLock[name]){
+                if(!_stack[name]){
+                    _stack[name] = [];
+                }
+                _stack[name].push([this, source]);
+                return;
+            }
+
+            _renderedAndLock[name] = true;
+
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
                 var instruct:BaseDrawInstruct = _renderSelectFunction(_getQuery, source, this);
@@ -115,6 +140,7 @@ package animation.library {
                 } else {
                     while (instruct.execute() == false) {}
                     instruct.finish();
+                    instruct = null;
                 }
             } else {
                 if (_getQuery.objectType == AssetTypes.TILE || _getQuery.objectType == AssetTypes.ITEM || _getQuery.objectType == AssetTypes.OBSTACLE) {
@@ -159,7 +185,7 @@ package animation.library {
         }
 
         public function get isLoaded():Boolean {
-            return AssetLibrary.getSourceByAssetName(name) != null;
+            return AssetLibrary.isLoad(name);
         }
 
         public function get isRenderFinish():Boolean {

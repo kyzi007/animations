@@ -199,6 +199,9 @@ package animation {
                         CONFIG::debug{ KLog.log("AssetView : setMovieState  " + 'invalid animation ' + _assetName + ' ' + _animationQuery.fullPartAnimationName, KLog.CRITICAL); }
                         return;
                     }
+
+
+
                     _generator.rotationLogicOn = _animationQuery._currentPreset().isRotateSupport(_rotate);
 
                     if (_animationQuery.isFullAnimation) {
@@ -305,7 +308,7 @@ package animation {
                 }
             }
         }
-
+/*
         protected function onRenderFinish():void {
             dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
             if (!_animationQuery) {
@@ -314,7 +317,7 @@ package animation {
                 setMovieState(AssetViewStateEnum.STATE_PLAY);
             }
         }
-
+*/
         private function updateShadowFrames(e:* = null):void {
             setShadowTimline(_shadowAssetData.frames);
         }

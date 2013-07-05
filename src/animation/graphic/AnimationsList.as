@@ -15,6 +15,7 @@ package animation.graphic {
         public static const MAGIC_WOOD:String = 'magic_wood';
         public static const MAGIC_WOOD_FIGHT:String = 'magic_wood_fight';
         public static const IDLE:String = 'idle';
+        public static const SHADOW:String = 'shadow';
 
         // main
         public static const SIDE_WALK:String = 'side_walk';

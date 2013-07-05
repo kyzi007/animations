@@ -22,7 +22,8 @@ package animation.library {
         // для вытаскивания дополнительных данных о анимации
         // так как клип все равно тут же дернется для рендеринга сохраняем сюда
         public static var _cachedMcByName:Object = {};
-        private static var _cachedMcNameList : Object = {};
+        private static var _cachedMcNameList:Object = {};
+        private static var _removed:Object = {};
 
         /**
          * получение AssetData
@@ -61,15 +62,23 @@ package animation.library {
             return assetData;
         }
 
-        public static function registerCachedAssetSourceName(name:String):void{
-            CONFIG::debug{ KLog.log("AssetLibrary : registerCachedAssetSourceName  "+ name, KLog.DEBUG); }
+        public static function registerCachedAssetSourceName(name:String):void {
+            CONFIG::debug{ KLog.log("AssetLibrary : registerCachedAssetSourceName  " + name, KLog.DEBUG); }
             _cachedMcNameList[name] = true;
         }
 
-        public static function removeCachedAssetSource(name : String) : void {
-            CONFIG::debug{ KLog.log("AssetLibrary : removeCachedAssetSource  "+ name, KLog.DEBUG); }
+        public static function removeCachedAssetSource(name:String):void {
+            CONFIG::debug{ KLog.log("AssetLibrary : removeCachedAssetSource  " + name, KLog.DEBUG); }
             delete _cachedMcNameList[name];
+            trace('-- remove', name)
+            /*if(_cachedMcByName){
+             while(_cachedMcByName[name].numChildren){
+             _cachedMcByName[name].removeChildAt(0);
+             }
+             }*/
+            _removed [name] = true;
             delete _cachedMcByName[name];
+            //delete _sourceByName[name];
         }
 
         /**
@@ -106,13 +115,18 @@ package animation.library {
          * @param name
          * @return MovieClip
          */
+        public static function isLoad(name:String):Boolean {
+            return Boolean(_sourceByName[name]);
+        }
+
         public static function getSourceByAssetName(name:String):DisplayObject {
             var clip:MovieClip;
-            if(_cachedMcByName[name]){
+            if (_cachedMcByName[name]) {
                 clip = _cachedMcByName[name];
-                if(!_cachedMcNameList[name]){
-                    delete _cachedMcByName[name];
+                if (!_cachedMcNameList[name]) {
+                    removeCachedAssetSource(name);
                 }
+                trace('-- get cached', name)
                 return clip;
             }
             if (!_sourceByName[name]) {
@@ -121,6 +135,7 @@ package animation.library {
                 if (_sourceByName[name] is Bitmap) return _sourceByName[name];
                 if (_sourceByName[name] is MovieClip) return _sourceByName[name];
                 clip = new _sourceByName[name]();
+                trace('-- create new', name)
                 return clip;
             }
         }
@@ -130,7 +145,7 @@ package animation.library {
          * @param assetName
          */
         public static function removeAllByName(assetName:String):void {
-            CONFIG::debug{ KLog.log("AssetLibrary : removeAllByName  "+ assetName, KLog.DEBUG); }
+            CONFIG::debug{ KLog.log("AssetLibrary : removeAllByName  " + assetName, KLog.DEBUG); }
             var assetsByName:Object = _collectionByName[assetName];
             if (assetName) {
                 for each (var assetData:AssetData in assetsByName) {
@@ -144,9 +159,9 @@ package animation.library {
         public static function registerAsset(name:String, data:*):void {
             _sourceByName[name] = data;
 
-            if(data is MovieClip){
+            if (data is MovieClip) {
                 AnimationLibrary.parseWyseClip(data, name);
-            } else if(data is Class){
+            } else if (data is Class) {
                 _cachedMcByName[name] = new data();
                 AnimationLibrary.parseWyseClip(_cachedMcByName[name] as MovieClip, name);
             }

@@ -14,6 +14,7 @@ package animation.library {
         private static const WIDTH:int = 95;
 
         override protected function drawFrame(frame:int):Boolean {
+            super.drawFrame(frame);
             var matrix:Matrix = new Matrix();
             var bitmap:BitmapData = new BitmapData(WIDTH, _source.height, true, 0);
             matrix.identity();
@@ -25,6 +26,7 @@ package animation.library {
         }
 
         override protected function init():void {
+            super.init();
             _totalFrames = _source.width / AnimationSettings.tileWidth;
         }
     }
