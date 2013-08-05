@@ -1,9 +1,8 @@
 package com.berry.animation.library {
+    import com.berry.events.SimpleEventDispatcher;
+
     import org.dzyga.pool.IReusable;
 
-    import umerkiCommon.evens.SimpleEventDispatcher;
-
-    ;
 
     public class AnimationModel extends SimpleEventDispatcher implements IReusable {
         public function AnimationModel() {

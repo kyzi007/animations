@@ -3,6 +3,7 @@ package com.berry.animation.library {
     import com.berry.animation.draw.BaseDrawInstruct;
     import com.berry.animation.draw.TileDrawInstruct;
     import com.berry.animation.draw.WyseDrawInstruct;
+    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
@@ -11,8 +12,6 @@ package com.berry.animation.library {
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
-
-    import umerkiCommon.evens.SimpleEventDispatcher;
 
     ;
 

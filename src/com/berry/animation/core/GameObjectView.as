@@ -7,6 +7,7 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetDataEvents;
     import com.berry.animation.library.AssetLibrary;
+    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
@@ -17,9 +18,6 @@ package com.berry.animation.core {
     import org.ColorMatrix;
     import org.dzyga.geom.Rect;
 
-    import umerkiCommon.evens.SimpleEventDispatcher;
-
-    ;
 
     public class GameObjectView {
         public function GameObjectView(id:String, name:String) {

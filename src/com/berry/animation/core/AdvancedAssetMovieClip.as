@@ -5,15 +5,12 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetDataEvents;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetLibrary;
+    import com.berry.events.SimpleEventDispatcher;
 
     import org.ColorMatrix;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
     import org.dzyga.geom.Rect;
-
-    import umerkiCommon.evens.SimpleEventDispatcher;
-
-    ;
 
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip() {

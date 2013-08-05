@@ -1,4 +1,6 @@
 package com.berry.animation.library {
+    import com.berry.events.SimpleEventDispatcher;
+
     import flash.display.MovieClip;
     import flash.display.Sprite;
     import flash.utils.Dictionary;
@@ -10,8 +12,6 @@ package com.berry.animation.library {
     import org.dzyga.events.IInstruct;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
-
-    import umerkiCommon.evens.SimpleEventDispatcher;
 
     ;
 
@@ -103,7 +103,7 @@ package com.berry.animation.library {
             _renderedAndLock[name] = false;
             if (_stack[name]) {
                 var data:Array = _stack[name].shift();
-                if(data){
+                if (data) {
                     AssetData(data[0]).startRender(data[1]);
                 }
                 if (_stack[name] && _stack[name].length == 0) delete _stack[name];
