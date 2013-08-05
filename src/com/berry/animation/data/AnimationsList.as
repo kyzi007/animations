@@ -1,4 +1,4 @@
-package com.berry.animation.graphic {
+package com.berry.animation.data {
     public class AnimationsList {
         public static const FEED:String = 'feed';
         public static const WATER:String = 'water';
@@ -32,7 +32,7 @@ package com.berry.animation.graphic {
         // work
         public static const CHOP:String = 'chop';
 
-        public static function isMove (name:String):Boolean {
+        public static function isMove(name:String):Boolean {
             switch (name) {
                 case SIDE_WALK:
                 case BACK_WALK:
@@ -45,7 +45,7 @@ package com.berry.animation.graphic {
             }
         }
 
-        public static function isComplexName (name:String):Boolean {
+        public static function isComplexName(name:String):Boolean {
             switch (name) {
                 case SIDE_WALK:
                 case BACK_WALK:

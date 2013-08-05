@@ -1,4 +1,4 @@
-package com.berry.animation.event {
+package com.berry.animation.core {
 
     public class AssetViewEvents {
         public static const ON_LOAD:String = 'AssetViewEvents.onLoad';

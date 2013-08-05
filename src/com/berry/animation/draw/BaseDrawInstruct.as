@@ -1,4 +1,7 @@
-package com.berry.animation.library {
+package com.berry.animation.draw {
+    import com.berry.animation.library.AssetData;
+    import com.berry.animation.library.AssetDataGetQuery;
+    import com.berry.animation.library.AssetFrame;
     import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.BitmapData;
@@ -6,13 +9,13 @@ package com.berry.animation.library {
 
     import org.dzyga.events.IInstruct;
 
-    internal class BaseDrawInstruct implements IInstruct {
+    public class BaseDrawInstruct implements IInstruct {
 
-        public function BaseDrawInstruct (assetData:AssetData, config:AssetDataGetQuery, source:*) {
+        public function BaseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:*) {
             _assetData = assetData;
             _query = config;
             _source = source;
-            init();
+            //init();
         }
 
         public static const FINISH:String = 'finish';
@@ -29,13 +32,13 @@ package com.berry.animation.library {
         private var _falled:Boolean;
         private var _inited:Boolean;
 
-        public function execute ():Boolean {
+        public function execute():Boolean {
             var complete:Boolean = drawFrame(_currentFrame);
             _currentFrame++;
             return complete;
         }
 
-        public function finish ():void {
+        public function finish():void {
             _source = null;
             if (!_falled) {
                 dispather.dispatchEvent(FINISH);
@@ -43,13 +46,20 @@ package com.berry.animation.library {
             }
         }
 
-        public function falled ():void {
+        public function falled():void {
             _falled = true;
             _assetData.falledRender();
             dispather.dispatchEvent(FALLED);
         }
 
-        protected function checkDuplicateData (bitmap:BitmapData, bounce:Rectangle, frame:int):int {
+        /**
+         * parse clip
+         */
+        public function init():void {
+            _inited = true;
+        }
+
+        protected function checkDuplicateData(bitmap:BitmapData, bounce:Rectangle, frame:int):int {
             if (frame == 0) return -1;
             if (_query.checkDuplicateDataMode == AssetDataGetQuery.CHECK_DUPLICATE_NONE)       return -1;
             if (_query.checkDuplicateDataMode == AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME)  return checkDuplicateDataOneFrame(bitmap, bounce, frame);
@@ -62,11 +72,11 @@ package com.berry.animation.library {
             while (!isDuplicate && --frame >= 0) {
                 compareFrame = _assetData.frames[frame];
                 if (
-                    compareFrame.bitmap.width != bounce.width
-                        || compareFrame.bitmap.height != bounce.height
-                        || compareFrame.x != bounce.x
-                        || compareFrame.y != bounce.y
-                    ) {
+                        compareFrame.bitmap.width != bounce.width
+                                || compareFrame.bitmap.height != bounce.height
+                                || compareFrame.x != bounce.x
+                                || compareFrame.y != bounce.y
+                        ) {
                     continue;
                 }
 
@@ -100,7 +110,7 @@ package com.berry.animation.library {
             return isDuplicate ? frame : -1;
         }
 
-        protected function checkDuplicateDataOneFrame (bitmap:BitmapData, bounce:Rectangle, i:int):int {
+        protected function checkDuplicateDataOneFrame(bitmap:BitmapData, bounce:Rectangle, i:int):int {
             var isDuplicate:Boolean = false;
             var compareFrame:AssetFrame;
             var compareResult:*;
@@ -108,11 +118,11 @@ package com.berry.animation.library {
             i--;
             compareFrame = _assetData.frames[i];
             if (
-                compareFrame.bitmap.width != bounce.width
-                    || compareFrame.bitmap.height != bounce.height
-                    || compareFrame.x != bounce.x
-                    || compareFrame.y != bounce.y
-                ) {
+                    compareFrame.bitmap.width != bounce.width
+                            || compareFrame.bitmap.height != bounce.height
+                            || compareFrame.x != bounce.x
+                            || compareFrame.y != bounce.y
+                    ) {
                 return -1;
             }
 
@@ -131,18 +141,11 @@ package com.berry.animation.library {
          * @param i
          * @return boolean flag - is this finished
          */
-        protected function drawFrame (i:int):Boolean {
+        protected function drawFrame(i:int):Boolean {
             return true;
         }
 
-        /**
-         * parse clip
-         */
-        protected function init ():void {
-            _inited = true;
-        }
-
-        public function get name ():String {
+        public function get name():String {
             return "";
         }
     }

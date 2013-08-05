@@ -1,5 +1,4 @@
-package com.berry.animation.graphic {
-    import com.berry.animation.event.AssetViewEvents;
+package com.berry.animation.core {
     import com.berry.animation.library.AssetFrame;
     import com.berry.events.SimpleEventDispatcher;
 
@@ -13,33 +12,28 @@ package com.berry.animation.graphic {
 
     public class AssetSprite extends Sprite {
 
-        public function AssetSprite (name:String) {
+        public function AssetSprite(name:String) {
             _assetName = name;
             _bitmap.smoothing = true;
             addChild(_bitmap);
-
         }
-
-        public static const SOURCE_SWF:String = 'swf';
-        public static const SOURCE_PNG:String = 'png';
         private static const _point:Point = new Point();
+        public var isDebug:Boolean;
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
-        protected var _rect:Rect = null;
+        private var _rect:Rect = null;
         protected var _bitmap:Bitmap = new Bitmap();
         protected var _assetName:String;
-        protected var _isOnStage:Boolean;
-        protected var _assetFormat:String = SOURCE_SWF;
         private var _currentFrameData:AssetFrame;
         private var _lastMovie:MovieClip;
 
-        public function cleanUp ():void {
+        public function cleanUp():void {
             _currentFrameData = null;
             _bitmap.bitmapData = null;
             _bitmap = null;
             _rect = null;
         }
 
-        public function hitTest (x:Number, y:Number):Boolean {
+        public function hitTest(x:Number, y:Number):Boolean {
             if (_currentFrameData && _currentFrameData.bitmap) {
 
                 var bitmapData:BitmapData = _currentFrameData.bitmap;
@@ -47,9 +41,9 @@ package com.berry.animation.graphic {
                 var bottom:Number = _currentFrameData.y + bitmapData.height;
 
                 if (x >= _currentFrameData.x &&
-                    x <= left &&
-                    y >= _currentFrameData.y &&
-                    y <= bottom) {
+                        x <= left &&
+                        y >= _currentFrameData.y &&
+                        y <= bottom) {
 
                     var px:uint = bitmapData.getPixel32(x - _currentFrameData.x, y - _currentFrameData.y);
                     if (px > 0x1000000) return true;
@@ -67,8 +61,8 @@ package com.berry.animation.graphic {
          * @param target - AssetFrame (bitmap) or MovieClip (vector)
          * @param isUpdateBounds
          */
-        protected function draw (target:*, isUpdateBounds:Boolean = false):void {
-            if (!_isOnStage && !isUpdateBounds) return;
+        protected function draw(target:*, isUpdateBounds:Boolean = false):void {
+            if (!visible && !isUpdateBounds || !_bitmap) return;
 
             if (target is AssetFrame) {
                 _currentFrameData = target;
@@ -90,16 +84,16 @@ package com.berry.animation.graphic {
             if ((isUpdateBounds || !_rect) && target is AssetFrame) {
                 if (!_rect) _rect = new Rect();
                 if (_rect.x != _currentFrameData.x
-                    || _rect.y != _currentFrameData.y
-                    || _rect.width != _currentFrameData.bitmap.width
-                    || _rect.height != _currentFrameData.bitmap.height
-                    ) {
+                        || _rect.y != _currentFrameData.y
+                        || _rect.width != _currentFrameData.bitmap.width
+                        || _rect.height != _currentFrameData.bitmap.height
+                        ) {
 
                     _rect.fill(
-                        _currentFrameData.x,
-                        _currentFrameData.y,
-                        _currentFrameData.bitmap.width,
-                        _currentFrameData.bitmap.height);
+                            _currentFrameData.x,
+                            _currentFrameData.y,
+                            _currentFrameData.bitmap.width,
+                            _currentFrameData.bitmap.height);
                     dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS); // обновится вся сортировка, очень аккуратно вызывать надо
                 }
             }
@@ -109,6 +103,14 @@ package com.berry.animation.graphic {
                 _rect.match(getBounds(this));
                 dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS);
             }
+        }
+
+        override public function set visible(value:Boolean):void {
+            super.visible = value;
+        }
+
+        public function get rect():Rect {
+            return _rect;
         }
     }
 }

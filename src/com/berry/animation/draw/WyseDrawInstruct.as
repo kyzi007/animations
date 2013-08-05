@@ -1,34 +1,36 @@
-package com.berry.animation.library {
-
-    import com.berry.animation.AssetTypes;
+package com.berry.animation.draw {
+    import com.berry.animation.library.AssetData;
+    import com.berry.animation.library.AssetDataGetQuery;
+    import com.berry.animation.library.AssetFrame;
 
     import flash.display.BitmapData;
     import flash.display.MovieClip;
     import flash.display.Sprite;
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
+    import flash.utils.getTimer;
 
     import log.logServer.KLog;
 
-    internal class WyseDrawInstruct extends BaseDrawInstruct {
+    public class WyseDrawInstruct extends BaseDrawInstruct {
 
-        public function WyseDrawInstruct (assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
+        public function WyseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
             super(assetData, config, source);
         }
 
         private var _matrix:Matrix = new Matrix();
         private var _render:MovieClip = null;
         private var _timline:Vector.<AssetFrame>;
+        private var _time:int;
 
-        override public function finish ():void {
-            CONFIG::debug{
-                KLog.log("WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS);
-            }
-            _render = null
+        override public function finish():void {
+            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
+            _render = null;
+            trace(getTimer() - _time, _query.name, _query.animation, _query.rotate)
             super.finish();
         }
 
-        override protected function drawFrame (frame:int):Boolean {
+        override protected function drawFrame(frame:int):Boolean {
             super.drawFrame(frame);
             if (!_render) {
                 falled();
@@ -51,23 +53,22 @@ package com.berry.animation.library {
             bitmap = new BitmapData(stateRect.width, stateRect.height, true, 0);
             bitmap.draw(_source, _matrix);
 
-            /* var duplicateFrame:int = checkDuplicateData(bitmap, stateRect, frame);
-             if (duplicateFrame != -1) {
-             bitmap.dispose();
-             _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, _timline[duplicateFrame].bitmap);
-             _timline[frame].dublicate = duplicateFrame;
-             } else {*/
-            _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, bitmap);
-            // }
+            var duplicateFrame:int = checkDuplicateData(bitmap, stateRect, frame);
+            if (duplicateFrame != -1) {
+                bitmap.dispose();
+                _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, _timline[duplicateFrame].bitmap);
+                _timline[frame].dublicate = duplicateFrame;
+            } else {
+                _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, bitmap);
+            }
 
             return (frame + 1 == _totalFrames)
         }
 
-        override protected function init ():void {
+        override public function init():void {
             super.init();
-            CONFIG::debug{
-                KLog.log("WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS);
-            }
+            _time = getTimer();
+            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
 
             _source.gotoAndStop(_query.step);
 
@@ -81,16 +82,14 @@ package com.berry.animation.library {
                 hideClips();
                 _source.x = 0;
                 _source.y = 0;
-                _totalFrames = _render.totalFrames;
+                _totalFrames = _query.isFullAnimation ?_render.totalFrames : 1;
             } else {
                 falled();
-                CONFIG::debug{
-                    KLog.log("WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR);
-                }
+                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR); }
             }
         }
 
-        private function hideClips ():void {
+        private function hideClips():void {
             for (var i:int = 0; i < _source.numChildren; i++) {
                 var item:MovieClip = _source.getChildAt(i) as MovieClip;
                 item.visible = item == _render;
@@ -98,16 +97,12 @@ package com.berry.animation.library {
             }
         }
 
-        private function setText ():void {
+        private function setText():void {
             if (_query.text != null) {
-                if (_query.objectType == AssetTypes.OBSTACLE) {
-                    var textMc:MovieClip = _render[TEXT_MC_NAME];
-                    if (textMc) {
-                        textMc[TEXT_NAME].text = _query.text;
-                        textMc[TEXT_SHADOW_NAME].text = _query.text;
-                    }
-                } else {
-                    throw new Error('text not supported in' + _query.objectType);
+                var textMc:MovieClip = _render[TEXT_MC_NAME];
+                if (textMc) {
+                    textMc[TEXT_NAME].text = _query.text;
+                    textMc[TEXT_SHADOW_NAME].text = _query.text;
                 }
             }
         }

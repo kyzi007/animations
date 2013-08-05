@@ -1,11 +1,11 @@
-package com.berry.animation.graphic {
+package com.berry.animation.data {
     import com.berry.enums.DynamicEnum;
 
     public class RotateEnum extends DynamicEnum {
 
-        public function RotateEnum () {
+        public function RotateEnum(defaultValue:String = NONE) {
             super([FLIP, NONE, BACK, CORNER, BACK_ROTATE, CORNER_ROTATE], String);
-            setValue(NONE);
+            setValue(defaultValue);
         }
 
         public static const NONE:String = '';

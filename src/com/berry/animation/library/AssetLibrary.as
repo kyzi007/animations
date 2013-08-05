@@ -1,266 +1,285 @@
 package com.berry.animation.library {
+    import com.berry.animation.data.SourceTypeEnum;
+    import com.berry.animation.draw.BaseDrawInstruct;
+    import com.berry.animation.draw.TileDrawInstruct;
+    import com.berry.animation.draw.WyseDrawInstruct;
+    import com.berry.events.SimpleEventDispatcher;
+
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
-    import flash.display.MovieClip;
-    import flash.utils.Dictionary;
-
-    import log.logServer.KLog;
+    import flash.display.Sprite;
 
     import org.dzyga.events.EnterFrame;
+    import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
 
     public class AssetLibrary {
-        /**
-         * @author kyzi007
-         * хранилище анимаций
-         * не предназначено для прямого использования - для этого существует конкретный класс (AssetLibrary) который выполняет специфические для игры действия
-         */
+        public function AssetLibrary(baseUrl:String) {
+            _baseUrl = baseUrl;
+        }
 
-        public static const nameDict:Dictionary = new Dictionary();
-        private static var _collectionByName:Object = {};
-        public static var _sourceByName:Object = {};
-        // для вытаскивания дополнительных данных о анимации
-        // так как клип все равно тут же дернется для рендеринга сохраняем сюда
-        public static var _cachedMcByName:Object = {};
-        private static var _cachedMcNameList:Object = {};
-        private static var _removed:Object = {};
+        public static const ON_INIT:String = 'init';
+        private var _dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
+        protected var _assets:Object = {};
+        protected var _doHash:Object = {};
+        protected var _classHash:Object = {};
+        private var _baseUrl:String;
+        private var _cached:Object = {};
 
-        /**
-         * получение AssetData
-         * если клип для рендеринга не загружен - инициализаирует загрузку, по загрузке / если клип в наличии - запускает рендеринг
-         * обновлятся счетчик использований
-         * @param query
-         * @return
-         */
-        public static function getAssetData (query:AssetDataGetQuery):AssetData {
-            var assetData:AssetData = findAnimation(query.name, query.animation, query.isFullAnimation, query.isAutoClear, query.step, query.rotate, query.position);
+        public function init():void {
+            // for override
+            EnterFrame.scheduleAction(10000, gc);
+        }
 
-            if (!assetData) {
-                assetData = new AssetData(query);
-                var source:* = getSourceClassByAssetName(query.name);
-                if (source) {
-                    onAssetLoaded(source, [assetData]);
-                } else {
-                    SWFLibraryTemp.loadSource(
-                        query.name,
-                        query.url,
-                        query.objectType,
-                        function (data:*):void {
-                            onAssetLoaded(data, [assetData]);
-                        }
-                    );
+        public function getPreloader(assetName:String):AssetData {
+            // for override
+            return null;
+        }
+
+        public function registerAsset(data:*, assetName:String):void {
+            if (data is Bitmap) {
+                _doHash[data] = data;
+            } else {
+                _classHash[data] = assetName;
+            }
+        }
+
+        public function gc():void {
+            EnterFrame.scheduleAction(10000, gc);
+            if (EnterFrame.calculatedFps < 20) {
+                return;
+            }
+            for (var assetsName:String in _assets) {
+                var assetsByName:Array = _assets[assetsName];
+                var count:int = 0;
+                for each (var assetData:AssetData in assetsByName) {
+                    // if not playing and rendering
+                    if (assetData.useCount == 0 && assetData.getQuery.isAutoClear && assetData.isRenderFinish) {
+                        assetData.destroy();
+                        assetsByName.splice(assetsByName.indexOf(assetData));
+                    }
+                    if (!assetData.isDestroyed) {
+                        count++;
+                    }
                 }
-                addData(assetData);
+                // if asset unused delete source
+                if (count == 0) {
+                    //delete _classHash[assetsName];
+                    delete _cached[assetsName];
+                    if (!(_doHash is Bitmap)) {
+                        delete _doHash[assetsName];
+                    }
+                }
+            }
+        }
+
+        public function loadData(name:String, type:SourceTypeEnum, finishCallback:Function):void {
+            var data:* = _classHash[name];
+
+            if (!data) {
+                data = new SwfLoader(name, getUrl(name, type.value), null);
+                _classHash[name] = data;
+                SwfLoader(data).addCallback(function (loadedData:*):void {
+                    _classHash[name] = loadedData;
+                    finishCallback(loadedData);
+                });
+            } else if (data is SwfLoader) {
+                SwfLoader(data).addCallback(function (loadedData:*):void {
+                    _classHash[name] = loadedData;
+                    finishCallback(loadedData);
+                });
+            } else if (data) {
+                finishCallback(data);
+            }
+        }
+
+        public function loaded(name:String):Boolean {
+            return _doHash[name] || (_classHash[name] && !(_classHash[name] is SwfLoader) );
+        }
+
+        public function cleanUp(name:String):void {
+
+        }
+
+        public function getSource(name:String):DisplayObject {
+            var source:DisplayObject = _doHash[name];
+            if (!source) {
+                if(_classHash[name] is Bitmap){
+                    source = _classHash[name]
+                } else {
+                    source = new _classHash[name]();
+                }
+            }
+            if (_cached[name]) {
+                _doHash[name] = source;
+            }
+            return source;
+        }
+
+        public function cacheSource(name:String):void {
+            _cached[name] = true;
+        }
+
+        public function removeSourceFromCache(name:String):void {
+            delete _cached[name];
+            delete _doHash[name];
+        }
+
+        public function getAssetData(query:AssetDataGetQuery):AssetData {
+            var assetData:AssetData = findAssetData(query);
+
+            if (!assetData || assetData.isDestroyed) {
+                assetData = new AssetData(query);
+                if (!query.isBitmapRendering) {
+                    assetData.sourceClass = _classHash[query.name];
+                }
+                assetData.startRender(getRender(assetData));
+                addAssetData(assetData);
             } else {
                 Pool.put(query);
-            }
-
-            if (assetData.isDestroyed) {
-                assetData.restore(getSourceByAssetName(assetData.name));
             }
 
             return assetData;
         }
 
-        public static function registerCachedAssetSourceName (name:String):void {
-            CONFIG::debug{
-                KLog.log("AssetLibrary : registerCachedAssetSourceName  " + name, KLog.DEBUG);
-            }
-            _cachedMcNameList[name] = true;
-        }
-
-        public static function removeCachedAssetSource (name:String):void {
-            CONFIG::debug{
-                KLog.log("AssetLibrary : removeCachedAssetSource  " + name, KLog.DEBUG);
-            }
-            delete _cachedMcNameList[name];
-            trace('-- remove', name)
-            /*if(_cachedMcByName){
-             while(_cachedMcByName[name].numChildren){
-             _cachedMcByName[name].removeChildAt(0);
-             }
-             }*/
-            _removed [name] = true;
-            delete _cachedMcByName[name];
-            //delete _sourceByName[name];
-        }
-
-        /**
-         * ищем - не закеширована ли анимация
-         * @param assetName
-         * @param animation
-         * @return AssetData
-         * @param isFullAnimation
-         * @param isAutoClear
-         * @param step
-         */
-        public static function findAnimation (assetName:String, animation:String, isFullAnimation:Boolean, isAutoClear:Boolean, step:uint, rotate:String, position:String):AssetData {
-            var collection:Object = _collectionByName[assetName];
-            if (!collection) return null;
-
-            for each (var assetData:AssetData in collection) {
-                if (
-                    assetData.name == assetName
-                        && assetData.getQuery.animation == animation
-                        && assetData.getQuery.isFullAnimation == isFullAnimation
-                        && assetData.getQuery.isAutoClear == isAutoClear
-                        && assetData.getQuery.step == step
-                        && assetData.getQuery.rotate == rotate
-                        && assetData.getQuery.position == position
-                    ) {
-                    return assetData;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * получаем новый инстанс клипа для рендеринга
-         * @param name
-         * @return MovieClip
-         */
-        public static function isLoad (name:String):Boolean {
-            return Boolean(_sourceByName[name]);
-        }
-
-        public static function getSourceByAssetName (name:String):DisplayObject {
-            var clip:MovieClip;
-            if (_cachedMcByName[name]) {
-                clip = _cachedMcByName[name];
-                if (!_cachedMcNameList[name]) {
-                    removeCachedAssetSource(name);
-                }
-                trace('-- get cached', name)
-                return clip;
-            }
-            if (!_sourceByName[name]) {
-                return null;
+        protected function getRender(assetData:AssetData):IInstruct {
+            var render:BaseDrawInstruct;
+            if (assetData.getQuery.sourceType == SourceTypeEnum.SOURCE_PNG) {
+                render = new TileDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name));
             } else {
-                if (_sourceByName[name] is Bitmap) return _sourceByName[name];
-                if (_sourceByName[name] is MovieClip) return _sourceByName[name];
-                clip = new _sourceByName[name]();
-                trace('-- create new', name)
-                return clip;
+                render = new WyseDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name) as Sprite);
             }
+
+            return render;
         }
 
-        /**
-         * умирают все анимации для ассета
-         * @param assetName
-         */
-        public static function removeAllByName (assetName:String):void {
-            CONFIG::debug{
-                KLog.log("AssetLibrary : removeAllByName  " + assetName, KLog.DEBUG);
+        protected function getUrl(name:String, type:String):String {
+            return _baseUrl + name + '.' + type;
+        }
+
+        private function addAssetData(assetData:AssetData):void {
+            if (!_assets[assetData.getQuery.name]) {
+                _assets[assetData.getQuery.name] = [];
             }
-            var assetsByName:Object = _collectionByName[assetName];
-            if (assetName) {
-                for each (var assetData:AssetData in assetsByName) {
-                    assetData.destroy();
+            _assets[assetData.getQuery.name].push(assetData);
+        }
+
+        public function createSourceInstance(name:String):DisplayObject
+        {
+            return new _classHash[name]();
+        }
+
+        private function findAssetData(query:AssetDataGetQuery):AssetData {
+            var assetsByName:Array = _assets[query.name];
+            var assetData:AssetData;
+
+            for each (var assetDataTemp:AssetData in assetsByName) {
+                if (assetDataTemp.getQuery.step == query.step
+                        && assetDataTemp.getQuery.text == query.text
+                        && assetDataTemp.getQuery.rotate == query.rotate
+                        && assetDataTemp.getQuery.position == query.position
+                        && assetDataTemp.getQuery.animation == query.animation
+                        && assetDataTemp.getQuery.isFullAnimation == query.isFullAnimation
+                        ) {
+                    assetData = assetDataTemp;
+                    break;
                 }
             }
-            _collectionByName[assetName] = null;
-            delete nameDict[assetData.name];
+
+            return assetData;
         }
 
-        public static function registerAsset (name:String, data:*):void {
-            _sourceByName[name] = data;
-
-            if (data is MovieClip) {
-                AnimationLibrary.parseWyseClip(data, name);
-            } else if (data is Class) {
-                _cachedMcByName[name] = new data();
-                AnimationLibrary.parseWyseClip(_cachedMcByName[name] as MovieClip, name);
-            }
+        public function set baseUrl(value:String):void {
+            _baseUrl = value;
         }
 
-        /**
-         * вычищаем коллекцию только для определенной анимации
-         * @param assetData
-         * @param force - если установлен удаляет данные вне зависимости от использования
-         */
-        public static function removeAssetData (assetData:AssetData, force:Boolean = false):void {
-            if (assetData) {
-                if (assetData.useCount < 1) {
-                    if (force) {
-                        remove(assetData);
-                    } else {
-                        CONFIG::debug {
-                            KLog.log('AssetLibarary : removeAssetData' + assetData.getQuery.toStringShot(), KLog.METHODS);
-                        }
-                        EnterFrame.scheduleAction(10000 + 10000 * Math.random(), remove, null, assetData).name = "AssetLibarary:removeAssetData " + assetData.name;
+        public function get dispatcher():SimpleEventDispatcher {
+            return _dispatcher;
+        }
+    }
+}
+
+import flash.display.Bitmap;
+import flash.display.Loader;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.net.URLRequest;
+import flash.system.LoaderContext;
+
+import log.logServer.KLog;
+
+class SwfLoader extends Loader {
+
+    private var _callback:Vector.<Function> = new Vector.<Function>();
+    private var _url:String;
+    private var _context:LoaderContext;
+
+    private static const HTTP_PREFIX:String = 'http://';
+    public var data:Class;
+    private var _name:String;
+    private const LIB_PROP:String = 'library';
+
+    public function SwfLoader(name:String, url:String, callback:Function) {
+        _name = name;
+
+        _context = new LoaderContext();
+        _context.checkPolicyFile = true;
+        _context.allowCodeImport = true;
+
+        contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
+        contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
+
+        addCallback(callback);
+        loadSwf(url);
+    }
+
+    public function addCallback(callback:Function):void {
+        if (callback != null) {
+            _callback.push(callback);
+        }
+    }
+
+    private function loadSwf(url:String):void {
+        _url = url;
+        load(new URLRequest(_url), _context);
+    }
+
+    private function error(event:IOErrorEvent):void {
+
+        CONFIG::debug{ KLog.log("SwfLoader:error " + event.toString() + ' url=' + _url, KLog.ERROR); }
+        complete(null);
+    }
+
+    private function complete(event:Event):void {
+        if (event) {
+            var data:*;
+            var className:String;
+
+            if (content is Bitmap) {
+                data = content;
+            } else {
+                if (content.hasOwnProperty(LIB_PROP)) {
+                    var lib:Object = content[LIB_PROP];
+                    for (var string:String in lib) {
+                        className = string;
+                        break;
                     }
-                }
-            }
-        }
-
-        public static function clearUnusedData ():void {
-            for (var itemName:String in _collectionByName) {
-                var itemAnimations:Object = _collectionByName[itemName];
-                if (itemAnimations) {
-                    for (var animationName:String in itemAnimations) {
-                        var data:AssetData = itemAnimations[animationName];
-                        data.checkClean();
-                    }
-                }
-            }
-        }
-
-        /**
-         * добавляет анимацию
-         * сохраняет имя ассета для последующих проверок
-         * @param assetData
-         */
-        private static function addData (assetData:AssetData):void {
-            if (!_collectionByName[assetData.name]) {
-                _collectionByName[assetData.name] = new Vector.<AssetData>;
-            }
-
-            _collectionByName[assetData.name].push(assetData);
-            nameDict[assetData.name] = true;
-        }
-
-        /**
-         * кривая хрень для дубликата вызова onAssetLoaded
-         * @param name
-         * @return
-         */
-        private static function getSourceClassByAssetName (name:String):* {
-            return _sourceByName[name];
-        }
-
-        /**
-         * ассет загрузился / пошел запрос на ассет
-         * @param data - класс ассета
-         * @param params - [assetData]
-         */
-        private static function onAssetLoaded (data:*, params:Array):void {
-            if (params && params[0]) {
-                var assetData:AssetData = params[0];
-                _sourceByName[assetData.name] = data;
-                assetData.startRender(getSourceByAssetName(assetData.name)); // на каждый вызов создается инстанс клипа, после окончания рендера отмирает
-                CONFIG::debug{
-                    KLog.log('AssetLibarary : onAssetSWFLoaded' + assetData.getQuery.fullAnimationName, KLog.METHODS);
-                }
-            }
-
-        }
-
-        private static function remove (assetData:AssetData):void {
-            if (assetData.useCount < 1) {
-                assetData.destroy();
-
-                if (_collectionByName[assetData.name]) {
-                    delete _collectionByName[assetData.name][assetData.getQuery.animation];
+                } else {
+                    className = _name;
                 }
 
-                for (var string:String in _collectionByName[assetData.name]) {
-                    return;
-                }
-                // если нету больше использования типа ассета грохаем имя
+                data = contentLoaderInfo.applicationDomain.getDefinition(className) as Class;
+            }
 
-                delete nameDict[assetData.name];
-                delete _collectionByName[assetData.name];
+            for (var i:int = 0; i < _callback.length; i++) {
+                _callback[i](data);
             }
         }
+        clean();
+    }
+
+    private function clean():void {
+        contentLoaderInfo.removeEventListener(Event.COMPLETE, complete);
+        contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, error);
     }
 }
