@@ -1,6 +1,6 @@
 package com.berry.animation.core {
     import com.berry.animation.library.AssetFrame;
-    import com.berry.events.SimpleEventDispatcher;
+    import umerkiCommon.evens.SimpleEventDispatcher;
 
     import flash.display.Bitmap;
     import flash.display.BitmapData;
