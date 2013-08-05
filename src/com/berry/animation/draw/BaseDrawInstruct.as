@@ -2,12 +2,15 @@ package com.berry.animation.draw {
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetFrame;
-    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.BitmapData;
     import flash.geom.Rectangle;
 
     import org.dzyga.events.IInstruct;
+
+    import umerkiCommon.evens.SimpleEventDispatcher;
+
+    ;
 
     public class BaseDrawInstruct implements IInstruct {
 

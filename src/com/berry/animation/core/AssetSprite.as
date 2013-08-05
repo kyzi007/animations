@@ -1,6 +1,5 @@
 package com.berry.animation.core {
     import com.berry.animation.library.AssetFrame;
-    import umerkiCommon.evens.SimpleEventDispatcher;
 
     import flash.display.Bitmap;
     import flash.display.BitmapData;
@@ -9,6 +8,10 @@ package com.berry.animation.core {
     import flash.geom.Point;
 
     import org.dzyga.geom.Rect;
+
+    import umerkiCommon.evens.SimpleEventDispatcher;
+
+    ;
 
     public class AssetSprite extends Sprite {
 

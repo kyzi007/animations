@@ -1,6 +1,4 @@
 package com.berry.animation.library {
-    import com.berry.events.SimpleEventDispatcher;
-
     import flash.display.MovieClip;
     import flash.display.Sprite;
     import flash.utils.Dictionary;
@@ -12,6 +10,10 @@ package com.berry.animation.library {
     import org.dzyga.events.IInstruct;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
+
+    import umerkiCommon.evens.SimpleEventDispatcher;
+
+    ;
 
     public class AssetData {
         public function AssetData(query:AssetDataGetQuery = null) {
