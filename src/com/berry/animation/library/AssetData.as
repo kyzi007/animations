@@ -13,6 +13,8 @@ package com.berry.animation.library {
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
 
+    ;
+
     public class AssetData {
         public function AssetData(query:AssetDataGetQuery = null) {
             /*CONFIG::debug{
@@ -101,7 +103,7 @@ package com.berry.animation.library {
             _renderedAndLock[name] = false;
             if (_stack[name]) {
                 var data:Array = _stack[name].shift();
-                if(data){
+                if (data) {
                     AssetData(data[0]).startRender(data[1]);
                 }
                 if (_stack[name] && _stack[name].length == 0) delete _stack[name];

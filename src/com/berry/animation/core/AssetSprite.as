@@ -10,6 +10,8 @@ package com.berry.animation.core {
 
     import org.dzyga.geom.Rect;
 
+    ;
+
     public class AssetSprite extends Sprite {
 
         public function AssetSprite(name:String) {
@@ -17,12 +19,13 @@ package com.berry.animation.core {
             _bitmap.smoothing = true;
             addChild(_bitmap);
         }
+
         private static const _point:Point = new Point();
         public var isDebug:Boolean;
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
-        private var _rect:Rect = null;
         protected var _bitmap:Bitmap = new Bitmap();
         protected var _assetName:String;
+        private var _rect:Rect = null;
         private var _currentFrameData:AssetFrame;
         private var _lastMovie:MovieClip;
 

@@ -13,18 +13,24 @@ package com.berry.animation.library {
     import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
 
+    ;
+
     public class AssetLibrary {
         public function AssetLibrary(baseUrl:String) {
             _baseUrl = baseUrl;
         }
 
         public static const ON_INIT:String = 'init';
-        private var _dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         protected var _assets:Object = {};
         protected var _doHash:Object = {};
         protected var _classHash:Object = {};
+        private var _dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _baseUrl:String;
         private var _cached:Object = {};
+
+        public function gcForce():void {
+            // todo
+        }
 
         public function init():void {
             // for override
@@ -104,7 +110,7 @@ package com.berry.animation.library {
         public function getSource(name:String):DisplayObject {
             var source:DisplayObject = _doHash[name];
             if (!source) {
-                if(_classHash[name] is Bitmap){
+                if (_classHash[name] is Bitmap) {
                     source = _classHash[name]
                 } else {
                     source = new _classHash[name]();
@@ -142,6 +148,10 @@ package com.berry.animation.library {
             return assetData;
         }
 
+        public function createSourceInstance(name:String):DisplayObject {
+            return new _classHash[name]();
+        }
+
         protected function getRender(assetData:AssetData):IInstruct {
             var render:BaseDrawInstruct;
             if (assetData.getQuery.sourceType == SourceTypeEnum.SOURCE_PNG) {
@@ -162,11 +172,6 @@ package com.berry.animation.library {
                 _assets[assetData.getQuery.name] = [];
             }
             _assets[assetData.getQuery.name].push(assetData);
-        }
-
-        public function createSourceInstance(name:String):DisplayObject
-        {
-            return new _classHash[name]();
         }
 
         private function findAssetData(query:AssetDataGetQuery):AssetData {

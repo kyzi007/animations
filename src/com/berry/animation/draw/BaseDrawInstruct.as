@@ -9,6 +9,8 @@ package com.berry.animation.draw {
 
     import org.dzyga.events.IInstruct;
 
+    ;
+
     public class BaseDrawInstruct implements IInstruct {
 
         public function BaseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:*) {

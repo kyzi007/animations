@@ -3,6 +3,7 @@ package com.berry.animation.library {
 
     import org.dzyga.pool.IReusable;
 
+
     public class AnimationModel extends SimpleEventDispatcher implements IReusable {
         public function AnimationModel() {
         }
@@ -30,12 +31,12 @@ package com.berry.animation.library {
                 return null;
             }
             var res:* = obj;
-            if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
+            if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
             for (var i:int = 0; i < keys.length; i++) {
                 var key:String = keys[i];
                 res = res.hasOwnProperty(key) ? res[key] : null;
                 if (res == null || res == undefined) return null;
-                if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
+                if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
             }
             return null;
         }
