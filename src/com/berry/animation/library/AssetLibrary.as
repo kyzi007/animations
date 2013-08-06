@@ -210,6 +210,7 @@ import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
+import flash.system.SecurityDomain;
 
 import log.logServer.KLog;
 
@@ -230,6 +231,7 @@ class SwfLoader extends Loader {
         _context = new LoaderContext();
         _context.checkPolicyFile = true;
         _context.allowCodeImport = true;
+        _context.securityDomain = SecurityDomain.currentDomain;
 
         contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
         contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
