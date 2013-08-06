@@ -123,7 +123,7 @@ package com.berry.animation.core {
             }
         }
 
-        private function loadOneFrame(e:*):void {
+        private function loadOneFrame(e:* = null):void {
             _view.dispatcher.setEventListener(false, AssetViewEvents.ON_ANIMATION_FINISH, loadOneFrame);
             playPart(_animationModel.currentPart(), true)
         }
@@ -156,12 +156,12 @@ package com.berry.animation.core {
                 }
                 if (_loopCount > 0 || _loopList) {
                     _animationModel.nextPresetRandom();
-                    trace('next', _animationModel.currentPart().fullName)
+                    //trace('next', _animationModel.currentPart().fullName)
                     playPart(_animationModel.currentPart());
                 }
             } else {
                 _animationModel.nextPresetRandom();
-                trace('next', _animationModel.currentPart().fullName)
+                //trace('next', _animationModel.currentPart().fullName)
                 playPart(_animationModel.currentPart());
             }
             _isFinishToEndCurrent = _animationModel.isListEnd;
