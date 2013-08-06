@@ -37,7 +37,7 @@ package com.berry.animation.core {
         }
 
         public function hitTest(x:Number, y:Number):Boolean {
-            if (_currentFrameData && _currentFrameData.bitmap) {
+            if (_currentFrameData && _currentFrameData.bitmap && !_currentFrameData.isDestroyed) {
 
                 var bitmapData:BitmapData = _currentFrameData.bitmap;
                 var left:Number = _currentFrameData.x + bitmapData.width;
