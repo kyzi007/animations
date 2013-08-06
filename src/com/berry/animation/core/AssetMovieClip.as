@@ -157,7 +157,9 @@ package com.berry.animation.core {
             }
 
             if (_assetData.isBitmap) {
-                draw(_frames[_currentFrame], false);
+                if(_frames.length > _currentFrame){
+                    draw(_frames[_currentFrame], false);
+                }
             } else {
                 _clip.gotoAndStop(_currentFrame + 1);
                 draw(_clip, false);
