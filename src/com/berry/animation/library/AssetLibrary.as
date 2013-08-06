@@ -29,7 +29,28 @@ package com.berry.animation.library {
         private var _cached:Object = {};
 
         public function gcForce():void {
-            // todo
+            for (var assetsName:String in _assets) {
+                var assetsByName:Array = _assets[assetsName];
+                var count:int = 0;
+                for each (var assetData:AssetData in assetsByName) {
+                    // if not playing and rendering
+                    if (assetData.useCount == 0) {
+                        assetData.destroy();
+                        assetsByName.splice(assetsByName.indexOf(assetData));
+                    }
+                    if (!assetData.isDestroyed) {
+                        count++;
+                    }
+                }
+                // if asset unused delete source
+                if (count == 0) {
+                    //delete _classHash[assetsName];
+                    delete _cached[assetsName];
+                    if (!(_doHash is Bitmap)) {
+                        delete _doHash[assetsName];
+                    }
+                }
+            }
         }
 
         public function init():void {
@@ -46,7 +67,7 @@ package com.berry.animation.library {
             if (data is Bitmap) {
                 _doHash[data] = data;
             } else {
-                _classHash[data] = assetName;
+                _classHash[assetName] = data;
             }
         }
 

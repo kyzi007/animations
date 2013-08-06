@@ -70,7 +70,7 @@ package com.berry.animation.core {
                     _data.clearUpdates();
                 }
             } else {
-                trace('no animationModel', id)
+               // trace('no animationModel', id)
             }
         }
 
@@ -205,7 +205,7 @@ package com.berry.animation.core {
                     _renderListBeforePlay = null;
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
                     removePreloader()
-                    trace('*********************-------------------- ON RENDER ', id)
+                    //trace('*********************-------------------- ON RENDER ', id)
                     if (_data.animationModel) {
                         playByModel(_data.animationModel);
                     } else if (_data.animation) {
@@ -449,5 +449,7 @@ package com.berry.animation.core {
         public function get main():AdvancedAssetMovieClip {
             return _main;
         }
+
+        public function set preloaderMode(preloaderMode:Boolean):void {_preloaderMode = preloaderMode;}
     }
 }

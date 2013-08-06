@@ -8,9 +8,14 @@ package com.berry.animation.draw {
     import flash.display.Sprite;
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
+    import flash.sampler.getSize;
     import flash.utils.getTimer;
 
     import log.logServer.KLog;
+
+    import tests.EffectViewer;
+
+    import utils.Mem;
 
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
@@ -26,8 +31,50 @@ package com.berry.animation.draw {
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            trace(getTimer() - _time, _query.name, _query.animation, _query.rotate)
+            EffectViewer.log(_query.name + ', ' + _query.animation +', fr ' +_timline.length+' : ' + Mem.endTime() + ' ms,', int(getMem1()*4/1024)+'/'+ int(getMem2() / 1024)+' kb');
             super.finish();
+        }
+
+        private function getMem2():int {
+            var sum:int;
+            for each (var assetFrame:AssetFrame in _timline) {
+               // sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
+                sum+=getSize(assetFrame.bitmap)
+            }
+            return sum;
+        }
+
+        private function getMem1():int {
+            var sum:int;
+            for each (var assetFrame:AssetFrame in _timline) {
+                 sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
+                //sum += getSize(assetFrame.bitmap)
+            }
+            return sum;
+        }
+
+        override public function init():void {
+            super.init();
+            Mem.start();
+            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
+
+            _source.gotoAndStop(_query.step);
+
+            _timline = _assetData.frames;
+
+            var name:String = _query.animation + _query.position + _query.rotate;
+            _render = _source.getChildByName(name) as MovieClip;
+
+            if (_render != null) {
+                setText();
+                hideClips();
+                _source.x = 0;
+                _source.y = 0;
+                _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
+            } else {
+                falled();
+                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR); }
+            }
         }
 
         override protected function drawFrame(frame:int):Boolean {
@@ -63,30 +110,6 @@ package com.berry.animation.draw {
             }
 
             return (frame + 1 == _totalFrames)
-        }
-
-        override public function init():void {
-            super.init();
-            _time = getTimer();
-            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
-
-            _source.gotoAndStop(_query.step);
-
-            _timline = _assetData.frames;
-
-            var name:String = _query.animation + _query.position + _query.rotate;
-            _render = _source.getChildByName(name) as MovieClip;
-
-            if (_render != null) {
-                setText();
-                hideClips();
-                _source.x = 0;
-                _source.y = 0;
-                _totalFrames = _query.isFullAnimation ?_render.totalFrames : 1;
-            } else {
-                falled();
-                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR); }
-            }
         }
 
         private function hideClips():void {
