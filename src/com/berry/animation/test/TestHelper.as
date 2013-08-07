@@ -1,7 +1,9 @@
 package com.berry.animation.test {
+    import animation.MidnightAssetLibrary;
+    import animation.MidnightAssetView;
+
     import com.berry.animation.data.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
-    import com.berry.animation.library.MidnightAssetLibrary;
 
     import flash.display.Sprite;
     import flash.events.MouseEvent;
@@ -24,29 +26,29 @@ package com.berry.animation.test {
 
             assetLib.init();
             //assetLib.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, function (e:*) {
-                asset = new MidnightAssetView("DEFAULT_FEMALE", "DEFAULT_FEMALE");
-                asset.stepFrame = 1;
-                asset.animationLibrary = animLib;
-                asset.assetLibrary = assetLib;
-                //asset.rotation = ROTATE;
-                //asset.vectorMode = true;
+            asset = new MidnightAssetView("DEFAULT_FEMALE", "DEFAULT_FEMALE");
+            asset.stepFrame = 1;
+            asset.animationLibrary = animLib;
+            asset.assetLibrary = assetLib;
+            //asset.rotation = ROTATE;
+            //asset.vectorMode = true;
 
-                //asset.flip = true;
-                //asset.effectMode = false;
-                asset.configureAnimationAsHelper();
-                asset.cache = true;
-                asset.init();
-                asset.visible = true;
-                asset.playByName(AnimationsList.IDLE);
+            //asset.flip = true;
+            //asset.effectMode = false;
+            asset.configureAnimationAsHelper();
+            asset.cache = true;
+            asset.init();
+            asset.visible = true;
+            asset.playByName(AnimationsList.IDLE);
 
-                asset.shadowSprite.alpha = 0.5;
-                addChild(asset.shadowSprite);
-                addChild(asset.mainSprite);
+            asset.shadowSprite.alpha = 0.5;
+            addChild(asset.shadowSprite);
+            addChild(asset.mainSprite);
 
-                asset.x = 300;
-                asset.y = 700;
+            asset.x = 300;
+            asset.y = 700;
 
-                stage.addEventListener(MouseEvent.CLICK, click);
+            stage.addEventListener(MouseEvent.CLICK, click);
             //});
         }
 
