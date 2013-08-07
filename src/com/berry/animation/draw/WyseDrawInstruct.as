@@ -4,6 +4,7 @@ package com.berry.animation.draw {
     import com.berry.animation.library.AssetFrame;
 
     import flash.display.BitmapData;
+    import flash.display.DisplayObject;
     import flash.display.MovieClip;
     import flash.display.Sprite;
     import flash.geom.Matrix;
@@ -14,8 +15,6 @@ package com.berry.animation.draw {
     import log.logServer.KLog;
 
     import tests.EffectViewer;
-
-    import utils.Mem;
 
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
@@ -31,31 +30,14 @@ package com.berry.animation.draw {
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-           // EffectViewer.log(_query.name + ', ' + _query.animation +', fr ' +_timline.length+' : ' + Mem.endTime() + ' ms,', int(getMem1()*4/1024)+'/'+ int(getMem2() / 1024)+' kb');
+            EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024) + '/' + int(getMem2() / 1024) + ' kb');
             super.finish();
-        }
-
-        private function getMem2():int {
-            var sum:int;
-            for each (var assetFrame:AssetFrame in _timline) {
-               // sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
-                sum+=getSize(assetFrame.bitmap)
-            }
-            return sum;
-        }
-
-        private function getMem1():int {
-            var sum:int;
-            for each (var assetFrame:AssetFrame in _timline) {
-                 sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
-                //sum += getSize(assetFrame.bitmap)
-            }
-            return sum;
         }
 
         override public function init():void {
             super.init();
-            Mem.start();
+            _time = getTimer();
+            //Mem.start();
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
 
             _source.gotoAndStop(_query.step);
@@ -112,11 +94,31 @@ package com.berry.animation.draw {
             return (frame + 1 == _totalFrames)
         }
 
+        private function getMem2():int {
+            var sum:int;
+            for each (var assetFrame:AssetFrame in _timline) {
+                // sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
+                sum += getSize(assetFrame.bitmap)
+            }
+            return sum;
+        }
+
+        private function getMem1():int {
+            var sum:int;
+            for each (var assetFrame:AssetFrame in _timline) {
+                sum += assetFrame.bitmap.width * assetFrame.bitmap.height;
+                //sum += getSize(assetFrame.bitmap)
+            }
+            return sum;
+        }
+
         private function hideClips():void {
             for (var i:int = 0; i < _source.numChildren; i++) {
-                var item:MovieClip = _source.getChildAt(i) as MovieClip;
+                var item:DisplayObject = _source.getChildAt(i);
                 item.visible = item == _render;
-                item.stop();
+                if(item is MovieClip){
+                    MovieClip(item).stop();
+                }
             }
         }
 
