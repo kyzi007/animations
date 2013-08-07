@@ -68,12 +68,12 @@ package com.berry.animation.core {
                 if (!isOneFrame) {
                     if (assetData.isRenderFinish) {
                         query = _data.getQuery(currPreset.fullName).setIsFullAnimation(true);
-                        var fullAssetData:AssetData = assetLibrary.getAssetData(query);
-                        if (fullAssetData.isRenderFinish) {
-                            assetData = fullAssetData;
+                        if (assetLibrary.assetRendered(query)) {
+                            assetData = assetLibrary.getAssetData(query);
                         } else {
-                            fullAssetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, playCurrentPart);
+                            EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                         }
+
                     }
                 }
             } else {
@@ -120,6 +120,16 @@ package com.berry.animation.core {
             } else {
                 // wait to the end rendering
                 assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, newAssetRendered);
+            }
+        }
+
+        private function getEffect():void {
+            var query:AssetDataGetQuery = _data.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
+            var fullAssetData:AssetData = assetLibrary.getAssetData(query);
+            if (fullAssetData.isRenderFinish) {
+                playCurrentPart(null);
+            } else {
+                fullAssetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, playCurrentPart);
             }
         }
 

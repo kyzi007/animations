@@ -169,6 +169,15 @@ package com.berry.animation.library {
             return assetData;
         }
 
+        public function assetRendered(query:AssetDataGetQuery):Boolean {
+            var assetData:AssetData = findAssetData(query);
+
+            if (!assetData || assetData.isDestroyed) {
+                return false;
+            }
+            return assetData.isRenderFinish;
+        }
+
         public function createSourceInstance(name:String):DisplayObject {
             return new _classHash[name]();
         }
@@ -222,6 +231,7 @@ package com.berry.animation.library {
         public function get dispatcher():SimpleEventDispatcher {
             return _dispatcher;
         }
+
     }
 }
 
