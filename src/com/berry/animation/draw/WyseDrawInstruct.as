@@ -79,6 +79,14 @@ package com.berry.animation.draw {
             _matrix.tx = -stateRect.x;
             _matrix.ty = -stateRect.y;
 
+
+            if(stateRect.width <=0){
+                stateRect.width = 1;
+            }
+            if (stateRect.height <= 0) {
+                stateRect.height = 1;
+            }
+
             bitmap = new BitmapData(stateRect.width, stateRect.height, true, 0);
             bitmap.draw(_source, _matrix);
 
