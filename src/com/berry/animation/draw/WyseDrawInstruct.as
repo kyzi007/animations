@@ -39,7 +39,6 @@ package com.berry.animation.draw {
             _time = getTimer();
             //Mem.start();
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
-
             _source.gotoAndStop(_query.step);
 
             _timline = _assetData.frames;
@@ -65,6 +64,7 @@ package com.berry.animation.draw {
                 falled();
                 return true;
             }
+           // trace('draw '+ _query.name + " " + _query.animation)
 
             _render.gotoAndStop(frame + 1);
             var bitmap:BitmapData;
@@ -79,8 +79,7 @@ package com.berry.animation.draw {
             _matrix.tx = -stateRect.x;
             _matrix.ty = -stateRect.y;
 
-
-            if(stateRect.width <=0){
+            if (stateRect.width <= 0) {
                 stateRect.width = 1;
             }
             if (stateRect.height <= 0) {
@@ -124,7 +123,7 @@ package com.berry.animation.draw {
             for (var i:int = 0; i < _source.numChildren; i++) {
                 var item:DisplayObject = _source.getChildAt(i);
                 item.visible = item == _render;
-                if(item is MovieClip){
+                if (item is MovieClip) {
                     MovieClip(item).stop();
                 }
             }

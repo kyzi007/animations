@@ -78,7 +78,10 @@ package com.berry.animation.library {
             renderInstruct.init()
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
-                if (_getQuery.asynchRender) {
+                if (_getQuery.isAutoClear) {
+                    _renderAction = EnterFrame.addAction(-20, renderInstruct);
+                    _renderAction.name = "AssetData:startRender";
+                } else if (_getQuery.asynchRender) {
                     _renderAction = EnterFrame.addThread(-10, 0, renderInstruct);
                     _renderAction.name = "AssetData:startRender";
                 } else {
