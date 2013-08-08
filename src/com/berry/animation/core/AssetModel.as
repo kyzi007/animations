@@ -7,6 +7,7 @@ package com.berry.animation.core {
     import org.dzyga.pool.Pool;
 
     public class AssetModel {
+        public var cachedList:Array;
         public function AssetModel() {
             sourceType.setValue(SourceTypeEnum.SOURCE_SWF);
         }
@@ -43,11 +44,17 @@ package com.berry.animation.core {
                     .setIsFullAnimation(true)
                     .setIsBitmapRendering(!vectorMode)
                     .setText(text)
-                    .setPreRender(cache)
                     .setStep(_stepFrame)
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
-                    .setIsAutoClear(!cache)
+                    .setIsAutoClear(!getCache(animation))
             return query;
+        }
+
+        private function getCache(animation:String):Boolean {
+            if(!cachedList) {
+                return cache;
+            }
+            return cachedList.indexOf(animation) != -1 ? true : cache;
         }
 
         public function clearUpdates():void {

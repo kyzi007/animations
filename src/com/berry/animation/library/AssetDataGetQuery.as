@@ -18,7 +18,6 @@ package com.berry.animation.library {
         private var _isFullAnimation:Boolean;
         private var _isAutoClear:Boolean = true;
         private var _checkDuplicateDataMode:uint;
-        private var _preRender:Boolean;
         private var _isBitmapRendering:Boolean = true;
         private var _text:String = null;
         private var _asynchRender:Boolean = true;
@@ -42,7 +41,6 @@ package com.berry.animation.library {
             _isAutoClear = true;
             _isBitmapRendering = true;
             _isFullAnimation = true;
-            _preRender = false;
             _sourceType = SourceTypeEnum.SOURCE_SWF;
             _step = 1;
             _text = null;
@@ -107,11 +105,6 @@ package com.berry.animation.library {
          */
         public function setIsFullAnimation(value:Boolean):AssetDataGetQuery {
             _isFullAnimation = value;
-            return this;
-        }
-
-        public function setPreRender(value:Boolean):AssetDataGetQuery {
-            _preRender = value;
             return this;
         }
 
@@ -182,10 +175,6 @@ package com.berry.animation.library {
 
         public function get name():String {
             return _name;
-        }
-
-        public function get preRender():Boolean {
-            return _preRender;
         }
 
         public function get reflection():Class {

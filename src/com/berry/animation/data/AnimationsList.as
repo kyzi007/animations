@@ -31,6 +31,7 @@ package com.berry.animation.data {
 
         // work
         public static const CHOP:String = 'chop';
+        public static const MOVE:Array = [SIDE_WALK, BACK_WALK, FORWARD_WALK, BACK_SIDE_WALK, FORWARD_SIDE_WALK];
 
         public static function isMove(name:String):Boolean {
             switch (name) {

@@ -44,6 +44,12 @@ package com.berry.animation.core {
         protected var _mainSprite:Sprite = new Sprite();
         protected var _preloaderMode:Boolean = true;
 
+
+        public function set cachedList(value:Array):void
+        {
+            _data.cachedList = value;
+        }
+
         public function playByName(animation:String):void {
             _data.animation = animation;
             if (isLoadComplete) {
