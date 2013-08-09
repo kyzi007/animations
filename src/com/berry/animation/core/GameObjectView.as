@@ -211,7 +211,7 @@ package com.berry.animation.core {
             var assetData:AssetData;
             if (_renderListBeforePlay) {
                 if (_renderListBeforePlay.length == 0) {
-                    _renderListBeforePl ay = null;
+                    _renderListBeforePlay = null;
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
                     removePreloader()
                     //trace('*********************-------------------- ON RENDER ', id)
