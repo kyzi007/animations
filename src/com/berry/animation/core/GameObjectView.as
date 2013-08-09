@@ -179,7 +179,8 @@ package com.berry.animation.core {
                     var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip();
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
-                    effect.fullAnimation = _data.effectMode;
+                    //effect.fullAnimation = _data.effectMode;
+                    effect.fullAnimation = false;
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
                     _effects.push(effect)
