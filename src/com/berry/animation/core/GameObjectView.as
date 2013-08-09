@@ -164,6 +164,9 @@ package com.berry.animation.core {
 
         protected function updateEffects():void {
             //clear old
+            if(!_data.animationModel){
+                return;
+            }
             for each (var effect:AdvancedAssetMovieClip in _effects) {
                 effect.cleanUp();
                 mainSprite.removeChild(effect.view);
