@@ -25,7 +25,7 @@ package com.berry.animation.core {
         private var _rotation:RotateEnum = GameObjectView.ROTATE_NONE;
         private var _animation:String;
         private var _stepFrame:int = 1;
-        private var _effectMode:Boolean = true;
+        private var _effectMode:Boolean = false;
         private var _stepFrameUpdated:Boolean;
         private var _animationUpdated:Boolean;
         private var _effectModeUpdated:Boolean;
@@ -91,10 +91,10 @@ package com.berry.animation.core {
         }
 
         public function set effectMode(value:Boolean):void {
-            if (_effectMode != value) {
+            /*if (_effectMode != value) {
                 _effectModeUpdated = true;
                 _effectMode = value;
-            }
+            }*/
         }
 
         public function get rotation():RotateEnum {

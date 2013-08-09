@@ -179,8 +179,7 @@ package com.berry.animation.core {
                     var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip();
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
-                    //effect.fullAnimation = _data.effectMode;
-                    effect.fullAnimation = false;
+                    effect.fullAnimation = _data.effectMode;
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
                     _effects.push(effect)
@@ -212,7 +211,7 @@ package com.berry.animation.core {
             var assetData:AssetData;
             if (_renderListBeforePlay) {
                 if (_renderListBeforePlay.length == 0) {
-                    _renderListBeforePlay = null;
+                    _renderListBeforePl ay = null;
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
                     removePreloader()
                     //trace('*********************-------------------- ON RENDER ', id)
