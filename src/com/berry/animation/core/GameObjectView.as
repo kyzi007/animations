@@ -164,7 +164,7 @@ package com.berry.animation.core {
 
         protected function updateEffects():void {
             //clear old
-            if(!_data.animationModel){
+            if(!_data.animationModel || !mainSprite){
                 return;
             }
             for each (var effect:AdvancedAssetMovieClip in _effects) {
