@@ -55,7 +55,7 @@ package com.berry.animation.library {
 
         public function init():void {
             // for override
-            EnterFrame.scheduleAction(10000, gc);
+            //EnterFrame.scheduleAction(10000, gc);
         }
 
         public function getPreloader(assetName:String):AssetData {
