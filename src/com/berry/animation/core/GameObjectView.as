@@ -167,22 +167,22 @@ package com.berry.animation.core {
             if(!_data.animationModel || !mainSprite){
                 return;
             }
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
+            var effect:AdvancedAssetMovieClip;
+            for each (effect in _effects) {
                 effect.cleanUp();
                 mainSprite.removeChild(effect.view);
             }
             _effects = [];
             if (_data.rotation.value == RotateEnum.NONE) {
                 var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
-
                 for each (var animationModel:AnimationModel in effectModels) {
-                    var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip();
+                    effect = new AdvancedAssetMovieClip();
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
                     effect.fullAnimation = _data.effectMode;
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
-                    _effects.push(effect)
+                    _effects.push(effect);
                     mainSprite.addChild(effect.view);
                 }
             }
@@ -330,7 +330,7 @@ package com.berry.animation.core {
         }
 
         public function get isPreRenderStatus():Boolean {
-            return _renderListBeforePlay;
+            return _renderListBeforePlay != null;
         }
 
         /**
