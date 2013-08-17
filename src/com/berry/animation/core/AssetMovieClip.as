@@ -64,15 +64,15 @@ package com.berry.animation.core {
             _currentFrame = frame;
             _frames = _assetData.frames;
 
-            if (_assetData.isBitmap && _frames.length == 0) {
+            if (_frames.length == 0 && !_assetData.mc) {
                 CONFIG::debug{ KLog.log("AssetMovieClip : gotoAndStop  " + _assetName + ' invalid animation - 0 frames', KLog.ERROR); }
                 return;
             }
 
-            if (_assetData.isBitmap) {
+            if (!_assetData.mc) {
                 draw(_frames[_currentFrame], true);
             } else {
-                _clip = _assetData.getMovie();
+                _clip = _assetData.mc;
                 _clip.gotoAndStop(_currentFrame + 1);
                 draw(_clip, true);
             }
@@ -94,14 +94,14 @@ package com.berry.animation.core {
             _currentFrame = frame;
             _frames = _assetData.frames;
 
-            if (_assetData.isBitmap && _frames.length == 0) {
+            if ( _frames.length == 0 && !_assetData.mc) {
                 CONFIG::debug{ KLog.log("AssetMovieClip : gotoAndStop  " + _assetName + ' invalid animation - 0 frames', KLog.ERROR); }
                 return;
             }
-            if (_assetData.isBitmap) {
+            if (!_assetData.mc) {
                 draw(_frames[_currentFrame], true);
             } else {
-                _clip = _assetData.getMovie();
+                _clip = _assetData.mc;
                 _clip.gotoAndStop(_currentFrame + 1);
                 draw(_clip, true);
             }
@@ -156,7 +156,7 @@ package com.berry.animation.core {
                 frame = _currentFrame = 0;
             }
 
-            if (_assetData.isBitmap) {
+            if (!_assetData.mc) {
                 if(_frames.length > _currentFrame){
                     draw(_frames[_currentFrame], false);
                 }
@@ -172,7 +172,7 @@ package com.berry.animation.core {
         }
 
         public function get isPlay():Boolean {
-            return _playAction != null;
+            return _playAction;
         }
 
         public function get speed():Number {return _speed;}
@@ -187,10 +187,10 @@ package com.berry.animation.core {
 
         public function get totalFrames():Number {
             if (!_assetData) return 0;
-            if (_assetData.isBitmap) {
-                return _frames.length;
+            if (_assetData.mc) {
+                return _assetData.mc.totalFrames;
             } else {
-                return _clip.totalFrames;
+                return _frames.length
             }
         }
 

@@ -1,8 +1,10 @@
 package com.berry.animation.library {
+    import com.berry.animation.data.AnimationSettings;
     import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.MovieClip;
     import flash.display.Sprite;
+    import flash.net.SharedObject;
     import flash.utils.Dictionary;
 
     import log.logServer.KLog;
@@ -20,12 +22,12 @@ package com.berry.animation.library {
             /*CONFIG::debug{
              if (query) KLog.log("AssetData:AssetData " + query.fullAnimationName, KLog.CREATE);
              }*/
-            _getQuery = query;
+           _getQuery = query;
         }
 
         private static var _renderedAndLock:Object = {};
         private static var _stack:Object = {};
-        public var sourceClass:Class;
+        public var mc:MovieClip;
         public var frames:Vector.<AssetFrame> = new Vector.<AssetFrame>(); // чтобы не грузить запросами геттер
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _useCount:int = 0;
@@ -38,14 +40,36 @@ package com.berry.animation.library {
         private var _movies:Dictionary = new Dictionary();
         private var _isFalled:Boolean;
 
-        public function getMovie():MovieClip {
-            var clip:MovieClip = new sourceClass()[getQuery.animation];
-            clip.parent.removeChild(clip);
-            clip.cacheAsBitmap = true;
-            return clip;
+        public function finishRender():void {
+            _isRenderWork = false;
+            _isRenderFinish = true;
+            _renderAction = null;
+            nextByStack();
+            update();
+
+            if (AnimationSettings.saveMode) {
+
+                if (!SharedObject.getLocal('midnight_').data['assets']) {
+                    SharedObject.getLocal('midnight_').data['assets'] = {};
+                }
+
+                var framesForSave:Array = [];
+                for (var i:int = 0; i < frames.length; i++) {
+                    var frame:AssetFrame = frames[i];
+                    framesForSave.push(frame.pack());
+                }
+
+                SharedObject.getLocal('midnight_').data['assets'][getQuery.toString()] = framesForSave;
+                SharedObject.getLocal('midnight_').flush();
+            }
         }
 
-        public function finishRender():void {
+        public function unpackSavedFrames(value:Array):void {
+            for (var i:int = 0; i < value.length; i++) {
+                var frame:AssetFrame = new AssetFrame(0, 0, null);
+                frame.unPack(value[i]);
+                frames.push(frame);
+            }
             _isRenderWork = false;
             _isRenderFinish = true;
             _renderAction = null;
@@ -79,10 +103,10 @@ package com.berry.animation.library {
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
                 if (_getQuery.isAutoClear) {
-                    _renderAction = EnterFrame.addAction(-100, renderInstruct);
+                    _renderAction = EnterFrame.addAction(-20, renderInstruct);
                     _renderAction.name = "AssetData:startRender";
                 } else if (_getQuery.asynchRender) {
-                    _renderAction = EnterFrame.addThread(-100, 0, renderInstruct);
+                    _renderAction = EnterFrame.addThread(-10, 0, renderInstruct);
                     _renderAction.name = "AssetData:startRender";
                 } else {
                     while (renderInstruct.execute() == false) {}
@@ -129,9 +153,13 @@ package com.berry.animation.library {
 
         public function get getQuery():AssetDataGetQuery {return _getQuery;}
 
-        public function get isBitmap():Boolean {
-            return _getQuery.isBitmapRendering;
+        public function set getQuery(value:AssetDataGetQuery):void {
+            _getQuery = value;
         }
+
+       /* public function get isBitmap():Boolean {
+            return _getQuery.isBitmapRendering;
+        }*/
 
         public function get isDestroyed():Boolean {
             return _isDestroyed;
@@ -163,7 +191,7 @@ package com.berry.animation.library {
 
         internal function destroy():void {
             CONFIG::debug{
-                KLog.log("AssetData:destroy " + getQuery.fullAnimationName, KLog.METHODS);
+                KLog.log("AssetData:destroy " + getQuery.toString(), KLog.METHODS);
             }
             _isDestroyed = true;
 
@@ -185,5 +213,6 @@ package com.berry.animation.library {
             EnterFrame.removeThread(_renderAction as Thread);
             _renderAction = null;
         }
+
     }
 }

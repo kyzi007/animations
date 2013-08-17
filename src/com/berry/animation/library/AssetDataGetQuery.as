@@ -25,13 +25,6 @@ package com.berry.animation.library {
         private var _rotate:String = '';
         private var _position:String = '';
 
-        public static function getUrl(objectType:String, assetName:String, assetFormat:String):String {
-            if (assetFormat == SourceTypeEnum.SOURCE_SWF) {
-                return  "" + assetName + ".swf";
-            }
-            return  "" + assetName + ".png";
-        }
-
         public function reset():void {
             _rotate = '';
             _name = null;
@@ -134,11 +127,16 @@ package com.berry.animation.library {
         }
 
         public function toString():String {
-            return "AssetDataGetQuery{_name=" + String(_name) + ",_animation=" + String(_animation) + ",_step=" + String(_step) + "}";
-        }
-
-        public function toStringShot():String {
-            return "AssetGenerateConfig{_name=" + String(_name) + ",fullName=" + String(fullAnimationName) + "}";
+            return "name=" + String(_name)
+                    +",sourceType=" + String(_sourceType)
+                    + ",animation=" + String(_animation)
+                    + ",isFullAnimation=" + String(_isFullAnimation)
+                    + ",isAutoClear=" + String(_isAutoClear)
+                    + ",isBitmapRendering=" + String(_isBitmapRendering)
+                    + ",text=" + String(_text)
+                    + ",step=" + String(_step)
+                    + ",rotate=" + String(_rotate)
+                    + ",position=" + String(_position);
         }
 
         public function get position():String {
@@ -155,10 +153,6 @@ package com.berry.animation.library {
 
         public function get checkDuplicateDataMode():uint {
             return _checkDuplicateDataMode;
-        }
-
-        public function get fullAnimationName():String {
-            return _name + '_' + (_isFullAnimation ? 'anim' : 'one frame') + '__' + animation + ' ' + _step;
         }
 
         public function get isAutoClear():Boolean {

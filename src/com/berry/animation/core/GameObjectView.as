@@ -11,6 +11,7 @@ package com.berry.animation.core {
 
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.display.Loader;
     import flash.display.Sprite;
 
     import log.logServer.KLog;
@@ -167,22 +168,22 @@ package com.berry.animation.core {
             if(!_data.animationModel || !mainSprite){
                 return;
             }
-            var effect:AdvancedAssetMovieClip;
-            for each (effect in _effects) {
+            for each (var effect:AdvancedAssetMovieClip in _effects) {
                 effect.cleanUp();
                 mainSprite.removeChild(effect.view);
             }
             _effects = [];
             if (_data.rotation.value == RotateEnum.NONE) {
                 var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
+
                 for each (var animationModel:AnimationModel in effectModels) {
-                    effect = new AdvancedAssetMovieClip();
+                    var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip();
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
                     effect.fullAnimation = _data.effectMode;
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
-                    _effects.push(effect);
+                    _effects.push(effect)
                     mainSprite.addChild(effect.view);
                 }
             }
@@ -213,9 +214,7 @@ package com.berry.animation.core {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
-                    if (_preloaderMode) {
-                        removePreloader();
-                    }
+                    removePreloader()
                     //trace('*********************-------------------- ON RENDER ', id)
                     if (_data.animationModel) {
                         playByModel(_data.animationModel);
@@ -253,14 +252,19 @@ package com.berry.animation.core {
             }
         }
 
-        protected function onLoadCallback(data:*):void {
+        protected function onLoadCallback(data:*, content:*):void {
             _animationLibrary.parseAsset(name, _assetLibrary.getSource(name));
-            if (_renderListBeforePlay || _renderListFromMainController) {
-                _assetLibrary.cacheSource(name);
-                _renderListBeforePlay = updatePreRenderList(_renderListBeforePlay);
-                _renderListFromMainController = updatePreRenderList(_renderListFromMainController);
-                preRenderNext();
+            if(_animationLibrary.getIsComplexAsset(name)){
+                _assetLibrary.registerPartAsset(name, content);
+            } else {
+                if (_renderListBeforePlay || _renderListFromMainController) {
+                    _assetLibrary.cacheSource(name);
+                    _renderListBeforePlay = updatePreRenderList(_renderListBeforePlay);
+                    _renderListFromMainController = updatePreRenderList(_renderListFromMainController);
+                    preRenderNext();
+                }
             }
+
             if (_data.animationModel) {
                 playByModel(_data.animationModel);
             } else if (_data.animation) {
@@ -330,7 +334,7 @@ package com.berry.animation.core {
         }
 
         public function get isPreRenderStatus():Boolean {
-            return _renderListBeforePlay != null;
+            return _renderListBeforePlay;
         }
 
         /**
@@ -415,7 +419,7 @@ package com.berry.animation.core {
         }
 
         public function get rotation():RotateEnum {
-            return _data.rotation;
+            return _data.rotation.value;
         }
 
         public function set rotation(value:RotateEnum):void {

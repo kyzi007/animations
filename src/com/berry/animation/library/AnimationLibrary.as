@@ -17,6 +17,7 @@ package com.berry.animation.library {
         private var _effectCache:Object = {};
         public var tileWidth:int = 45;
         public var tileHeight:int = 90;
+        private var _partMode:Array = [];
 
 
 
@@ -72,97 +73,114 @@ package com.berry.animation.library {
                 source.gotoAndStop(1);
 
                 var data:Object = source['animationData'];
-                for (var frame:int = 1; frame < source.totalFrames + 1; frame++) {
-                    var clipData:Object = data && data[frame - 1] ? data[frame - 1] : {};
-                    source.gotoAndStop(frame);
-                    _animationPresetList[assetName][frame] = parseClipFrame(clipData, source, assetName);
+
+                if(data && data.partMode){
+                    _partMode[assetName] = true;
+                    var result:Object = {};
+                    result.animations = [];
+                    for (var frame:int = 0; frame < data.stepsCount; frame++) {
+                        for (var clipName:String in data[frame]) {
+                            createData(clipName, data[frame][clipName].totalFrames, result, data[frame][clipName]);
+                        }
+                    }
+                    _animationPresetList[assetName][frame] = result;
+                } else {
+                    for (var frame:int = 1; frame < source.totalFrames + 1; frame++) {
+                        var clipData:Object = data && data[frame - 1] ? data[frame - 1] : {};
+                        source.gotoAndStop(frame);
+                        _animationPresetList[assetName][frame] = parseClipFrame(clipData, source, assetName);
+                    }
                 }
             } else if(source is Bitmap){
                 // force create animation structure
-                _animationPresetList[assetName][1] = {
-                    animations:[AnimationsList.IDLE]
-                }
-                _animationPresetList[assetName][1][AnimationsList.IDLE]
-                        = new AnimationPart(int(source.width / tileHeight), RotateEnum.NONE);
+                _animationPresetList[assetName][1] = {animations:[AnimationsList.IDLE]}
+                _animationPresetList[assetName][1][AnimationsList.IDLE] = new AnimationPart(int(source.width / tileHeight), RotateEnum.NONE);
             }
+        }
+
+        public function getIsComplexAsset(assetName:String):Boolean
+        {
+            return _partMode[assetName];
         }
 
         protected function parseClipFrame(clipData:Object, clip:MovieClip, assetName:String):Object {
             var result:Object = {}; // shotName // state // sub state or // fullName // effects
             result.animations = [];
-
             for (var i:int = 0; i < clip.numChildren; i++) {
                 var child:MovieClip = clip.getChildAt(i) as MovieClip;
                 if (child) {
-
-                    var nameParse:Array;
-                    var shotName:String;
-                    var states:Array;
-                    var state:int;
-                    var subState:int;
-                    var rotation:String
-                    var name:String = child.name;
-
-                    if (name.indexOf('_state_') != -1 || AnimationsList.isComplexName(name)) {
-                        nameParse = name.split('_state_');
-                        shotName = nameParse[0];
-                        states = nameParse[1] ? nameParse[1].split('_') : [];
-                        state = states[0] ? states[0] : -1;
-                        subState = states[1] ? states[1] : -1;
-                        rotation = states[2] ? states[2] : '';
-                    } else {
-                        var index:int = name.indexOf('_');
-                        if (index != -1) {
-                            nameParse = [name.slice(0, index), name.slice(index, name.length)];
-                        } else {
-                            nameParse = [name, RotateEnum.NONE];
-                        }
-                        shotName = nameParse[0];
-                        state = -1;
-                        subState = -1;
-                        rotation = nameParse[1];
-                    }
-
-                    if (!new RotateEnum().isExists(rotation)) {
-                        trace('аа, шото пошло не так в парсинге клипа');
-                    }
-
-                    var otherRotate:AnimationPart = findClassInstance(result, AnimationPart, null, shotName, state, subState) as AnimationPart;
-                    if (otherRotate) {
-                        otherRotate.addSupportRotate(rotation);
-                        continue;
-                    }
-
-                    var animFlag:Boolean = true;
-                    for each (var anim:String in result.animations) {
-                        if (shotName == anim) {
-                            animFlag = false;
-                        }
-                    }
-                    if (animFlag)result.animations.push(shotName);
-
-                    var preset:AnimationPart = new AnimationPart(child.totalFrames, rotation);
-
-                    preset.parse(clipData[name], name.replace(rotation, ''));
-
-                    if (state == -1) {
-                        result[shotName] = preset;
-                    } else {
-                        if (!result[shotName]) {
-                            result[shotName] = [];
-                        }
-                        if (subState != -1 && !result[shotName][state]) {
-                            result[shotName][state] = [];
-                        }
-                        if (subState != -1) {
-                            result[shotName][state][subState] = preset;
-                        } else {
-                            result[shotName][state] = preset;
-                        }
-                    }
+                    createData(child.name, child.totalFrames, result, clipData[child.name]);
                 }
             }
             return result;
+        }
+
+        private function createData(name:String, totalFrames:int, result:Object, clipData:Object):void {
+            var nameParse:Array;
+            var shotName:String;
+            var states:Array;
+            var state:int;
+            var subState:int;
+            var rotation:String
+            var name:String = name;
+
+            if (name.indexOf('_state_') != -1 || AnimationsList.isComplexName(name)) {
+                nameParse = name.split('_state_');
+                shotName = nameParse[0];
+                states = nameParse[1] ? nameParse[1].split('_') : [];
+                state = states[0] ? states[0] : -1;
+                subState = states[1] ? states[1] : -1;
+                rotation = states[2] ? states[2] : '';
+            } else {
+                var index:int = name.indexOf('_');
+                if (index != -1) {
+                    nameParse = [name.slice(0, index), name.slice(index, name.length)];
+                } else {
+                    nameParse = [name, RotateEnum.NONE];
+                }
+                shotName = nameParse[0];
+                state = -1;
+                subState = -1;
+                rotation = nameParse[1];
+            }
+
+            if (!new RotateEnum().isExists(rotation)) {
+                trace('аа, шото пошло не так в парсинге клипа');
+            }
+
+            var otherRotate:AnimationPart = findClassInstance(result, AnimationPart, null, shotName, state, subState) as AnimationPart;
+            if (otherRotate) {
+                otherRotate.addSupportRotate(rotation);
+                return;
+            }
+
+            var animFlag:Boolean = true;
+            for each (var anim:String in result.animations) {
+                if (shotName == anim) {
+                    animFlag = false;
+                }
+            }
+            if (animFlag)result.animations.push(shotName);
+
+            var preset:AnimationPart = new AnimationPart(totalFrames, rotation);
+
+            preset.parse(clipData, name.replace(rotation, ''));
+
+            if (state == -1) {
+                result[shotName] = preset;
+            } else {
+                if (!result[shotName]) {
+                    result[shotName] = [];
+                }
+                if (subState != -1 && !result[shotName][state]) {
+                    result[shotName][state] = [];
+                }
+                if (subState != -1) {
+                    result[shotName][state][subState] = preset;
+                } else {
+                    result[shotName][state] = preset;
+                }
+            }
         }
 
         private function findClassInstance(obj:Object, classId:Class, conditionFunction:Function, ...keys):* {
@@ -170,12 +188,12 @@ package com.berry.animation.library {
                 return null;
             }
             var res:* = obj;
-            if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
+            if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
             for (var i:int = 0; i < keys.length; i++) {
                 var key:String = keys[i];
                 res = res.hasOwnProperty(key) ? res[key] : null;
                 if (res == null || res == undefined) return null;
-                if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
+                if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
             }
             return null;
         }

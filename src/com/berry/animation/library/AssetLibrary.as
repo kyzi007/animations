@@ -1,4 +1,5 @@
 package com.berry.animation.library {
+    import com.berry.animation.data.AnimationSettings;
     import com.berry.animation.data.SourceTypeEnum;
     import com.berry.animation.draw.BaseDrawInstruct;
     import com.berry.animation.draw.TileDrawInstruct;
@@ -7,13 +8,13 @@ package com.berry.animation.library {
 
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
+    import flash.display.LoaderInfo;
     import flash.display.Sprite;
+    import flash.net.SharedObject;
 
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
-
-    ;
 
     public class AssetLibrary {
         public function AssetLibrary(baseUrl:String) {
@@ -27,6 +28,7 @@ package com.berry.animation.library {
         private var _dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _baseUrl:String;
         private var _cached:Object = {};
+        private var _partAsset:Object = {};
 
         public function gcForce():void {
             for (var assetsName:String in _assets) {
@@ -55,7 +57,7 @@ package com.berry.animation.library {
 
         public function init():void {
             // for override
-            //EnterFrame.scheduleAction(10000, gc);
+            EnterFrame.scheduleAction(10000, gc);
         }
 
         public function getPreloader(assetName:String):AssetData {
@@ -63,11 +65,14 @@ package com.berry.animation.library {
             return null;
         }
 
-        public function registerAsset(data:*, assetName:String):void {
+        public function registerAsset(data:*, assetName:String, loaderInfo:LoaderInfo):void {
             if (data is Bitmap) {
                 _doHash[data] = data;
             } else {
                 _classHash[assetName] = data;
+                if(loaderInfo){
+                    _partAsset[assetName] = loaderInfo;
+                }
             }
         }
 
@@ -106,17 +111,17 @@ package com.berry.animation.library {
             if (!data) {
                 data = new SwfLoader(name, getUrl(name, type.value), null);
                 _classHash[name] = data;
-                SwfLoader(data).addCallback(function (loadedData:*):void {
+                SwfLoader(data).addCallback(function (loadedData:*, loaderContext:*):void {
                     _classHash[name] = loadedData;
-                    finishCallback(loadedData);
+                    finishCallback(loadedData, loaderContext);
                 });
             } else if (data is SwfLoader) {
-                SwfLoader(data).addCallback(function (loadedData:*):void {
+                SwfLoader(data).addCallback(function (loadedData:*, loaderContext:*):void {
                     _classHash[name] = loadedData;
-                    finishCallback(loadedData);
+                    finishCallback(loadedData, loaderContext);
                 });
             } else if (data) {
-                finishCallback(data);
+                finishCallback(data, _partAsset[name]);
             }
         }
 
@@ -156,11 +161,18 @@ package com.berry.animation.library {
             var assetData:AssetData = findAssetData(query);
 
             if (!assetData || assetData.isDestroyed) {
-                assetData = new AssetData(query);
-                if (!query.isBitmapRendering) {
-                    assetData.sourceClass = _classHash[query.name];
+                assetData = new AssetData();
+                assetData.getQuery = query;
+
+                //classic render
+                if(!_partAsset[query.name]){
+                    assetData.startRender(getRender(assetData));
+                } else {
+                    var mcClass:Class = _partAsset[query.name].applicationDomain.getDefinition(query.name + '__' + query.step + '__'+ query.animation) as Class;
+                    assetData.mc = new mcClass;
+                    assetData.mc.cacheAsBitmap = true;
+                    assetData.finishRender();
                 }
-                assetData.startRender(getRender(assetData));
                 addAssetData(assetData);
             } else {
                 Pool.put(query);
@@ -221,6 +233,15 @@ package com.berry.animation.library {
                 }
             }
 
+            if(!assetData && SharedObject.getLocal('midnight_').data['assets'] && AnimationSettings.saveMode){
+
+                var frames:* = SharedObject.getLocal('midnight_').data['assets'][query.toString()];
+                if(frames){
+                    assetData = new AssetData(query);
+                    assetData.unpackSavedFrames(frames);
+                }
+            }
+
             return assetData;
         }
 
@@ -232,6 +253,9 @@ package com.berry.animation.library {
             return _dispatcher;
         }
 
+        public function registerPartAsset(name:String, content:*):void {
+            _partAsset[name] = content;
+        }
     }
 }
 
@@ -310,7 +334,7 @@ class SwfLoader extends Loader {
             }
 
             for (var i:int = 0; i < _callback.length; i++) {
-                _callback[i](data);
+                _callback[i](data, contentLoaderInfo);
             }
         }
         clean();
