@@ -24,6 +24,18 @@ package com.berry.animation.library {
         private var _step:uint = 1;
         private var _rotate:String = '';
         private var _position:String = '';
+        private var _renderInTread:Boolean;
+        
+        public function get renderInTread ():Boolean
+        {
+        	return _renderInTread;
+        }
+        
+        public function setRenderInTread (value:Boolean):AssetDataGetQuery
+        {
+        	_renderInTread = value;
+        	return this;
+        }
 
         public function reset():void {
             _rotate = '';

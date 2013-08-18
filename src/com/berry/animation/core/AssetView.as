@@ -47,6 +47,10 @@ package com.berry.animation.core {
         protected var _preloaderMode:Boolean = true;
 
 
+        public function set renderInTread(value:Boolean):void {
+            _data.renderInTread = value;
+        }
+
         public function set cachedList(value:Array):void
         {
             _data.cachedList = value;
@@ -94,21 +98,7 @@ package com.berry.animation.core {
 
             _mainSprite.addChild(_preloader);
             _mainSprite.addChild(_main.view);
-            if (!_data.vectorMode && _preloaderMode) {
-                _main.dispatcher.setEventListener(true, AssetViewEvents.ON_RENDER, removePreloader);
-                _preloader.assetData = _assetLibrary.getPreloader(name);
-                _preloader.y = -50;
-                if (!_preloader.assetData) {
-                    _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
-                }
-                else if (!_preloader.assetData.isRenderFinish) {
-                    _preloader.assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
-                }
-                else {
 
-                    _preloader.gotoAndPlay(0);
-                }
-            }
             _assetLibrary.loadData(name, _data.sourceType, onLoadCallback);
         }
 
@@ -192,6 +182,9 @@ package com.berry.animation.core {
 
         protected function updateMain():void {
             _main.playAnimationSet(_data.animationModel);
+            if(!_main._view.assetData){
+                showPreloader();
+            }
         }
 
         protected function updateShadow():void {
@@ -220,6 +213,7 @@ package com.berry.animation.core {
                     if(visible){
                         play();
                     }
+                    dispatcher.dispatchEvent('init');
                     if (_renderListFromMainController) {
                         preRenderNext();
                     }
@@ -335,7 +329,29 @@ package com.berry.animation.core {
                     effect.visible = value;
                 }
                 if(value){
-                    play();
+                    if(_assetLibrary.loaded(_data.name)){
+                        play();
+                    } else {
+                        showPreloader();
+                    }
+                }
+            }
+        }
+
+        private function showPreloader():void {
+            if (!_data.vectorMode && _preloaderMode) {
+                _main.dispatcher.setEventListener(true, AssetViewEvents.ON_RENDER, removePreloader);
+                _preloader.assetData = _assetLibrary.getPreloader(name);
+                _preloader.y = -50;
+                if (!_preloader.assetData) {
+                    _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
+                }
+                else if (!_preloader.assetData.isRenderFinish) {
+                    _preloader.assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
+                }
+                else {
+
+                    _preloader.gotoAndPlay(0);
                 }
             }
         }

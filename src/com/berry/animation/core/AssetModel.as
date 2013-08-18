@@ -7,11 +7,12 @@ package com.berry.animation.core {
     import org.dzyga.pool.Pool;
 
     public class AssetModel {
-        public var cachedList:Array;
         public function AssetModel() {
             sourceType.setValue(SourceTypeEnum.SOURCE_SWF);
         }
 
+        public var cachedList:Array;
+        public var renderInTread:Boolean;
         public var id:String;
         public var name:String;
         public var animationModel:AnimationModel;
@@ -47,14 +48,8 @@ package com.berry.animation.core {
                     .setStep(_stepFrame)
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
                     .setIsAutoClear(!getCache(animation))
+                    .setRenderInTread(renderInTread)
             return query;
-        }
-
-        private function getCache(animation:String):Boolean {
-            if(!cachedList) {
-                return cache;
-            }
-            return cachedList.indexOf(animation) != -1 ? true : cache;
         }
 
         public function clearUpdates():void {
@@ -62,6 +57,13 @@ package com.berry.animation.core {
             _animationUpdated = false;
             _effectModeUpdated = false;
             _rotationUpdated = false;
+        }
+
+        private function getCache(animation:String):Boolean {
+            if (!cachedList) {
+                return cache;
+            }
+            return cachedList.indexOf(animation) != -1 ? true : cache;
         }
 
         public function get stepFrame():int {
@@ -92,9 +94,9 @@ package com.berry.animation.core {
 
         public function set effectMode(value:Boolean):void {
             /*if (_effectMode != value) {
-                _effectModeUpdated = true;
-                _effectMode = value;
-            }*/
+             _effectModeUpdated = true;
+             _effectMode = value;
+             }*/
         }
 
         public function get rotation():RotateEnum {

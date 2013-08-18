@@ -22,7 +22,7 @@ package com.berry.animation.core {
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         public var assetLibrary:AssetLibrary;
         private var _data:AssetModel;
-        private var _view:AssetMovieClip;
+        public var _view:AssetMovieClip;
         private var _animationModel:AnimationModel;
         private var _nextToTimeAction:Action;
         private var _isFinishToEndCurrent:Boolean;
