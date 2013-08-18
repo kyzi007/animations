@@ -78,12 +78,12 @@ package com.berry.animation.library {
                     _partMode[assetName] = true;
                     var result:Object = {};
                     result.animations = [];
-                    for (var frame:int = 0; frame < data.stepsCount; frame++) {
-                        for (var clipName:String in data[frame]) {
-                            createData(clipName, data[frame][clipName].totalFrames, result, data[frame][clipName]);
+                    for (var step:int = 0; step < data.stepsCount; step++) {
+                        for (var clipName:String in data[step]) {
+                            createData(clipName, data[step][clipName].totalFrames, result, data[step][clipName]);
                         }
                     }
-                    _animationPresetList[assetName][frame] = result;
+                    _animationPresetList[assetName][step] = result;
                 } else {
                     for (var frame:int = 1; frame < source.totalFrames + 1; frame++) {
                         var clipData:Object = data && data[frame - 1] ? data[frame - 1] : {};
@@ -188,12 +188,12 @@ package com.berry.animation.library {
                 return null;
             }
             var res:* = obj;
-            if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
+            if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
             for (var i:int = 0; i < keys.length; i++) {
                 var key:String = keys[i];
                 res = res.hasOwnProperty(key) ? res[key] : null;
                 if (res == null || res == undefined) return null;
-                if (res is classId && (!conditionFunction || conditionFunction(res))) return res;
+                if (res is classId && (conditionFunction == null || conditionFunction(res))) return res;
             }
             return null;
         }

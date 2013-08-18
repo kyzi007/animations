@@ -11,14 +11,12 @@ package com.berry.animation.core {
 
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
-    import flash.display.Loader;
     import flash.display.Sprite;
 
     import log.logServer.KLog;
 
     import org.ColorMatrix;
     import org.dzyga.geom.Rect;
-
 
     public class AssetView {
         public function AssetView(id:String, name:String) {
@@ -46,16 +44,6 @@ package com.berry.animation.core {
         protected var _mainSprite:Sprite = new Sprite();
         protected var _preloaderMode:Boolean = true;
 
-
-        public function set renderInTread(value:Boolean):void {
-            _data.renderInTread = value;
-        }
-
-        public function set cachedList(value:Array):void
-        {
-            _data.cachedList = value;
-        }
-
         public function playByName(animation:String):void {
             _data.animation = animation;
             if (isLoadComplete && _data.visible) {
@@ -82,15 +70,16 @@ package com.berry.animation.core {
                     _data.clearUpdates();
                 }
             } else {
-               // trace('no animationModel', id)
+                // trace('no animationModel', id)
             }
         }
 
         public function init():void {
             failIfInit();
             _isInit = true;
-            if (!_assetLibrary || !_animationLibrary) {
-                CONFIG::debug{ KLog.log("AssetMediator : init  " + "no data", KLog.CRITICAL); }
+
+            CONFIG::debug{
+                if (!_assetLibrary || !_animationLibrary) { KLog.log("AssetMediator : init  " + "no data", KLog.CRITICAL); }
             }
             _main.assetLibrary = _assetLibrary;
             _main.data = _data;
@@ -156,10 +145,11 @@ package com.berry.animation.core {
 
         protected function updateEffects():void {
             //clear old
-            if(!_data.animationModel || !mainSprite){
+            if (!_data.animationModel || !mainSprite) {
                 return;
             }
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
+            var effect:AdvancedAssetMovieClip;
+            for each (effect in _effects) {
                 effect.cleanUp();
                 mainSprite.removeChild(effect.view);
             }
@@ -168,7 +158,7 @@ package com.berry.animation.core {
                 var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
 
                 for each (var animationModel:AnimationModel in effectModels) {
-                    var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip(_data.name+'effect');
+                    effect = new AdvancedAssetMovieClip(_data.name + 'effect');
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
                     effect.fullAnimation = _data.effectMode;
@@ -182,7 +172,7 @@ package com.berry.animation.core {
 
         protected function updateMain():void {
             _main.playAnimationSet(_data.animationModel);
-            if(!_main._view.assetData){
+            if (!_main._view.assetData) {
                 showPreloader();
             }
         }
@@ -210,7 +200,7 @@ package com.berry.animation.core {
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
                     removePreloader()
                     //trace('*********************-------------------- ON RENDER ', id)
-                    if(visible){
+                    if (visible) {
                         play();
                     }
                     dispatcher.dispatchEvent('init');
@@ -245,7 +235,7 @@ package com.berry.animation.core {
 
         protected function onLoadCallback(data:*, content:*):void {
             _animationLibrary.parseAsset(name, _assetLibrary.getSource(name));
-            if(_animationLibrary.getIsComplexAsset(name)){
+            if (_animationLibrary.getIsComplexAsset(name)) {
                 _assetLibrary.registerPartAsset(name, content);
             } else {
                 if (_renderListBeforePlay || _renderListFromMainController) {
@@ -255,12 +245,17 @@ package com.berry.animation.core {
                     preRenderNext();
                 }
             }
-            if(visible){
+            if (visible) {
                 play();
             }
 
-
             dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
+        }
+
+        protected function failIfInit():void {
+            CONFIG::debug{
+                if (_isInit) {KLog.log("BaseAssetView : set value  " + "already init", KLog.CRITICAL); }
+            }
         }
 
         private function play():void {
@@ -270,12 +265,6 @@ package com.berry.animation.core {
                 playByName(_data.animation);
             } else {
                 playByName(AnimationsList.IDLE)
-            }
-        }
-
-        protected function failIfInit():void {
-            if (_isInit) {
-                CONFIG::debug{ KLog.log("BaseAssetView : set value  " + "already init", KLog.CRITICAL); }
             }
         }
 
@@ -309,6 +298,32 @@ package com.berry.animation.core {
             }
         }
 
+        private function showPreloader():void {
+            if (!_data.vectorMode && _preloaderMode) {
+                _main.dispatcher.setEventListener(true, AssetViewEvents.ON_RENDER, removePreloader);
+                _preloader.assetData = _assetLibrary.getPreloader(name);
+                _preloader.y = -50;
+                if (!_preloader.assetData) {
+                    _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
+                }
+                else if (!_preloader.assetData.isRenderFinish) {
+                    _preloader.assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
+                }
+                else {
+
+                    _preloader.gotoAndPlay(0);
+                }
+            }
+        }
+
+        public function set renderInTread(value:Boolean):void {
+            _data.renderInTread = value;
+        }
+
+        public function set cachedList(value:Array):void {
+            _data.cachedList = value;
+        }
+
         public function get isLoadComplete():Boolean {
             return _assetLibrary.loaded(name);
         }
@@ -328,8 +343,8 @@ package com.berry.animation.core {
                 for each (var effect:AdvancedAssetMovieClip in _effects) {
                     effect.visible = value;
                 }
-                if(value){
-                    if(_assetLibrary.loaded(_data.name)){
+                if (value) {
+                    if (_assetLibrary.loaded(_data.name)) {
                         play();
                     } else {
                         showPreloader();
@@ -338,26 +353,8 @@ package com.berry.animation.core {
             }
         }
 
-        private function showPreloader():void {
-            if (!_data.vectorMode && _preloaderMode) {
-                _main.dispatcher.setEventListener(true, AssetViewEvents.ON_RENDER, removePreloader);
-                _preloader.assetData = _assetLibrary.getPreloader(name);
-                _preloader.y = -50;
-                if (!_preloader.assetData) {
-                    _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
-                }
-                else if (!_preloader.assetData.isRenderFinish) {
-                    _preloader.assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
-                }
-                else {
-
-                    _preloader.gotoAndPlay(0);
-                }
-            }
-        }
-
         public function get isPreRenderStatus():Boolean {
-            return _renderListBeforePlay;
+            return _renderListBeforePlay != null;
         }
 
         /**

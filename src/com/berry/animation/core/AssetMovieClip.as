@@ -172,7 +172,7 @@ package com.berry.animation.core {
         }
 
         public function get isPlay():Boolean {
-            return _playAction;
+            return _playAction != null;
         }
 
         public function get speed():Number {return _speed;}
