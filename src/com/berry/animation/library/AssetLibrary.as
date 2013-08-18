@@ -233,7 +233,7 @@ package com.berry.animation.library {
                 }
             }
 
-            if(!assetData && SharedObject.getLocal('midnight_').data['assets'] && AnimationSettings.saveMode){
+            if(!assetData && AnimationSettings.saveMode && SharedObject.getLocal('midnight_').data['assets']){
 
                 var frames:* = SharedObject.getLocal('midnight_').data['assets'][query.toString()];
                 if(frames){
