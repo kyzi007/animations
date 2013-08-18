@@ -133,7 +133,7 @@ package com.berry.animation.core {
         }
 
         protected function removePreloader(e:* = null):void {
-            if (!_renderListBeforePlay) {
+            if (!_renderListBeforePlay && _preloader && _preloader.assetData) {
                 _main.dispatcher.setEventListener(false, AssetViewEvents.ON_RENDER, removePreloader);
                 _preloader.assetData.dispatcher.setEventListener(false, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
                 _preloader.stop(true);
