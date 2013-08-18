@@ -1,9 +1,9 @@
 package com.berry.animation.test {
-    import com.berry.animation.core.GameObjectView;
+    import com.berry.animation.core.AssetView;
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.library.AnimationModel;
 
-    public class MyGameObjectView extends GameObjectView{
+    public class MyGameObjectView extends AssetView{
         private var _flip:Boolean;
         private var _flipWaitUpdate:Boolean;
         private var _widthInCell:int;
@@ -33,7 +33,7 @@ package com.berry.animation.test {
                 var tmp:Number = _widthInCell;
                 _widthInCell = _heightInCell;
                 _heightInCell = tmp;
-                rotation = _flip ? GameObjectView.ROTATE_FLIP : GameObjectView.ROTATE_NONE;
+                rotation = _flip ? AssetView.ROTATE_FLIP : AssetView.ROTATE_NONE;
 
             } else {
                 _flipWaitUpdate = true;

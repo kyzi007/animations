@@ -21,8 +21,8 @@ package com.berry.animation.core {
         public var vectorMode:Boolean;
         public var sourceType:SourceTypeEnum = new SourceTypeEnum();
         public var text:String;
-        public var visible:Boolean;
-        private var _rotation:RotateEnum = GameObjectView.ROTATE_NONE;
+        public var visible:Boolean = false;
+        private var _rotation:RotateEnum = AssetView.ROTATE_NONE;
         private var _animation:String;
         private var _stepFrame:int = 1;
         private var _effectMode:Boolean = false;

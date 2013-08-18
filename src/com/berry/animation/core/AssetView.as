@@ -20,8 +20,8 @@ package com.berry.animation.core {
     import org.dzyga.geom.Rect;
 
 
-    public class GameObjectView {
-        public function GameObjectView(id:String, name:String) {
+    public class AssetView {
+        public function AssetView(id:String, name:String) {
             _data.id = id;
             _data.name = name;
         }
@@ -53,7 +53,7 @@ package com.berry.animation.core {
 
         public function playByName(animation:String):void {
             _data.animation = animation;
-            if (isLoadComplete) {
+            if (isLoadComplete && _data.visible) {
                 playByModel(_animationLibrary.getAnimationModel(name, _data.animation, _data.stepFrame));
             }
         }
@@ -70,7 +70,7 @@ package com.berry.animation.core {
             if (animationModel) {
                 _data.animationModel = animationModel;
                 _data.animation = animationModel.shotName;
-                if (!isPreRenderStatus) {
+                if (!isPreRenderStatus && _data.visible) {
                     updateMain();
                     updateShadow();
                     updateEffects();
@@ -216,12 +216,8 @@ package com.berry.animation.core {
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
                     removePreloader()
                     //trace('*********************-------------------- ON RENDER ', id)
-                    if (_data.animationModel) {
-                        playByModel(_data.animationModel);
-                    } else if (_data.animation) {
-                        playByName(_data.animation)
-                    } else {
-                        playByName(AnimationsList.IDLE)
+                    if(visible){
+                        play();
                     }
                     if (_renderListFromMainController) {
                         preRenderNext();
@@ -264,7 +260,15 @@ package com.berry.animation.core {
                     preRenderNext();
                 }
             }
+            if(visible){
+                play();
+            }
 
+
+            dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
+        }
+
+        private function play():void {
             if (_data.animationModel) {
                 playByModel(_data.animationModel);
             } else if (_data.animation) {
@@ -272,7 +276,6 @@ package com.berry.animation.core {
             } else {
                 playByName(AnimationsList.IDLE)
             }
-            dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
         }
 
         protected function failIfInit():void {
@@ -329,6 +332,9 @@ package com.berry.animation.core {
                 }
                 for each (var effect:AdvancedAssetMovieClip in _effects) {
                     effect.visible = value;
+                }
+                if(value){
+                    play();
                 }
             }
         }
