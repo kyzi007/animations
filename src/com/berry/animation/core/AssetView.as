@@ -24,6 +24,7 @@ package com.berry.animation.core {
         public function AssetView(id:String, name:String) {
             _data.id = id;
             _data.name = name;
+            _main = new AdvancedAssetMovieClip(name)
         }
 
         public static const ROTATE_NONE:RotateEnum = new RotateEnum(RotateEnum.NONE);
@@ -37,7 +38,7 @@ package com.berry.animation.core {
         protected var _data:AssetModel = new AssetModel();
         protected var _animationLibrary:AnimationLibrary;
         protected var _shadow:AssetMovieClip = new AssetMovieClip("shadow");
-        protected var _main:AdvancedAssetMovieClip = new AdvancedAssetMovieClip(); // advanced animation control (play preset list)
+        protected var _main:AdvancedAssetMovieClip; // advanced animation control (play preset list)
         protected var _effects:Array = [];
         protected var _preloader:AssetMovieClip = new AssetMovieClip("preloader");
         protected var _renderListBeforePlay:Array;
@@ -177,7 +178,7 @@ package com.berry.animation.core {
                 var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
 
                 for each (var animationModel:AnimationModel in effectModels) {
-                    var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip();
+                    var effect:AdvancedAssetMovieClip = new AdvancedAssetMovieClip(_data.name+'effect');
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
                     effect.fullAnimation = _data.effectMode;

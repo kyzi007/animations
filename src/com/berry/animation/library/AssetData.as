@@ -103,11 +103,11 @@ package com.berry.animation.library {
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
                 if (_getQuery.isAutoClear) {
-                    _renderAction = EnterFrame.addAction(-20, renderInstruct);
-                    _renderAction.name = "AssetData:startRender";
+                    _renderAction = EnterFrame.addAction(0, renderInstruct);
+                    _renderAction.name = "AssetData:render "+name;
                 } else if (_getQuery.asynchRender) {
-                    _renderAction = EnterFrame.addThread(-10, 0, renderInstruct);
-                    _renderAction.name = "AssetData:startRender";
+                    _renderAction = EnterFrame.addThread(0, 0, renderInstruct);
+                    _renderAction.name = "AssetData:render " + name;
                 } else {
                     while (renderInstruct.execute() == false) {}
                     renderInstruct.finish();

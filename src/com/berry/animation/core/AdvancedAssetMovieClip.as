@@ -13,8 +13,8 @@ package com.berry.animation.core {
     import org.dzyga.geom.Rect;
 
     public class AdvancedAssetMovieClip {
-        public function AdvancedAssetMovieClip() {
-
+        public function AdvancedAssetMovieClip(name:String) {
+            _view = new AssetMovieClip(name)
         }
 
         public var fullAnimation:Boolean = true;
@@ -22,7 +22,7 @@ package com.berry.animation.core {
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         public var assetLibrary:AssetLibrary;
         private var _data:AssetModel;
-        private var _view:AssetMovieClip = new AssetMovieClip("");
+        private var _view:AssetMovieClip;
         private var _animationModel:AnimationModel;
         private var _nextToTimeAction:Action;
         private var _isFinishToEndCurrent:Boolean;
