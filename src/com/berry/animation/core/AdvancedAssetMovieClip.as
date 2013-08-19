@@ -12,6 +12,8 @@ package com.berry.animation.core {
     import org.dzyga.events.EnterFrame;
     import org.dzyga.geom.Rect;
 
+    import tests.EffectViewer;
+
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip(name:String) {
             _view = new AssetMovieClip(name)
@@ -61,6 +63,8 @@ package com.berry.animation.core {
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
+
+            EffectViewer.log(_view.name+' play part '+currPreset.fullName)
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
                 query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
@@ -166,12 +170,12 @@ package com.berry.animation.core {
                 }
                 if (_loopCount > 0 || _loopList) {
                     _animationModel.nextPresetRandom();
-                    //trace('next', _animationModel.currentPart().fullName)
+                    EffectViewer.log(_view.name + ' next ON_ANIMATION_FINISH');
                     playPart(_animationModel.currentPart());
                 }
             } else {
                 _animationModel.nextPresetRandom();
-                //trace('next', _animationModel.currentPart().fullName)
+                EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
                 playPart(_animationModel.currentPart());
             }
             _isFinishToEndCurrent = _animationModel.isListEnd;

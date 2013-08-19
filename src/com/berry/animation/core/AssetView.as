@@ -310,7 +310,6 @@ package com.berry.animation.core {
                     _preloader.assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
                 }
                 else {
-
                     _preloader.gotoAndPlay(0);
                 }
             }

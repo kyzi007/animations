@@ -3,7 +3,6 @@ package com.berry.animation.library {
 
     import org.dzyga.pool.IReusable;
 
-
     public class AnimationModel extends SimpleEventDispatcher implements IReusable {
         public function AnimationModel() {
         }
@@ -20,7 +19,6 @@ package com.berry.animation.library {
         private var _loopTime:int = 0;
         private var _isFullAnimation:Boolean = true;
         private var _partList:*;
-        private var _completeStates:Array = [];
         private var _completeSubStates:Array = [];
         private var _updateCurrent:Boolean;
         private var _currentPreset:AnimationPart;
@@ -50,16 +48,7 @@ package com.berry.animation.library {
         }
 
         public function incrementState():void {
-            if (!_completeStates[_state]) {
-                _completeStates[_state] = 0;
-            }
-
-            if (_completeStates[_state] >= maxPlayCount - 1) {
-                _state++;
-            }
-
-            _completeStates[_state]++;
-
+            _state++;
             if (!_partList[_state]) {
                 loopEnumeration();
             }
@@ -89,8 +78,28 @@ package com.berry.animation.library {
                 loopEnumeration();
                 return;
             }
-            incrementState();
-            incrementSubStateRandom();
+            if(!_completeSubStates[_state]){_completeSubStates[_state] = 0}
+            _isListEnd = false;
+            if (isSubStates) {
+                if (_completeSubStates[_state] > subStateCount*1.5) {
+                    _completeSubStates[_state] = 0;
+                    _state++;
+                    if (isSubStates) {
+                        _completeSubStates[_state]++;
+                        _subState = int(subStateCount * Math.random());
+                    }
+                } else {
+                    _completeSubStates[_state]++;
+                    _subState = int(subStateCount * Math.random());
+                }
+            } else {
+                _state++;
+            }
+
+            if (!_partList[_state]) {
+                loopEnumeration();
+            }
+
             _updateCurrent = true;
         }
 
@@ -108,7 +117,6 @@ package com.berry.animation.library {
             _loopTime = 0;
             _isFullAnimation = true;
             _partList = null;
-            _completeStates = [];
             _completeSubStates = [];
             _currentPreset = null;
             _updateCurrent = false;
@@ -123,15 +131,12 @@ package com.berry.animation.library {
 
         private function incrementSubStateRandom():void {
             if (isSubStates) {
-                _subState = int(maxPlayCount * Math.random());
+                _subState = int(subStateCount * Math.random());
             }
             if (!_completeSubStates[_subState]) {
                 _completeSubStates[_subState] = 0;
             }
             _completeSubStates[_subState]++;
-            if (_completeStates[_subState] > maxPlayCount) {
-                loopEnumeration();
-            }
         }
 
         private function loopEnumeration():void {
@@ -173,7 +178,9 @@ package com.berry.animation.library {
 
         private function get isState():Boolean {return _partList is Array;}
 
-        public function get isSubStates():Boolean {return _partList ? _partList[_state] && _partList[_state] is Array : -1;}
+        public function get isSubStates():Boolean {
+            return _partList ? _partList[_state] && _partList[_state] is Array : false;
+        }
 
         public function get loop():Boolean {
             return  _loop;
@@ -191,8 +198,8 @@ package com.berry.animation.library {
 
         public function set loopTime(value:int):void {_loopTime = value;}
 
-        private function get maxPlayCount():int {
-            return isSubStates ? _partList[_state].length : 1;
+        private function get subStateCount():int {
+            return isSubStates ? _partList[_state].length : 0;
         }
 
         public function get reflection():Class {return AnimationModel;}

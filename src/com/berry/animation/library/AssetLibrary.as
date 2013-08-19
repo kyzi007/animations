@@ -71,7 +71,7 @@ package com.berry.animation.library {
             } else {
                 _classHash[assetName] = data;
                 if(loaderInfo){
-                    _partAsset[assetName] = loaderInfo;
+                    //_partAsset[assetName] = loaderInfo;
                 }
             }
         }
