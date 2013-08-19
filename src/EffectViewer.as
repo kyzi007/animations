@@ -58,6 +58,7 @@ package {
         private var _f:FileReference;
 
         public static function log(...strings):void {
+            return;
             for each (var string:String in strings) {
                 if (_log) _log.appendText(string + ' ');
                 trace(string);

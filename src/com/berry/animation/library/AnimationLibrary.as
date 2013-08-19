@@ -65,7 +65,8 @@ package com.berry.animation.library {
                             _effectCache[assetName + animationName + step][animationData.shotName] = animationData;
                         }
                     } else {
-                        if(!(animationParts[0] is String)){
+                        // TODO: временное
+                        if(!(animationParts[0] is String) && animationParts[0][0] && AnimationPart(animationParts[0][0]).isEffect){
                             var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
                             animationDataAdvanced.step = step;
                             animationDataAdvanced.setPartList(animationParts);
