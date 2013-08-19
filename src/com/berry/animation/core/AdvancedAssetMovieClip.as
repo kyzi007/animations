@@ -12,7 +12,7 @@ package com.berry.animation.core {
     import org.dzyga.events.EnterFrame;
     import org.dzyga.geom.Rect;
 
-    import tests.EffectViewer;
+    import EffectViewer;
 
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip(name:String) {

@@ -14,7 +14,7 @@ package com.berry.animation.draw {
 
     import log.logServer.KLog;
 
-    import tests.EffectViewer;
+    import EffectViewer;
 
     public class WyseDrawInstruct extends BaseDrawInstruct {
 

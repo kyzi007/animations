@@ -54,13 +54,24 @@ package com.berry.animation.library {
             } else {
                 _effectCache[assetName + animationName + step] = {};
                 var assetPresets:Object = _animationPresetList [assetName] ? _animationPresetList [assetName][step] : null;
-                for each (var animationPart:Object in assetPresets) {
-                    if (animationPart.isEffect && animationPart.effectStates.indexOf(animationName) != -1) {
-                        var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-                        animationData.step = step;
-                        animationData.setPartList(animationPart);
-                        animationData.shotName = animationPart.fullName;
-                        _effectCache[assetName + animationName + step][animationPart.fullName] = animationData;
+                for each (var animationParts:Object in assetPresets) {
+                    if(animationParts is AnimationPart){
+                        // плоская структура
+                        if (animationParts.isEffect && animationParts.effectStates.indexOf(animationName) != -1) {
+                            var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
+                            animationData.step = step;
+                            animationData.setPartList(animationParts);
+                            animationData.shotName = animationParts.fullName;
+                            _effectCache[assetName + animationName + step][animationData.shotName] = animationData;
+                        }
+                    } else {
+                        if(!(animationParts[0] is String)){
+                            var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
+                            animationDataAdvanced.step = step;
+                            animationDataAdvanced.setPartList(animationParts);
+                            animationDataAdvanced.shotName = AnimationPart(animationParts[0][0]).fullName.split('_state')[0];// TODO наебнется на точном порядке
+                            _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
+                        }
                     }
                 }
                 return _effectCache[assetName + animationName + step];
