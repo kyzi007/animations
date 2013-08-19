@@ -26,7 +26,7 @@ package com.berry.animation.core {
         private var _rotation:RotateEnum = AssetView.ROTATE_NONE;
         private var _animation:String;
         private var _stepFrame:int = 1;
-        private var _effectMode:Boolean = false;
+        private var _effectMode:Boolean = true;
         private var _stepFrameUpdated:Boolean;
         private var _animationUpdated:Boolean;
         private var _effectModeUpdated:Boolean;
