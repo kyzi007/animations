@@ -180,15 +180,16 @@ package com.berry.animation.core {
         protected function updateShadow():void {
             var assetDataFromShadow:AssetData = _assetLibrary.getAssetData(_data.getQuery(AnimationsList.SHADOW));
             if (assetDataFromShadow.isRenderFinish) {
-                shadowAssetOnLoad(assetDataFromShadow);
+                shadowAssetOnRender(assetDataFromShadow);
             } else {
-                assetDataFromShadow.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, shadowAssetOnLoad);
+                assetDataFromShadow.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, shadowAssetOnRender);
             }
         }
 
-        protected function shadowAssetOnLoad(data:AssetData):void {
-            data.dispatcher.setEventListener(false, AssetDataEvents.COMPLETE_RENDER, shadowAssetOnLoad);
-            _shadow.assetData = data;
+        protected function shadowAssetOnRender(data:*):void {
+            var assetDataFromShadow:AssetData = _assetLibrary.getAssetData(_data.getQuery(AnimationsList.SHADOW));
+            //assetDataFromShadow.dispatcher.setEventListener(false, AssetDataEvents.COMPLETE_RENDER, shadowAssetOnRender);
+            _shadow.assetData = assetDataFromShadow;
             _shadow.gotoAndStop(0);
         }
 
