@@ -156,7 +156,6 @@ package com.berry.animation.core {
             _effects = [];
             if (_data.rotation.value == RotateEnum.NONE) {
                 var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
-
                 for each (var animationModel:AnimationModel in effectModels) {
                     effect = new AdvancedAssetMovieClip(_data.name + 'effect');
                     effect.assetLibrary = _assetLibrary;
@@ -373,6 +372,7 @@ package com.berry.animation.core {
 
         public function set effectMode(value:Boolean):void {
             if (_data.effectMode != value) {
+                trace('set effectMode', value, _data.name)
                 _data.effectMode = value;
                 updateEffects();
             }

@@ -93,10 +93,10 @@ package com.berry.animation.core {
         }
 
         public function set effectMode(value:Boolean):void {
-            /*if (_effectMode != value) {
-             _effectModeUpdated = true;
-             _effectMode = value;
-             }*/
+            if (_effectMode != value) {
+                _effectModeUpdated = true;
+                _effectMode = value;
+            }
         }
 
         public function get rotation():RotateEnum {
