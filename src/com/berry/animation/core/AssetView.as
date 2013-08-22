@@ -105,7 +105,7 @@ package com.berry.animation.core {
             _data.cleanUp();
         }
 
-        public function hitTest(x:int, y:int):Boolean {
+        public function hitTest(x:Number, y:Number):Boolean {
             // TODO effect
             return _main.hitTest(x, y);
         }
