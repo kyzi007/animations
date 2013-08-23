@@ -73,6 +73,13 @@ package com.berry.animation.library {
                             animationDataAdvanced.shotName = AnimationPart(animationParts[0][0]).fullName.split('_state')[0];// TODO наебнется на точном порядке
                             _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
                         }
+                        if (!(animationParts[0] is String) && animationParts[0] is AnimationPart && AnimationPart(animationParts[0]).isEffect) {
+                            var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
+                            animationDataAdvanced.step = step;
+                            animationDataAdvanced.setPartList(animationParts);
+                            animationDataAdvanced.shotName = AnimationPart(animationParts[0]).fullName.split('_state')[0];
+                            _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
+                        }
                     }
                 }
                 return _effectCache[assetName + animationName + step];
