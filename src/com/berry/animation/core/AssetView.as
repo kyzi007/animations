@@ -16,6 +16,7 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
+    import org.dzyga.events.Promise;
     import org.dzyga.geom.Rect;
 
     public class AssetView {
@@ -31,6 +32,10 @@ package com.berry.animation.core {
         public static const SOURCE_SWF:SourceTypeEnum = new SourceTypeEnum(SourceTypeEnum.SOURCE_SWF);
         private const BOUNDS:Rect = new Rect(-40, -40, 80, 80);
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
+
+        // Promises
+        public var boundsUpdatePromise:Promise = new Promise();
+
         protected var _isInit:Boolean;
         protected var _assetLibrary:AssetLibrary;
         protected var _data:AssetModel = new AssetModel();
@@ -83,7 +88,9 @@ package com.berry.animation.core {
             }
             _main.assetLibrary = _assetLibrary;
             _main.data = _data;
-            _main.view.dispatcher.setEventListener(true, AssetViewEvents.ON_UPDATE_BOUNDS, onUpdateBounds)
+
+            _main.view.boundsUpdatePromise.callbackRegister(onUpdateBounds);
+            // _main.view.dispatcher.setEventListener(true, AssetViewEvents.ON_UPDATE_BOUNDS, onUpdateBounds);
 
             _mainSprite.addChild(_preloader);
             _mainSprite.addChild(_main.view);
@@ -163,7 +170,7 @@ package com.berry.animation.core {
                     effect.fullAnimation = _data.effectMode;
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
-                    _effects.push(effect)
+                    _effects.push(effect);
                     mainSprite.addChild(effect.view);
                 }
             }
@@ -198,8 +205,8 @@ package com.berry.animation.core {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
                     dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
-                    removePreloader()
-                    //trace('*********************-------------------- ON RENDER ', id)
+                    removePreloader();
+
                     if (visible) {
                         play();
                     }
@@ -268,7 +275,10 @@ package com.berry.animation.core {
             }
         }
 
-        private function onUpdateBounds(e:*):void {
+        private function onUpdateBounds(... args):void {
+            boundsUpdatePromise.resolve(this);
+
+            // TODO: Remove this
             dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS);
         }
 

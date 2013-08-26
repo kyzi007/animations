@@ -8,9 +8,9 @@ package com.berry.animation.core {
     import flash.display.Sprite;
     import flash.geom.Point;
 
-    import org.dzyga.geom.Rect;
+    import org.dzyga.events.Promise;
 
-    ;
+    import org.dzyga.geom.Rect;
 
     public class AssetSprite extends Sprite {
 
@@ -22,6 +22,7 @@ package com.berry.animation.core {
 
         private static const _point:Point = new Point();
         public var isDebug:Boolean;
+        public var boundsUpdatePromise:Promise = new Promise();
         public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         protected var _bitmap:Bitmap = new Bitmap();
         protected var _assetName:String;
@@ -97,6 +98,10 @@ package com.berry.animation.core {
                             _currentFrameData.y,
                             _currentFrameData.bitmap.width,
                             _currentFrameData.bitmap.height);
+
+                    boundsUpdatePromise.resolve(this);
+
+                    // TODO: Remove in favor of boundsUpdatePromise
                     dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS); // обновится вся сортировка, очень аккуратно вызывать надо
                 }
             }
@@ -104,7 +109,11 @@ package com.berry.animation.core {
             if ((isUpdateBounds || !_rect) && target is MovieClip) {
                 if (!_rect) _rect = new Rect();
                 _rect.match(getBounds(this));
+                boundsUpdatePromise.resolve(this);
+
+                // TODO: Remove in favor of boundsUpdatePromise
                 dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS);
+
             }
         }
 
