@@ -382,7 +382,7 @@ package com.berry.animation.core {
 
         public function set effectMode(value:Boolean):void {
             if (_data.effectMode != value) {
-                trace('set effectMode', value, _data.name)
+                //trace('set effectMode', value, _data.name)
                 _data.effectMode = value;
                 updateEffects();
             }
