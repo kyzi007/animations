@@ -5,14 +5,12 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetDataEvents;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetLibrary;
-    import com.berry.events.SimpleEventDispatcher;
 
     import org.ColorMatrix;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
+    import org.dzyga.events.Promise;
     import org.dzyga.geom.Rect;
-
-    import EffectViewer;
 
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip(name:String) {
@@ -21,10 +19,12 @@ package com.berry.animation.core {
 
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
-        public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         public var assetLibrary:AssetLibrary;
-        private var _data:AssetModel;
         public var _view:AssetMovieClip;
+        public var renderPromise:Promise = new Promise();
+        public var animationPartFinishPromise:Promise = new Promise();
+        public var animationFinishPromise:Promise = new Promise();
+        private var _data:AssetModel;
         private var _animationModel:AnimationModel;
         private var _nextToTimeAction:Action;
         private var _isFinishToEndCurrent:Boolean;
@@ -69,7 +69,7 @@ package com.berry.animation.core {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
 
-            EffectViewer.log(_view.name+' play part '+currPreset.fullName)
+            EffectViewer.log(_view.name + ' play part ' + currPreset.fullName)
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
                 query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
@@ -109,10 +109,10 @@ package com.berry.animation.core {
                 EnterFrame.removeScheduledAction(_nextToTimeAction);
                 if (!_view.loop) {
                     if (currPreset.pauseTime) {
-                        _view.dispatcher.setEventListener(true, AssetViewEvents.ON_ANIMATION_FINISH, loadOneFrame);
+                        _view.animationFinishPromise.callbackRegister(loadOneFrame);
                         _nextToTimeAction = EnterFrame.scheduleAction(currPreset.pauseTime + currPreset.pauseTime * Math.random(), next)
                     } else {
-                        _view.dispatcher.setEventListener(true, AssetViewEvents.ON_ANIMATION_FINISH, next);
+                        _view.animationFinishPromise.callbackRegister(next);
                     }
                 } else if (currPreset.randomTime) {
                     if (currPreset.pauseTime) {
@@ -125,7 +125,7 @@ package com.berry.animation.core {
                     // trace('no time or loop')
                 }
                 _lastPreset = currPreset;
-                dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
+                renderPromise.resolve();
             } else {
                 // wait to the end rendering
                 assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, newAssetRendered);
@@ -136,40 +136,38 @@ package com.berry.animation.core {
             var query:AssetDataGetQuery = _data.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
             var fullAssetData:AssetData = assetLibrary.getAssetData(query);
             if (fullAssetData.isRenderFinish) {
-                playCurrentPart(null);
+                playCurrentPart();
             } else {
                 fullAssetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, playCurrentPart);
             }
         }
 
-        private function loadOneFrame(e:* = null):void {
-            _view.dispatcher.setEventListener(false, AssetViewEvents.ON_ANIMATION_FINISH, loadOneFrame);
+        private function loadOneFrame():void {
+            _view.animationFinishPromise.callbackRemove(loadOneFrame);
             playPart(_animationModel.currentPart(), true)
         }
 
         private function newAssetRendered(e:* = null):void {
-            dispatcher.dispatchEvent(AssetViewEvents.ON_RENDER);
+            renderPromise.resolve();
             if (_view.loop && _view.isPlay) {
                 // wait end animation
                 _view.loop = false;
-                _view.dispatcher.setEventListener(true, AssetViewEvents.ON_ANIMATION_FINISH, playCurrentPart);
+                _view.animationFinishPromise.callbackRegister(playCurrentPart);
             } else {
                 playPart(_animationModel.currentPart());
             }
         }
 
-        private function playCurrentPart(e:*):void {
-            _view.dispatcher.setEventListener(false, AssetViewEvents.ON_ANIMATION_FINISH, playCurrentPart);
+        private function playCurrentPart(e:* = null):void {
+            _view.animationFinishPromise.callbackRemove(playCurrentPart);
             playPart(_animationModel.currentPart());
         }
 
         private function next(e:* = null):void {
-
-            _view.dispatcher.setEventListener(false, AssetViewEvents.ON_ANIMATION_FINISH, next);
-            dispatcher.dispatchEvent(AssetViewEvents.ON_ANIMATION_PART_FINISH);
-
+            _view.animationFinishPromise.callbackRemove(next);
+            animationPartFinishPromise.resolve();
             if (_isFinishToEndCurrent) {
-                dispatcher.dispatchEvent(AssetViewEvents.ON_ANIMATION_FINISH);
+                animationFinishPromise.resolve();
                 if (!_loopList) {
                     _loopCount--;
                 }

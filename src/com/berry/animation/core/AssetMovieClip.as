@@ -10,6 +10,7 @@ package com.berry.animation.core {
     import org.ColorMatrix;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
+    import org.dzyga.events.Promise;
 
     public class AssetMovieClip extends AssetSprite {
 
@@ -30,6 +31,7 @@ package com.berry.animation.core {
         private var _lastFrame:int;
         private var _tempForFreeze:BitmapData;
         private var _clip:MovieClip;
+        public var animationFinishPromise:Promise = new Promise();
 
         public function applyFilter(filter:ColorMatrix):void {
             if (_filter) return;
@@ -121,7 +123,7 @@ package com.berry.animation.core {
             clearAnimation();
             _lastFrame = -1;
             _clip = null;
-            dispatcher.dispatchEvent(AssetViewEvents.ON_ANIMATION_FINISH);
+            animationFinishPromise.resolve();
         }
 
         private function makeFreeze():void {

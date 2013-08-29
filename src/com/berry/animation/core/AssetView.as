@@ -35,7 +35,9 @@ package com.berry.animation.core {
 
         // Promises
         public var boundsUpdatePromise:Promise = new Promise();
-
+        public var onRenderPromise:Promise = new Promise();
+        public var onLoadPromise:Promise = new Promise();
+        public var onUpdateBoundsPromise:Promise = new Promise();
         protected var _isInit:Boolean;
         protected var _assetLibrary:AssetLibrary;
         protected var _data:AssetModel = new AssetModel();
@@ -138,9 +140,9 @@ package com.berry.animation.core {
             _data.animationModel ? _data.animationModel.totalFrame : 0;
         }
 
-        protected function removePreloader(e:* = null):void {
+        protected function removePreloader():void {
             if (!_renderListBeforePlay && _preloader && _preloader.assetData) {
-                _main.dispatcher.setEventListener(false, AssetViewEvents.ON_RENDER, removePreloader);
+                _main.renderPromise.callbackRemove(removePreloader);
                 _preloader.assetData.dispatcher.setEventListener(false, AssetDataEvents.COMPLETE_RENDER, onPreloaderRender);
                 _preloader.stop(true);
                 _preloader.assetData = null;
@@ -191,7 +193,7 @@ package com.berry.animation.core {
             }
         }
 
-        protected function shadowAssetOnRender(data:*):void {
+        protected function shadowAssetOnRender(data:* = null):void {
             var assetDataFromShadow:AssetData = _assetLibrary.getAssetData(_data.getQuery(AnimationsList.SHADOW));
             //assetDataFromShadow.dispatcher.setEventListener(false, AssetDataEvents.COMPLETE_RENDER, shadowAssetOnRender);
             _shadow.assetData = assetDataFromShadow;
@@ -203,7 +205,7 @@ package com.berry.animation.core {
             if (_renderListBeforePlay) {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
-                    dispatcher.dispatchEvent(AssetViewEvents.ON_PRE_RENDER);
+                    onRenderPromise.resolve();
                     removePreloader();
 
                     if (visible) {
@@ -254,8 +256,7 @@ package com.berry.animation.core {
             if (visible) {
                 play();
             }
-
-            dispatcher.dispatchEvent(AssetViewEvents.ON_LOAD);
+            onLoadPromise.resolve();
         }
 
         protected function failIfInit():void {
@@ -274,11 +275,9 @@ package com.berry.animation.core {
             }
         }
 
-        private function onUpdateBounds(... args):void {
+        private function onUpdateBounds(...args):void {
             boundsUpdatePromise.resolve(this);
-
-            // TODO: Remove this
-            dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS);
+            onUpdateBoundsPromise.resolve();
         }
 
         private function updatePreRenderList(list:Array):Array {
@@ -299,7 +298,7 @@ package com.berry.animation.core {
             return tempArray;
         }
 
-        private function onPreloaderRender(e:*):void {
+        private function onPreloaderRender(e:* = null):void {
             _assetLibrary.dispatcher.setEventListener(false, AssetLibrary.ON_INIT, onPreloaderRender);
             if (!_main.view.assetData || _renderListBeforePlay) {
                 _preloader.assetData = _assetLibrary.getPreloader(name);
@@ -309,7 +308,7 @@ package com.berry.animation.core {
 
         private function showPreloader():void {
             if (!_data.vectorMode && _preloaderMode) {
-                _main.dispatcher.setEventListener(true, AssetViewEvents.ON_RENDER, removePreloader);
+                _main.renderPromise.callbackRegister(removePreloader);
                 _preloader.assetData = _assetLibrary.getPreloader(name);
                 _preloader.y = -50;
                 if (!_preloader.assetData) {

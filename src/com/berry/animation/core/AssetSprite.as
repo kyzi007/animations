@@ -1,6 +1,5 @@
 package com.berry.animation.core {
     import com.berry.animation.library.AssetFrame;
-    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.Bitmap;
     import flash.display.BitmapData;
@@ -20,9 +19,7 @@ package com.berry.animation.core {
         }
 
         private static const _point:Point = new Point();
-        public var isDebug:Boolean;
         public var boundsUpdatePromise:Promise = new Promise();
-        public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         protected var _bitmap:Bitmap = new Bitmap();
         protected var _assetName:String;
         private var _rect:Rect = null;
@@ -99,9 +96,6 @@ package com.berry.animation.core {
                             _currentFrameData.bitmap.height);
 
                     boundsUpdatePromise.resolve(this);
-
-                    // TODO: Remove in favor of boundsUpdatePromise
-                    dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS); // обновится вся сортировка, очень аккуратно вызывать надо
                 }
             }
 
@@ -109,10 +103,6 @@ package com.berry.animation.core {
                 if (!_rect) _rect = new Rect();
                 _rect.match(getBounds(this));
                 boundsUpdatePromise.resolve(this);
-
-                // TODO: Remove in favor of boundsUpdatePromise
-                dispatcher.dispatchEvent(AssetViewEvents.ON_UPDATE_BOUNDS);
-
             }
         }
 
