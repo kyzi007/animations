@@ -12,6 +12,7 @@ package com.berry.animation.library {
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
+    import org.dzyga.events.Promise;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
 
@@ -29,7 +30,6 @@ package com.berry.animation.library {
         private static var _stack:Object = {};
         public var mc:MovieClip;
         public var frames:Vector.<AssetFrame> = new Vector.<AssetFrame>(); // чтобы не грузить запросами геттер
-        public var dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _useCount:int = 0;
         private var _maxBounds:Rect = new Rect();
         private var _isRenderWork:Boolean = false;
@@ -39,6 +39,7 @@ package com.berry.animation.library {
         private var _renderAction:Action;
         private var _movies:Dictionary = new Dictionary();
         private var _isFalled:Boolean;
+        public var completeRenderPromise:Promise = new Promise();
 
         public function finishRender():void {
             _isRenderWork = false;
@@ -121,7 +122,7 @@ package com.berry.animation.library {
         public function update():void {
             //CONFIG::debug{ KLog.log("AssetData:update " + getQuery.fullAnimationName, KLog.METHODS);}
             updateMaxBounds();
-            dispatcher.dispatchEvent(AssetDataEvents.COMPLETE_RENDER, this);
+            completeRenderPromise.resolve(this);
         }
 
         // не вычищаю из памяти инстансы
@@ -201,7 +202,7 @@ package com.berry.animation.library {
 
             _isRenderFinish = false;
             _isRenderWork = false;
-            dispatcher.clearAllCallbacks();
+            completeRenderPromise.clear();
 
             for each (var sprite:Sprite in _movies) {
                 if (sprite.parent) {

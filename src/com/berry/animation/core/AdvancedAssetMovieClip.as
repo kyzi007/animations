@@ -2,7 +2,6 @@ package com.berry.animation.core {
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AnimationPart;
     import com.berry.animation.library.AssetData;
-    import com.berry.animation.library.AssetDataEvents;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetLibrary;
 
@@ -69,7 +68,7 @@ package com.berry.animation.core {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
 
-            EffectViewer.log(_view.name + ' play part ' + currPreset.fullName)
+           // EffectViewer.log(_view.name + ' play part ' + currPreset.fullName)
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
                 query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
@@ -125,10 +124,9 @@ package com.berry.animation.core {
                     // trace('no time or loop')
                 }
                 _lastPreset = currPreset;
-                renderPromise.resolve();
             } else {
                 // wait to the end rendering
-                assetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, newAssetRendered);
+                assetData.completeRenderPromise.callbackRegister(newAssetRendered);
             }
         }
 
@@ -138,7 +136,7 @@ package com.berry.animation.core {
             if (fullAssetData.isRenderFinish) {
                 playCurrentPart();
             } else {
-                fullAssetData.dispatcher.setEventListener(true, AssetDataEvents.COMPLETE_RENDER, playCurrentPart);
+                fullAssetData.completeRenderPromise.callbackRegister(playCurrentPart);
             }
         }
 
