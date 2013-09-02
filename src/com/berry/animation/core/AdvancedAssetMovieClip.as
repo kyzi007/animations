@@ -33,6 +33,11 @@ package com.berry.animation.core {
         private var _lastPreset:AnimationPart;
         private var _pauseAction:Action;
 
+        public function get isActive():Boolean
+        {
+            return _view && _view.assetData && _view.assetData.isRenderFinish
+        }
+
         public function playAnimationSet(animationModel:AnimationModel):void {
             _animationModel = animationModel;
             _loopCount = _animationModel.loopCount;

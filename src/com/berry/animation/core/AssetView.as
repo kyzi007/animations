@@ -113,8 +113,7 @@ package com.berry.animation.core {
         }
 
         public function hitTest(x:Number, y:Number):Boolean {
-            // TODO effect
-            return _main.hitTest(x, y);
+            return _main.isActive ? _main.hitTest(x, y) : _preloader && _preloader.visible;
         }
 
         public function applyFilter(value:ColorMatrix):void {
