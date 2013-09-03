@@ -12,11 +12,10 @@ package com.berry.animation.library {
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
-    import org.dzyga.events.Promise;
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
 
-    ;
 
     public class AssetData {
         public function AssetData(query:AssetDataGetQuery = null) {
