@@ -1,5 +1,5 @@
 package com.berry.animation.test {
-    import com.berry.animation.core.AssetViewEvents;
+
     import com.berry.animation.data.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;

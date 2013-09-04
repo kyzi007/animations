@@ -470,7 +470,6 @@ package com.berry.animation.core {
 
         public function set animationSpeed(value:Number):void {
             _main.speed = value;
-            _shadow.speed = value;
             for each (var effect:AdvancedAssetMovieClip in _effects) {
                 effect.speed = value;
             }

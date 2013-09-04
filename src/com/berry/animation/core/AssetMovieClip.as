@@ -8,9 +8,9 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
-    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
+    import org.dzyga.callbacks.Promise;
 
     public class AssetMovieClip extends AssetSprite {
 

@@ -74,11 +74,11 @@ package com.berry.animation.library {
                             _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
                         }
                         if (!(animationParts[0] is String) && animationParts[0] is AnimationPart && AnimationPart(animationParts[0]).isEffect) {
-                            var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-                            animationDataAdvanced.step = step;
-                            animationDataAdvanced.setPartList(animationParts);
-                            animationDataAdvanced.shotName = AnimationPart(animationParts[0]).fullName.split('_state')[0];
-                            _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
+                            var animationDataAdvanced2:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
+                            animationDataAdvanced2.step = step;
+                            animationDataAdvanced2.setPartList(animationParts);
+                            animationDataAdvanced2.shotName = AnimationPart(animationParts[0]).fullName.split('_state')[0];
+                            _effectCache[assetName + animationName + step][animationDataAdvanced2.shotName] = animationDataAdvanced2;
                         }
                     }
                 }

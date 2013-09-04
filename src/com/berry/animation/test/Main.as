@@ -1,7 +1,8 @@
 package com.berry.animation.test {
     import animation.MidnightAssetLibrary;
 
-    import com.berry.animation.core.AssetViewEvents;
+    import com.berry.animation.core.AssetView;
+
     import com.berry.animation.data.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
@@ -34,7 +35,7 @@ package com.berry.animation.test {
                 //asset = new MyGameObjectView("building_farmhouse", "building_farmhouse");
                 //asset = new MyGameObjectView("building_alchemist", "building_alchemist");
                 //asset = new MyGameObjectView("building_smithy", "building_smithy");
-                asset.dispatcher.setEventListener(true, AssetViewEvents.ON_UPDATE_BOUNDS, updateBounds);
+                asset.boundsUpdatePromise.callbackRegister(updateBounds)
                 asset.stepFrame = 1;
                 asset.animationLibrary = animLib;
                 asset.assetLibrary = assetLib;
@@ -59,7 +60,7 @@ package com.berry.animation.test {
             });
         }
 
-        private function updateBounds(e:*):void {
+        private function updateBounds(data:AssetView):void {
             trace('UPDATE')
         }
 

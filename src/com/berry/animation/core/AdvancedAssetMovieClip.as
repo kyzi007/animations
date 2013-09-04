@@ -6,9 +6,9 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetLibrary;
 
     import org.ColorMatrix;
-    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.geom.Rect;
 
     public class AdvancedAssetMovieClip {
