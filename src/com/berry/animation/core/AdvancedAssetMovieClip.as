@@ -171,12 +171,12 @@ package com.berry.animation.core {
                 }
                 if (_loopCount > 0 || _loopList) {
                     _animationModel.nextPresetRandom();
-                    EffectViewer.log(_view.name + ' next ON_ANIMATION_FINISH');
+                    //EffectViewer.log(_view.name + ' next ON_ANIMATION_FINISH');
                     playPart(_animationModel.currentPart());
                 }
             } else {
                 _animationModel.nextPresetRandom();
-                EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
+                //EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
                 playPart(_animationModel.currentPart());
             }
             _isFinishToEndCurrent = _animationModel.isListEnd;
