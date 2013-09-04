@@ -41,7 +41,7 @@ package com.berry.animation.draw {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
             //trace("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation)
             _source.gotoAndStop(_query.step);
-            trace(_query.step);
+            //trace(_query.step);
 
             _timline = _assetData.frames;
 
@@ -66,7 +66,7 @@ package com.berry.animation.draw {
                 falled();
                 return true;
             }
-            trace('draw '+ _query.name + " " + _query.animation)
+            //trace('draw '+ _query.name + " " + _query.animation)
 
             _render.gotoAndStop(frame + 1);
             var bitmap:BitmapData;
