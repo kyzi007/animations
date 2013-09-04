@@ -448,7 +448,7 @@ package com.berry.animation.core {
         }
 
         public function get rotation():RotateEnum {
-            return _data.rotation.value;
+            return _data.rotation;
         }
 
         public function set rotation(value:RotateEnum):void {
