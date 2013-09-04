@@ -8,8 +8,7 @@ package com.berry.animation.core {
     import flash.display.Sprite;
     import flash.geom.Point;
 
-    import org.dzyga.events.Promise;
-
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.geom.Rect;
 
     public class AssetSprite extends Sprite {

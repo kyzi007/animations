@@ -16,7 +16,7 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
-    import org.dzyga.events.Promise;
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.geom.Rect;
 
     public class AssetView {
