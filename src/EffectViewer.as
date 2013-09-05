@@ -61,7 +61,7 @@ package {
             //return;
             for each (var string:String in strings) {
                 if (_log) _log.appendText(string + ' ');
-                trace(string);
+                //trace(string);
             }
             if (_log) _log.appendText('\n');
         }

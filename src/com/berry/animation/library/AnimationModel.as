@@ -47,32 +47,6 @@ package com.berry.animation.library {
             return _currentPreset;
         }
 
-        public function incrementState():void {
-            _state++;
-            if (!_partList[_state]) {
-                loopEnumeration();
-            }
-        }
-
-        public function incrementSubState():void {
-            if (isSubStates) {
-                _subState++;
-                if (!_partList[_state][_subState]) {
-                    loopEnumeration();
-                }
-            }
-        }
-
-        public function nextPreset():void {
-            if (!isState) {
-                loopEnumeration();
-                return;
-            }
-            incrementState();
-            incrementSubState();
-            _updateCurrent = true;
-        }
-
         public function nextPresetRandom():void {
             if (!isState) {
                 loopEnumeration();
@@ -86,14 +60,19 @@ package com.berry.animation.library {
                     _state++;
                     if (isSubStates) {
                         _completeSubStates[_state]++;
-                        _subState = int(subStateCount * Math.random());
+                        _subState = Math.floor(subStateCount * Math.random());
                     }
                 } else {
                     _completeSubStates[_state]++;
-                    _subState = int(subStateCount * Math.random());
+                    _subState = Math.floor(subStateCount * Math.random());
                 }
             } else {
+                _subState = 0;
                 _state++;
+            }
+
+            if(_subState == 2 && _state == 2){
+                trace()
             }
 
             if (!_partList[_state]) {
@@ -129,16 +108,6 @@ package com.berry.animation.library {
             return this;
         }
 
-        private function incrementSubStateRandom():void {
-            if (isSubStates) {
-                _subState = int(subStateCount * Math.random());
-            }
-            if (!_completeSubStates[_subState]) {
-                _completeSubStates[_subState] = 0;
-            }
-            _completeSubStates[_subState]++;
-        }
-
         private function loopEnumeration():void {
             _subState = 0;
             _state = 0;
@@ -150,6 +119,9 @@ package com.berry.animation.library {
         }
 
         public function get fullPartAnimationName():String {
+            if (_subState == 2 && _state == 2) {
+                trace()
+            }
             var name:String = _shotName;
             if (isState) {
                 name += '_state_' + _state;
@@ -222,7 +194,9 @@ package com.berry.animation.library {
 
         public function get subState():int {return _subState;}
 
-        public function set subState(value:int):void {_subState = value;}
+        public function set subState(value:int):void {
+            _subState = value;
+        }
 
         public function get totalFrame():uint {return currentPart().totalFrames;}
 
