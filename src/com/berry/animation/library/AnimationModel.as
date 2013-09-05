@@ -71,10 +71,6 @@ package com.berry.animation.library {
                 _state++;
             }
 
-            if(_subState == 2 && _state == 2){
-                trace()
-            }
-
             if (!_partList[_state]) {
                 loopEnumeration();
             }
