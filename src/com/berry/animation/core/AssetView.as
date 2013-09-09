@@ -95,6 +95,8 @@ package com.berry.animation.core {
             _mainSprite.addChild(_preloader);
             _mainSprite.addChild(_main.view);
 
+            preloaderShow();
+
             _assetLibrary.loadData(name, _data.sourceType, onLoadCallback);
         }
 

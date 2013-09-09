@@ -205,7 +205,7 @@ package com.berry.animation.library {
             return render;
         }
 
-        protected function getUrl(name:String, type:String):String {
+        public function getUrl(name:String, type:String):String {
             return _baseUrl + name + '.' + type;
         }
 
@@ -287,6 +287,7 @@ class SwfLoader extends Loader {
         _context.checkPolicyFile = true;
         _context.allowCodeImport = true;
         _context.securityDomain = SecurityDomain.currentDomain;
+        CONFIG::debug{ _context.securityDomain = null; }
 
         contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
         contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);

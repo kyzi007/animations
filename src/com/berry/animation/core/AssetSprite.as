@@ -113,5 +113,9 @@ package com.berry.animation.core {
         public function get rect():Rect {
             return _rect;
         }
+
+        public function get bitmap():Bitmap {
+            return _bitmap;
+        }
     }
 }
