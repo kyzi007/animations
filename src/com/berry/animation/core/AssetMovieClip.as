@@ -12,8 +12,6 @@ package com.berry.animation.core {
     import org.dzyga.events.EnterFrame;
     import org.dzyga.callbacks.Promise;
 
-    import tests.DebugPromise;
-
     public class AssetMovieClip extends AssetSprite {
 
         public function AssetMovieClip(name:String) {
