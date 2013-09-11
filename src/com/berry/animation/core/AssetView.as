@@ -34,7 +34,7 @@ package com.berry.animation.core {
 
         // Promises
         public var boundsUpdatePromise:Promise = new Promise();
-        public var renderFinishPromise:Promise = new Promise();
+        public var cacheAnimationFinishPromise:Promise = new Promise();
         public var loadCompletePromise:Promise = new Promise();
         protected var _isInit:Boolean;
         protected var _data:AssetModel = new AssetModel();
@@ -195,7 +195,7 @@ package com.berry.animation.core {
             if (_renderListBeforePlay) {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
-                    renderFinishPromise.resolve();
+                    cacheAnimationFinishPromise.resolve();
                     preloaderHide();
 
                     if (visible) {
