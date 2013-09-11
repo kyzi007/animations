@@ -133,7 +133,7 @@ package com.berry.animation.core {
         protected function preloaderHide():void {
             if (!_renderListBeforePlay && _preloader && _preloader.assetData) {
                 // trace(id, 'hidePreloader')
-                _main.renderPromise.callbackRemove(preloaderHide);
+                _main.renderCompletePromise.callbackRemove(preloaderHide);
                 _preloader.assetData.completeRenderPromise.callbackRegister(onPreloaderRender);
                 _preloader.stop(true);
                 _preloader.assetData = null;
@@ -300,7 +300,7 @@ package com.berry.animation.core {
             try {
                 if (!_data.vectorMode && _preloaderMode) {
                     //trace(id,  'preloaderShow')
-                    _main.renderPromise.callbackRegister(preloaderHide);
+                    _main.renderCompletePromise.callbackRegister(preloaderHide);
                     _preloader.assetData = _assetLibrary.getPreloader(name);
                     _preloader.y = -50;
                     if (!_preloader.assetData) {

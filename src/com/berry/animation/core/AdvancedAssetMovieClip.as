@@ -20,7 +20,7 @@ package com.berry.animation.core {
         public var loadOneFrameFirst:Boolean = false;
         public var assetLibrary:AssetLibrary;
         public var _view:AssetMovieClip;
-        public var renderPromise:Promise = new Promise();
+        public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
         public var animationFinishPromise:Promise = new Promise();
         private var _data:AssetModel;
@@ -146,7 +146,7 @@ package com.berry.animation.core {
         }
 
         private function newAssetRendered(e:* = null):void {
-            renderPromise.resolve();
+            renderCompletePromise.resolve();
             if (_view.loop && _view.isPlay) {
                 // wait end animation
                 _view.loop = false;
