@@ -134,11 +134,12 @@ package com.berry.animation.core {
             if (!_renderListBeforePlay && _preloader && _preloader.assetData) {
                 // trace(id, 'hidePreloader')
                 _main.renderCompletePromise.callbackRemove(preloaderHide);
+                boundsUpdatePromise.callbackRemove(preloaderHide);
                 _preloader.assetData.completeRenderPromise.callbackRegister(onPreloaderRender);
                 _preloader.stop(true);
                 _preloader.assetData = null;
-                _preloader.visible = false;
-                _preloader = null;
+                _preloader.setVisible(false);
+                //_preloader = null;
             }
         }
 
@@ -296,25 +297,22 @@ package com.berry.animation.core {
         }
 
         private function preloaderShow():void {
-            // TODO: check clean up
-            try {
-                if (!_data.vectorMode && _preloaderMode) {
-                    //trace(id,  'preloaderShow')
-                    _main.renderCompletePromise.callbackRegister(preloaderHide);
-                    _preloader.assetData = _assetLibrary.getPreloader(name);
-                    _preloader.y = -50;
-                    if (!_preloader.assetData) {
-                        _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
-                    }
-                    else if (!_preloader.assetData.isRenderFinish) {
-                        _preloader.assetData.completeRenderPromise.callbackRegister(onPreloaderRender);
-                    }
-                    else {
-                        _preloader.gotoAndPlay(0);
-                    }
+            if (!_data.vectorMode && _preloaderMode) {
+                //trace(id,  'preloaderShow')
+                _main.renderCompletePromise.callbackRegister(preloaderHide);
+                boundsUpdatePromise.callbackRegister(preloaderHide);
+                _preloader.assetData = _assetLibrary.getPreloader(name);
+                _preloader.y = -50;
+                _preloader.setVisible(_data.visible);
+                if (!_preloader.assetData) {
+                    _assetLibrary.dispatcher.setEventListener(true, AssetLibrary.ON_INIT, onPreloaderRender);
                 }
-            } catch (e:Error) {
-                CONFIG::debug{ KLog.log("AssetView : preloaderShow  " + e.getStackTrace(), KLog.CRITICAL); }
+                else if (!_preloader.assetData.isRenderFinish) {
+                    _preloader.assetData.completeRenderPromise.callbackRegister(onPreloaderRender);
+                }
+                else {
+                    _preloader.gotoAndPlay(0);
+                }
             }
         }
 
@@ -385,13 +383,13 @@ package com.berry.animation.core {
         public function set visible(value:Boolean):void {
             if (_data.visible != value) {
                 _data.visible = value;
-                _main.visible = value;
-                _shadow.visible = value;
+                _main.setVisible(value);
+                _shadow.setVisible(value);
                 if (_preloader) {
-                    _preloader.visible = value;
+                    _preloader.setVisible(value);
                 }
                 for each (var effect:AdvancedAssetMovieClip in _effects) {
-                    effect.visible = value;
+                    effect.setVisible(value);
                 }
                 if (value) {
                     if (_assetLibrary.loaded(_data.name)) {

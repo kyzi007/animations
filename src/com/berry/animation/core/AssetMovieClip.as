@@ -207,6 +207,8 @@ package com.berry.animation.core {
             _assetData = value;
             if (_assetData) {
                 _assetData.useCount++;
+            } else {
+                bitmap.bitmapData = null;
             }
         }
 

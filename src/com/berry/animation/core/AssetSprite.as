@@ -26,6 +26,11 @@ package com.berry.animation.core {
         private var _currentFrameData:AssetFrame;
         private var _lastMovie:MovieClip;
 
+        public function setVisible(value:Boolean):void
+        {
+            super.visible = value;
+        }
+
         public function cleanUp():void {
             _currentFrameData = null;
             _bitmap.bitmapData = null;
@@ -62,7 +67,7 @@ package com.berry.animation.core {
          * @param isUpdateBounds
          */
         protected function draw(target:*, isUpdateBounds:Boolean = false):void {
-            if (!visible && !isUpdateBounds || !_bitmap) return;
+            if (!super.visible && !isUpdateBounds || !_bitmap) return;
 
             if (target is AssetFrame) {
                 _currentFrameData = target;
@@ -107,7 +112,8 @@ package com.berry.animation.core {
         }
 
         override public function set visible(value:Boolean):void {
-            super.visible = value;
+            trace()
+            //super.visible = value;
         }
 
         public function get rect():Rect {

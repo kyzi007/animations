@@ -186,8 +186,8 @@ package com.berry.animation.core {
             return _view.visible;
         }
 
-        public function set visible(value:Boolean):void {
-            _view.visible = value;
+        public function setVisible(value:Boolean):void {
+            _view.setVisible(value);
         }
 
         public function get bounds():Rect {
