@@ -130,7 +130,7 @@ package com.berry.animation.core {
             _data.animationModel ? _data.animationModel.totalFrame : 0;
         }
 
-        protected function preloaderHide():void {
+        protected function preloaderHide(...params):void {
             if (!_renderListBeforePlay && _preloader && _preloader.assetData) {
                 // trace(id, 'hidePreloader')
                 _main.renderCompletePromise.callbackRemove(preloaderHide);
