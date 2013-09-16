@@ -133,7 +133,7 @@ package com.berry.animation.library {
             var source:DisplayObject = _doHash[name];
             if (!source) {
                 if (_classHash[name] is Bitmap) {
-                    source = _classHash[name]
+                    source = _doHash[name] || _classHash[name];// fix me
                 } else {
                     source = new _classHash[name]();
                 }
