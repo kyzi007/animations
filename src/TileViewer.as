@@ -58,6 +58,7 @@ package {
         private var _animLib:AnimationLibrary = new AnimationLibrary();
         private var _asset:AssetView;
         private var _f:FileReference;
+        private var i:int;
 
         public static function log(...strings):void {
             //return;
@@ -82,6 +83,25 @@ package {
             return tf;
         }
 
+        private function place(i2:int, i22:int):void {
+            _asset = new TileView(_name, _name);
+            _asset.animationLibrary = _animLib;
+            _asset.assetLibrary = _assetLib;
+            _asset.cache = false;
+            _asset.effectMode = true;
+            _asset.preloaderMode = false;
+            _asset.stepFrame = int(_frame.text);
+            _asset.init();
+
+            _asset.mainSprite.x = 600;
+            _asset.mainSprite.y = 600;
+            _asset.visible = true;
+
+            addChildAt(_asset.mainSprite, 0);
+            _asset.mainSprite.x = i2;
+            _asset.mainSprite.y = i22;
+        }
+
         private function onChangeFrame(event:Event):void {
             if (_asset) {
                 _asset.stepFrame = int(_frame.text);
@@ -101,6 +121,7 @@ package {
         }
 
         private function onLoad(event:Event):void {
+            i++;
             _name = _f.name.replace('.swf', '');
             var loader:Loader = new Loader();
             loader.contentLoaderInfo.addEventListener(Event.INIT, onLoadMc, false, 0, true);
@@ -114,33 +135,19 @@ package {
             _f = null;
             var loaderInfo:LoaderInfo = (event.target as LoaderInfo);
             _assetLib.registerAsset(loaderInfo.content, _name, loaderInfo);
-
-            for (var i:int = 0; i < 10; i++) {
-                for (var j:int = 0; j < 3; j++) {
-                    place(i*45, j*90)
-                }
-
+            i++;
+            for (var j:int = 0; j < 8; j++) {
+                place(j * 95 + 100, i * 22)
+            }
+            i++;
+            for (var j:int = 0; j < 8; j++) {
+                place(j * 95 + 100 +47, i * 22)
+            }
+            i++;
+            for (var j:int = 0; j < 8; j++) {
+                place(j * 95 + 100, i * 22)
             }
 
-        }
-
-        private function place(i2:int, i22:int):void {
-            _asset = new TileView(_name, _name);
-            _asset.animationLibrary = _animLib;
-            _asset.assetLibrary = _assetLib;
-            _asset.cache = false;
-            _asset.effectMode = true;
-            _asset.preloaderMode = false;
-            _asset.stepFrame = int(_frame.text);
-            _asset.init();
-
-            _asset.mainSprite.x = 600;
-            _asset.mainSprite.y = 600;
-            _asset.visible = true;
-
-            addChildAt(_asset.mainSprite, 0);
-            _asset.mainSprite.x = i2;
-            _asset.mainSprite.y = i22;
         }
 
     }
