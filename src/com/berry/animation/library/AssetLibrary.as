@@ -67,7 +67,7 @@ package com.berry.animation.library {
 
         public function registerAsset(data:*, assetName:String, loaderInfo:LoaderInfo):void {
             if (data is Bitmap) {
-                _doHash[data] = data;
+                _doHash[assetName] = data;
             } else {
                 _classHash[assetName] = data;
                 if(loaderInfo){
@@ -106,7 +106,7 @@ package com.berry.animation.library {
         }
 
         public function loadData(name:String, type:SourceTypeEnum, finishCallback:Function):void {
-            var data:* = _classHash[name];
+            var data:* = _classHash[name] || _doHash[name];
 
             if (!data) {
                 data = new SwfLoader(name, getUrl(name, type.value), null);
