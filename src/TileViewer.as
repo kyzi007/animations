@@ -137,15 +137,15 @@ package {
             _assetLib.registerAsset(loaderInfo.content, _name, loaderInfo);
             i++;
             for (var j:int = 0; j < 8; j++) {
-                place(j * 95 + 100, i * 22)
+                place(j * 95 + 100, i * 23)
             }
             i++;
             for (var j:int = 0; j < 8; j++) {
-                place(j * 95 + 100 +47, i * 22)
+                place(j * 95 + 100 +47, i * 23)
             }
             i++;
             for (var j:int = 0; j < 8; j++) {
-                place(j * 95 + 100, i * 22)
+                place(j * 95 + 100, i * 23)
             }
 
         }
