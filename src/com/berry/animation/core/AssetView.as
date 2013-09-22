@@ -41,6 +41,13 @@ package com.berry.animation.core {
         protected var _shadow:AssetMovieClip = new AssetMovieClip("shadow");
         protected var _effects:Array = [];
         protected var _preloader:AssetMovieClip = new AssetMovieClip("preloader");
+        protected var _assetLibrary:AssetLibrary;
+        protected var _animationLibrary:AnimationLibrary;
+        protected var _main:AdvancedAssetMovieClip; // advanced animation control (play preset list)
+        protected var _renderListBeforePlay:Array;
+        protected var _renderListFromMainController:Array;
+        protected var _mainSprite:Sprite = new Sprite();
+        protected var _preloaderMode:Boolean = true;
 
         public function playByName(animation:String):void {
             _data.animation = animation;
@@ -316,27 +323,19 @@ package com.berry.animation.core {
             }
         }
 
-        protected var _assetLibrary:AssetLibrary;
-
         public function set assetLibrary(value:AssetLibrary):void {
             failIfInit();
             _assetLibrary = value;
         }
-
-        protected var _animationLibrary:AnimationLibrary;
 
         public function set animationLibrary(value:AnimationLibrary):void {
             failIfInit();
             _animationLibrary = value;
         }
 
-        protected var _main:AdvancedAssetMovieClip; // advanced animation control (play preset list)
-
         public function get main():AdvancedAssetMovieClip {
             return _main;
         }
-
-        protected var _renderListBeforePlay:Array;
 
         /**
          * full names (idle_state_0, idle_state_1_0)
@@ -347,20 +346,14 @@ package com.berry.animation.core {
             _renderListBeforePlay = value;
         }
 
-        protected var _renderListFromMainController:Array;
-
         public function set renderListFromMainController(value:Array):void {
             failIfInit();
             _renderListFromMainController = value;
         }
 
-        protected var _mainSprite:Sprite = new Sprite();
-
         public function get mainSprite():DisplayObjectContainer {
             return _mainSprite;
         }
-
-        protected var _preloaderMode:Boolean = true;
 
         public function set preloaderMode(preloaderMode:Boolean):void {_preloaderMode = preloaderMode;}
 
