@@ -2,7 +2,7 @@ package com.berry.animation.test {
     import animation.MidnightAssetLibrary;
     import animation.MidnightAssetView;
 
-    import com.berry.animation.data.AnimationsList;
+    import animation.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
 
     import flash.display.Sprite;

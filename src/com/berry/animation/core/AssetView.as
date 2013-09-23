@@ -1,5 +1,5 @@
 package com.berry.animation.core {
-    import com.berry.animation.data.AnimationsList;
+    import animation.AnimationsList;
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.data.SourceTypeEnum;
     import com.berry.animation.library.AnimationLibrary;
@@ -262,7 +262,7 @@ package com.berry.animation.core {
             } else if (_data.animation) {
                 playByName(_data.animation);
             } else {
-                playByName(AnimationsList.IDLE)
+                playByName(_animationLibrary.defaultAnimation);
             }
         }
 

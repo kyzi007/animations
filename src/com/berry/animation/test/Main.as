@@ -3,7 +3,7 @@ package com.berry.animation.test {
 
     import com.berry.animation.core.AssetView;
 
-    import com.berry.animation.data.AnimationsList;
+    import animation.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 
