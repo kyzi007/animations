@@ -47,7 +47,7 @@ package {
             _log.y = 50;
             addChild(_log);
 
-        }
+        } 
 
         private static var _log:TextField;
         private var _frame:TextField;
