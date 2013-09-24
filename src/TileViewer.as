@@ -4,7 +4,7 @@ package {
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 
-    import common.view.components.TileView;
+    import common.objects.view.components.TileView;
 
     import flash.display.Loader;
     import flash.display.LoaderInfo;

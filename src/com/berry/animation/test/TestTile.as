@@ -3,7 +3,7 @@ package com.berry.animation.test {
     import com.berry.animation.library.AssetLibrary;
     import com.berry.animation.library.MidnightAssetLibrary;
 
-    import common.view.components.TileView;
+    import common.objects.view.components.TileView;
 
     import flash.display.Sprite;
 
