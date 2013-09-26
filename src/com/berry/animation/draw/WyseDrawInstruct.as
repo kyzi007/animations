@@ -34,7 +34,7 @@ package com.berry.animation.draw {
             super.finish();
         }
 
-        override public function init():void {
+        override public function init(...params):void {
             super.init();
             _time = getTimer();
             //Mem.start();

@@ -191,7 +191,7 @@ package com.berry.animation.core {
         }
 
         public function get bounds():Rect {
-            return _view.rect;
+            return _view.bounds;
         }
 
         public function set speed(speed:Number):void {_view.speed = speed;}

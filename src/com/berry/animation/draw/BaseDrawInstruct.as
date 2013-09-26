@@ -9,15 +9,12 @@ package com.berry.animation.draw {
 
     import org.dzyga.events.IInstruct;
 
-    ;
-
     public class BaseDrawInstruct implements IInstruct {
 
         public function BaseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:*) {
             _assetData = assetData;
             _query = config;
             _source = source;
-            //init();
         }
 
         public static const FINISH:String = 'finish';
@@ -57,7 +54,7 @@ package com.berry.animation.draw {
         /**
          * parse clip
          */
-        public function init():void {
+        public function init(...params):void {
             _inited = true;
         }
 

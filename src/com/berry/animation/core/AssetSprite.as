@@ -22,7 +22,7 @@ package com.berry.animation.core {
         public var boundsUpdatePromise:Promise = new Promise();
         protected var _bitmap:Bitmap = new Bitmap();
         protected var _assetName:String;
-        private var _rect:Rect = null;
+        private var _bounds:Rect = null;
         private var _currentFrameData:AssetFrame;
         private var _lastMovie:MovieClip;
 
@@ -35,7 +35,7 @@ package com.berry.animation.core {
             _currentFrameData = null;
             _bitmap.bitmapData = null;
             _bitmap = null;
-            _rect = null;
+            _bounds = null;
         }
 
         public function hitTest(x:Number, y:Number):Boolean {
@@ -86,15 +86,15 @@ package com.berry.animation.core {
                 }
             }
 
-            if ((isUpdateBounds || !_rect) && target is AssetFrame) {
-                if (!_rect) _rect = new Rect();
-                if (_rect.x != _currentFrameData.x
-                        || _rect.y != _currentFrameData.y
-                        || _rect.width != _currentFrameData.bitmap.width
-                        || _rect.height != _currentFrameData.bitmap.height
+            if ((isUpdateBounds || !_bounds) && target is AssetFrame) {
+                if (!_bounds) _bounds = new Rect();
+                if (_bounds.x != _currentFrameData.x
+                        || _bounds.y != _currentFrameData.y
+                        || _bounds.width != _currentFrameData.bitmap.width
+                        || _bounds.height != _currentFrameData.bitmap.height
                         ) {
 
-                    _rect.fill(
+                    _bounds.fill(
                             _currentFrameData.x,
                             _currentFrameData.y,
                             _currentFrameData.bitmap.width,
@@ -104,9 +104,9 @@ package com.berry.animation.core {
                 }
             }
 
-            if ((isUpdateBounds || !_rect) && target is MovieClip) {
-                if (!_rect) _rect = new Rect();
-                _rect.match(getBounds(this));
+            if ((isUpdateBounds || !_bounds) && target is MovieClip) {
+                if (!_bounds) _bounds = new Rect();
+                _bounds.match(getBounds(this));
                 boundsUpdatePromise.resolve(this);
             }
         }
@@ -116,8 +116,8 @@ package com.berry.animation.core {
             //super.visible = value;
         }
 
-        public function get rect():Rect {
-            return _rect;
+        public function get bounds():Rect {
+            return _bounds;
         }
 
         public function get bitmap():Bitmap {
