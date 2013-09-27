@@ -48,6 +48,24 @@ package com.berry.animation.library {
             return res;
         }
 
+        public function getFullNames(assetName:String,list:Array):Array {
+            var tempArray:Array;
+            if (list) {
+                tempArray = []
+                for each (var animationShotName:String in list) {
+                    var animationModel:AnimationModel = getAnimationModel(assetName, animationShotName);
+                    if (animationModel) {
+                        //while (!animationModel.isListEnd) {
+                        tempArray.push(animationModel.fullPartAnimationName);
+                        // animationModel.nextPreset();
+                        // }
+                    }
+                }
+                if (tempArray.length == 0) tempArray = null;
+            }
+            return tempArray;
+        }
+
         public function getAnimationEffects(assetName:String, animationName:String, step:uint = 1):Object {
             if (_effectCache[assetName + animationName + step]) {
                 return _effectCache[assetName + animationName + step];
