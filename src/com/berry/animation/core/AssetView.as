@@ -21,7 +21,7 @@ package com.berry.animation.core {
     public class AssetView {
         public function AssetView(id:String, name:String) {
             _data.id = id;
-            _data.name = name;
+            _data.assetName = name;
             _main = new AdvancedAssetMovieClip(name);
         }
 
@@ -155,9 +155,9 @@ package com.berry.animation.core {
             }
             _effects = [];
             if (_data.rotation.value == RotateEnum.NONE) {
-                var effectModels:Object = _animationLibrary.getAnimationEffects(_data.name, _data.animationModel.currentPart().fullName, _data.stepFrame);
+                var effectModels:Object = _animationLibrary.getAnimationEffects(_data.assetName, _data.animationModel.currentPart().fullName, _data.stepFrame);
                 for each (var animationModel:AnimationModel in effectModels) {
-                    effect = new AdvancedAssetMovieClip(_data.name + 'effect');
+                    effect = new AdvancedAssetMovieClip(_data.assetName + 'effect');
                     effect.assetLibrary = _assetLibrary;
                     effect.data = _data;
                     effect.fullAnimation = _data.effectMode;
@@ -392,7 +392,7 @@ package com.berry.animation.core {
                     effect.setVisible(value);
                 }
                 if (value) {
-                    if (_assetLibrary.loaded(_data.name)) {
+                    if (_assetLibrary.loaded(_data.assetName)) {
                         play();
                     } else {
                         preloaderShow();
@@ -458,7 +458,7 @@ package com.berry.animation.core {
         }
 
         public function get name():String {
-            return _data.name;
+            return _data.assetName;
         }
 
         public function set text(value:String):void {

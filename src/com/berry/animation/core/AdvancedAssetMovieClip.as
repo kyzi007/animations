@@ -64,6 +64,7 @@ package com.berry.animation.core {
             //TODO
         }
 
+        // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
@@ -183,7 +184,7 @@ package com.berry.animation.core {
         }
 
         public function get visible():Boolean {
-            return _view.visible;
+            return _view.view.visible;
         }
 
         public function setVisible(value:Boolean):void {
@@ -198,7 +199,7 @@ package com.berry.animation.core {
 
         public function set data(value:AssetModel):void {
             _data = value;
-            _view.name = _data.name;
+            _view.name = _data.assetName;
         }
 
         public function get view():AssetMovieClip {

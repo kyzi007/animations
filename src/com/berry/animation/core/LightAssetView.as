@@ -25,7 +25,7 @@ package com.berry.animation.core {
 
         public function LightAssetView(id:String, name:String) {
             _data.id = id;
-            _data.name = name;
+            _data.assetName = name;
             _main = new AssetMovieClip(name);
         }
 
@@ -243,7 +243,7 @@ package com.berry.animation.core {
                     _preloader.setVisible(value);
                 }
                 if (value) {
-                    if (_assetLibrary.loaded(_data.name)) {
+                    if (_assetLibrary.loaded(_data.assetName)) {
                         play();
                     } else {
                         preloaderShow();
@@ -287,7 +287,7 @@ package com.berry.animation.core {
         }
 
         public function get name():String {
-            return _data.name;
+            return _data.assetName;
         }
 
         public function set text(value:String):void {
