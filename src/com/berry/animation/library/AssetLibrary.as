@@ -153,11 +153,12 @@ package com.berry.animation.library {
             delete _doHash[name];
         }
 
-        public function getAssetData(query:AssetDataGetQuery):AssetData {
+        public function getAssetData(query:AssetDataGetQuery, renderProps:Array = null):AssetData {
             var assetData:AssetData = findAssetData(query);
 
             if (!assetData || assetData.isDestroyed) {
                 assetData = new AssetData();
+                assetData.renderInitParams = renderProps;
                 assetData.getQuery = query;
 
                 //classic render

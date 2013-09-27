@@ -1,5 +1,6 @@
 package com.berry.animation.library {
-    import com.berry.animation.data.AnimationsList;
+    import animation.AnimationsList;
+
     import com.berry.animation.data.RotateEnum;
 
     import flash.display.Bitmap;
@@ -13,13 +14,12 @@ package com.berry.animation.library {
         public function AnimationLibrary() {
         }
 
+        public var tileWidth:int = 90;
+        public var tileHeight:int = 45;
+        public var defaultAnimation:String = 'idle';
         private var _animationPresetList:Object = {};
         private var _effectCache:Object = {};
-        public var tileWidth:int = 45;
-        public var tileHeight:int = 90;
         private var _partMode:Array = [];
-
-
 
         public function getAnimationModel(assetName:String, animationName:String, step:uint = 1):AnimationModel {
             var animationModel:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
@@ -55,7 +55,7 @@ package com.berry.animation.library {
                 _effectCache[assetName + animationName + step] = {};
                 var assetPresets:Object = _animationPresetList [assetName] ? _animationPresetList [assetName][step] : null;
                 for each (var animationParts:Object in assetPresets) {
-                    if(animationParts is AnimationPart){
+                    if (animationParts is AnimationPart) {
                         // плоская структура
                         if (animationParts.isEffect && animationParts.effectStates.indexOf(animationName) != -1) {
                             var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
@@ -66,7 +66,7 @@ package com.berry.animation.library {
                         }
                     } else {
                         // TODO: временное
-                        if(!(animationParts[0] is String) && animationParts[0][0] && AnimationPart(animationParts[0][0]).isEffect){
+                        if (!(animationParts[0] is String) && animationParts[0][0] && AnimationPart(animationParts[0][0]).isEffect) {
                             var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
                             animationDataAdvanced.step = step;
                             animationDataAdvanced.setPartList(animationParts);
@@ -93,7 +93,7 @@ package com.berry.animation.library {
 
                 var data:Object = source['animationData'];
 
-                if(data && data.partMode){
+                if (data && data.partMode) {
                     _partMode[assetName] = true;
                     var result:Object = {};
                     result.animations = [];
@@ -110,15 +110,14 @@ package com.berry.animation.library {
                         _animationPresetList[assetName][frame] = parseClipFrame(clipData, source, assetName);
                     }
                 }
-            } else if(source is Bitmap){
+            } else if (source is Bitmap) {
                 // force create animation structure
-                _animationPresetList[assetName][1] = {animations:[AnimationsList.IDLE]}
-                _animationPresetList[assetName][1][AnimationsList.IDLE] = new AnimationPart(int(source.width / tileHeight), RotateEnum.NONE);
+                _animationPresetList[assetName][1] = {animations: [defaultAnimation]}
+                _animationPresetList[assetName][1][defaultAnimation] = new AnimationPart(int(source.width / tileWidth), RotateEnum.NONE);
             }
         }
 
-        public function getIsComplexAsset(assetName:String):Boolean
-        {
+        public function getIsComplexAsset(assetName:String):Boolean {
             return _partMode[assetName];
         }
 

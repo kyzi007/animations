@@ -8,9 +8,9 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
-    import org.dzyga.callbacks.Promise;
 
     public class AssetMovieClip extends AssetSprite {
 
@@ -19,19 +19,15 @@ package com.berry.animation.core {
         }
 
         public var loopCount:int;
+        public var animationFinishPromise:Promise = new Promise();
         protected var _filter:ColorMatrix;
         protected var _currentFrame:uint = 0;
         protected var _drawPriority:int = 25;
-        private var _loop:Boolean = true;
-        private var _assetData:AssetData;
-        private var _speed:Number = 1;
         private var _frames:Vector.<AssetFrame>;
         private var _playAction:Action;
-        private var _onEnterFrame:Function;
         private var _lastFrame:int;
         private var _tempForFreeze:BitmapData;
         private var _clip:MovieClip;
-        public var animationFinishPromise:Promise = new Promise();
 
         public function applyFilter(filter:ColorMatrix):void {
             if (_filter) return;
@@ -71,13 +67,7 @@ package com.berry.animation.core {
                 return;
             }
 
-            if (!_assetData.mc) {
-                draw(_frames[_currentFrame], true);
-            } else {
-                _clip = _assetData.mc;
-                _clip.gotoAndStop(_currentFrame + 1);
-                draw(_clip, true);
-            }
+            draw(_frames[_currentFrame], true);
 
             makeFreeze();
 
@@ -96,17 +86,11 @@ package com.berry.animation.core {
             _currentFrame = frame;
             _frames = _assetData.frames;
 
-            if ( _frames.length == 0 && !_assetData.mc) {
+            if (_frames.length == 0 && !_assetData.mc) {
                 CONFIG::debug{ KLog.log("AssetMovieClip : gotoAndStop  " + _assetName + ' invalid animation - 0 frames', KLog.ERROR); }
                 return;
             }
-            if (!_assetData.mc) {
-                draw(_frames[_currentFrame], true);
-            } else {
-                _clip = _assetData.mc;
-                _clip.gotoAndStop(_currentFrame + 1);
-                draw(_clip, true);
-            }
+            draw(_frames[_currentFrame], true);
             makeFreeze();
         }
 
@@ -129,10 +113,10 @@ package com.berry.animation.core {
         private function makeFreeze():void {
             if (_filter) {
                 try {
-                    _tempForFreeze = _bitmap.bitmapData.clone();
-                    _bitmap.bitmapData = _tempForFreeze;
-                    _bitmap.bitmapData.applyFilter(_tempForFreeze, _bitmap.getBounds(_bitmap), _bitmap.getBounds(_bitmap).topLeft, _filter.filter);
-                    _bitmap.smoothing = true;
+                    _tempForFreeze = _view.bitmapData.clone();
+                    _view.bitmapData = _tempForFreeze;
+                    _view.bitmapData.applyFilter(_tempForFreeze, _view.getBounds(_view), _view.getBounds(_view).topLeft, _filter.filter);
+                    _view.smoothing = true;
                 } catch (err:Error) {
 
                 }
@@ -146,10 +130,9 @@ package com.berry.animation.core {
 
         private function incrementAndDrawFrame():void {
             var frame:uint = Math.floor(_currentFrame);
-            if (Math.floor(_currentFrame) >= totalFrames) {
+            if (frame >= totalFrames) {
                 if (!_loop) {
                     if (loopCount <= 1) {
-                        //clearAnimation();
                         finishAnimation();
                         return;
                     }
@@ -158,13 +141,8 @@ package com.berry.animation.core {
                 frame = _currentFrame = 0;
             }
 
-            if (!_assetData.mc) {
-                if(_frames.length > _currentFrame){
-                    draw(_frames[_currentFrame], false);
-                }
-            } else {
-                _clip.gotoAndStop(_currentFrame + 1);
-                draw(_clip, false);
+            if (_frames.length > frame) {
+                draw(_frames[frame], false);
             }
 
             makeFreeze();
@@ -173,28 +151,17 @@ package com.berry.animation.core {
             _currentFrame += _speed;
         }
 
-        public function get isPlay():Boolean {
-            return _playAction != null;
+        private var _loop:Boolean = true;
+
+        public function get loop():Boolean {
+            return _loop;
         }
 
-        public function get speed():Number {return _speed;}
-
-        public function set speed(speed:Number):void {
-            _speed = speed;
+        public function set loop(value:Boolean):void {
+            _loop = value;
         }
 
-        public function set onEnterFrame(value:Function):void {
-            _onEnterFrame = value;
-        }
-
-        public function get totalFrames():Number {
-            if (!_assetData) return 0;
-            if (_assetData.mc) {
-                return _assetData.mc.totalFrames;
-            } else {
-                return _frames.length
-            }
-        }
+        private var _assetData:AssetData;
 
         public function get assetData():AssetData {
             return _assetData;
@@ -208,16 +175,40 @@ package com.berry.animation.core {
             if (_assetData) {
                 _assetData.useCount++;
             } else {
-                bitmap.bitmapData = null;
+                view.bitmapData = null;
             }
         }
 
-        public function get loop():Boolean {
-            return _loop;
+        private var _speed:Number = 1;
+
+        public function get speed():Number {return _speed;}
+
+        public function set speed(speed:Number):void {
+            _speed = speed;
         }
 
-        public function set loop(value:Boolean):void {
-            _loop = value;
+        private var _onEnterFrame:Function;
+
+        public function set onEnterFrame(value:Function):void {
+            _onEnterFrame = value;
+        }
+
+        public function get isPlay():Boolean {
+            return _playAction != null;
+        }
+
+        public function get totalFrames():Number {
+            if (!_assetData) return 0;
+            if (_assetData.mc) {
+                return _assetData.mc.totalFrames;
+            } else {
+                return _frames.length
+            }
+        }
+
+        public function set name(value:String):void
+        {
+            _assetName = value;
         }
     }
 }

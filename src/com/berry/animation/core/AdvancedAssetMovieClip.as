@@ -64,11 +64,12 @@ package com.berry.animation.core {
             //TODO
         }
 
+        // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
 
-           EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
+           //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
                 query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
@@ -171,19 +172,19 @@ package com.berry.animation.core {
                 }
                 if (_loopCount > 0 || _loopList) {
                     _animationModel.nextPresetRandom();
-                    EffectViewer.log(_view.name + ' next ON_ANIMATION_FINISH');
+                    //EffectViewer.log(_view.name + ' next ON_ANIMATION_FINISH');
                     playPart(_animationModel.currentPart());
                 }
             } else {
                 _animationModel.nextPresetRandom();
-                EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
+                //EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
                 playPart(_animationModel.currentPart());
             }
             _isFinishToEndCurrent = _animationModel.isListEnd;
         }
 
         public function get visible():Boolean {
-            return _view.visible;
+            return _view.view.visible;
         }
 
         public function setVisible(value:Boolean):void {
@@ -191,14 +192,14 @@ package com.berry.animation.core {
         }
 
         public function get bounds():Rect {
-            return _view.rect;
+            return _view.bounds;
         }
 
         public function set speed(speed:Number):void {_view.speed = speed;}
 
         public function set data(value:AssetModel):void {
             _data = value;
-            _view.name = _data.name;
+            _view.name = _data.assetName;
         }
 
         public function get view():AssetMovieClip {

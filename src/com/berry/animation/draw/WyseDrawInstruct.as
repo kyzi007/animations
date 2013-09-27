@@ -30,11 +30,11 @@ package com.berry.animation.draw {
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            //EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024) + '/' + int(getMem2() / 1024) + ' kb');
+            EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
             super.finish();
         }
 
-        override public function init():void {
+        override public function init(...params):void {
             super.init();
             _time = getTimer();
             //Mem.start();

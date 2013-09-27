@@ -39,6 +39,7 @@ package com.berry.animation.library {
         private var _movies:Dictionary = new Dictionary();
         private var _isFalled:Boolean;
         public var completeRenderPromise:Promise = new Promise();
+        public var renderInitParams:Array;
 
         public function finishRender():void {
             _isRenderWork = false;
@@ -99,7 +100,7 @@ package com.berry.animation.library {
 
             _renderedAndLock[name] = true;
 
-            renderInstruct.init()
+            renderInstruct.init(renderInitParams);
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
                 /*if (_getQuery.asynchRender) {

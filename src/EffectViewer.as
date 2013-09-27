@@ -1,6 +1,6 @@
 package {
     import com.berry.animation.core.AssetView;
-    import com.berry.animation.data.AnimationsList;
+    import animation.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 
@@ -47,7 +47,7 @@ package {
             _log.y = 50;
             addChild(_log);
 
-        }
+        } 
 
         private static var _log:TextField;
         private var _frame:TextField;

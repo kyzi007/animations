@@ -14,7 +14,7 @@ package com.berry.animation.core {
         public var cachedList:Array;
         public var renderInTread:Boolean;
         public var id:String;
-        public var name:String;
+        public var assetName:String;
         public var animationModel:AnimationModel;
         public var cache:Boolean;
         public var x:Number;
@@ -38,7 +38,7 @@ package com.berry.animation.core {
 
         public function getQuery(animation:String, rotateOn:Boolean = true, checkDuplicate:int = AssetDataGetQuery.CHECK_DUPLICATE_NONE):AssetDataGetQuery {
             var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
-            query.setAssetName(name)
+            query.setAssetName(assetName)
                     .setSourceType(sourceType.value)
                     .setAnimationName(animation)
                     .setIsCheckDuplicateData(checkDuplicate)
