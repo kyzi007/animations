@@ -30,6 +30,7 @@ package com.berry.animation.draw {
         protected var _assetData:AssetData;
         private var _falled:Boolean;
         private var _inited:Boolean;
+        // todo render progress
 
         public function execute():Boolean {
             var complete:Boolean = drawFrame(_currentFrame);

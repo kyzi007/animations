@@ -13,13 +13,13 @@ package com.berry.animation.core {
 
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip(name:String) {
-            _view = new AssetMovieClip(name)
+            _assetMovieClip = new AssetMovieClip(name)
         }
 
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
         public var assetLibrary:AssetLibrary;
-        public var _view:AssetMovieClip;
+        public var _assetMovieClip:AssetMovieClip;
         public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
         public var animationFinishPromise:Promise = new Promise();
@@ -31,10 +31,12 @@ package com.berry.animation.core {
         private var _loopList:Boolean;
         private var _lastPreset:AnimationPart;
         private var _pauseAction:Action;
+        private var _rendered:Boolean;
+        private var startRenderPromise:Promise = new Promise();
 
         public function get isActive():Boolean
         {
-            return _view && _view.assetData && _view.assetData.isRenderFinish
+            return _assetMovieClip && _assetMovieClip.assetData && _assetMovieClip.assetData.isRenderFinish
         }
 
         public function playAnimationSet(animationModel:AnimationModel):void {
@@ -45,19 +47,19 @@ package com.berry.animation.core {
         }
 
         public function cleanUp():void {
-            _view.cleanUp();
+            _assetMovieClip.cleanUp();
         }
 
         public function hitTest(x:int, y:int):Boolean {
-            return _view.hitTest(x, y);
+            return _assetMovieClip.hitTest(x, y);
         }
 
         public function applyFilter(value:ColorMatrix):void {
-            _view.applyFilter(value);
+            _assetMovieClip.applyFilter(value);
         }
 
         public function removeFilter():void {
-            _view.removeFilter();
+            _assetMovieClip.removeFilter();
         }
 
         public function showPivot():void {
@@ -93,26 +95,26 @@ package com.berry.animation.core {
             EnterFrame.removeScheduledAction(_pauseAction);
 
             if (assetData.isRenderFinish) {
-                _view.loop = currPreset.isLoop;
-                _view.loopCount = currPreset.loopCount;
+                _assetMovieClip.loop = currPreset.isLoop;
+                _assetMovieClip.loopCount = currPreset.loopCount;
 
-                if (_view.assetData != assetData || !_view.loop) {
-                    _view.assetData = assetData;
+                if (_assetMovieClip.assetData != assetData || !_assetMovieClip.loop) {
+                    _assetMovieClip.assetData = assetData;
                     if (_animationModel.play) {
-                        _view.gotoAndPlay(0);
+                        _assetMovieClip.gotoAndPlay(0);
                         //_view.gotoAndPlay(_animationModel.startFrame);
                     } else {
-                        _view.gotoAndStop(_animationModel.startFrame);
+                        _assetMovieClip.gotoAndStop(_animationModel.startFrame);
                     }
                 }
 
                 EnterFrame.removeScheduledAction(_nextToTimeAction);
-                if (!_view.loop) {
+                if (!_assetMovieClip.loop) {
                     if (currPreset.pauseTime) {
-                        _view.animationFinishPromise.callbackRegister(loadOneFrame);
+                        _assetMovieClip.animationFinishPromise.callbackRegister(loadOneFrame);
                         _nextToTimeAction = EnterFrame.scheduleAction(currPreset.pauseTime + currPreset.pauseTime * Math.random(), next)
                     } else {
-                        _view.animationFinishPromise.callbackRegister(next);
+                        _assetMovieClip.animationFinishPromise.callbackRegister(next);
                     }
                 } else if (currPreset.randomTime) {
                     if (currPreset.pauseTime) {
@@ -127,8 +129,15 @@ package com.berry.animation.core {
                 _lastPreset = currPreset;
             } else {
                 // wait to the end rendering
+                _rendered = false;
+                startRenderPromise.resolve();
                 assetData.completeRenderPromise.callbackRegister(newAssetRendered);
             }
+        }
+
+        public function get isRenderFinish():Boolean
+        {
+            return _rendered;
         }
 
         private function getEffect():void {
@@ -142,28 +151,29 @@ package com.berry.animation.core {
         }
 
         private function loadOneFrame():void {
-            _view.animationFinishPromise.callbackRemove(loadOneFrame);
+            _assetMovieClip.animationFinishPromise.callbackRemove(loadOneFrame);
             playPart(_animationModel.currentPart(), true)
         }
 
         private function newAssetRendered(e:* = null):void {
+            _rendered = true;
             renderCompletePromise.resolve();
-            if (_view.loop && _view.isPlay) {
+            if (_assetMovieClip.loop && _assetMovieClip.isPlay) {
                 // wait end animation
-                _view.loop = false;
-                _view.animationFinishPromise.callbackRegister(playCurrentPart);
+                _assetMovieClip.loop = false;
+                _assetMovieClip.animationFinishPromise.callbackRegister(playCurrentPart);
             } else {
                 playPart(_animationModel.currentPart());
             }
         }
 
         private function playCurrentPart(e:* = null):void {
-            _view.animationFinishPromise.callbackRemove(playCurrentPart);
+            _assetMovieClip.animationFinishPromise.callbackRemove(playCurrentPart);
             playPart(_animationModel.currentPart());
         }
 
         private function next():void {
-            _view.animationFinishPromise.callbackRemove(next);
+            _assetMovieClip.animationFinishPromise.callbackRemove(next);
             animationPartFinishPromise.resolve();
             if (_isFinishToEndCurrent) {
                 animationFinishPromise.resolve();
@@ -184,26 +194,26 @@ package com.berry.animation.core {
         }
 
         public function get visible():Boolean {
-            return _view.view.visible;
+            return _assetMovieClip.view.visible;
         }
 
         public function setVisible(value:Boolean):void {
-            _view.setVisible(value);
+            _assetMovieClip.setVisible(value);
         }
 
         public function get bounds():Rect {
-            return _view.bounds;
+            return _assetMovieClip.bounds;
         }
 
-        public function set speed(speed:Number):void {_view.speed = speed;}
+        public function set speed(speed:Number):void {_assetMovieClip.speed = speed;}
 
         public function set data(value:AssetModel):void {
             _data = value;
-            _view.name = _data.assetName;
+            _assetMovieClip.name = _data.assetName;
         }
 
-        public function get view():AssetMovieClip {
-            return _view;
+        public function get assetMovieClip():AssetMovieClip {
+            return _assetMovieClip;
         }
 
         public function get animationModel():AnimationModel {

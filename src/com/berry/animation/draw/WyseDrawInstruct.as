@@ -27,6 +27,7 @@ package com.berry.animation.draw {
         private var _timline:Vector.<AssetFrame>;
         private var _time:int;
 
+
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;

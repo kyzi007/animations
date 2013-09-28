@@ -89,10 +89,10 @@ package com.berry.animation.core {
             _main.assetLibrary = _assetLibrary;
             _main.data = _data;
 
-            _main.view.boundsUpdatePromise.callbackRegister(onUpdateBounds);
+            _main.assetMovieClip.boundsUpdatePromise.callbackRegister(onUpdateBounds);
 
             _mainSprite.addChild(_preloader);
-            _mainSprite.addChild(_main.view);
+            _mainSprite.addChild(_main.assetMovieClip);
 
             _assetLibrary.loadData(name, _data.sourceType, onLoadCallback);
         }
@@ -158,7 +158,7 @@ package com.berry.animation.core {
             var effect:AdvancedAssetMovieClip;
             for each (effect in _effects) {
                 effect.cleanUp();
-                mainSprite.removeChild(effect.view);
+                mainSprite.removeChild(effect.assetMovieClip);
             }
             _effects = [];
             if (_data.rotation.value == RotateEnum.NONE) {
@@ -171,14 +171,14 @@ package com.berry.animation.core {
                     effect.loadOneFrameFirst = true;
                     effect.playAnimationSet(animationModel);
                     _effects.push(effect);
-                    mainSprite.addChild(effect.view);
+                    mainSprite.addChild(effect.assetMovieClip);
                 }
             }
         }
 
         protected function updateMain():void {
             _main.playAnimationSet(_data.animationModel);
-            if (!_main._view.assetData) {
+            if (!_main._assetMovieClip.assetData) {
                 preloaderShow();
             }
         }
@@ -297,7 +297,7 @@ package com.berry.animation.core {
 
         private function onPreloaderRender(e:* = null):void {
             _assetLibrary.dispatcher.setEventListener(false, AssetLibrary.ON_INIT, onPreloaderRender);
-            if (!_main.view.assetData || _renderListBeforePlay) {
+            if (!_main.assetMovieClip.assetData || _renderListBeforePlay) {
                 _preloader.assetData = _assetLibrary.getPreloader(name);
                 _preloader.gotoAndPlay(0);
             }

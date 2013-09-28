@@ -1,6 +1,5 @@
 package com.berry.animation.library {
     import com.berry.animation.data.AnimationSettings;
-    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.MovieClip;
     import flash.display.Sprite;
@@ -9,26 +8,29 @@ package com.berry.animation.library {
 
     import log.logServer.KLog;
 
+    import org.dzyga.callbacks.Promise;
+    import org.dzyga.eventloop.LoopTask;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
-    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
-
 
     public class AssetData {
         public function AssetData(query:AssetDataGetQuery = null) {
             /*CONFIG::debug{
              if (query) KLog.log("AssetData:AssetData " + query.fullAnimationName, KLog.CREATE);
              }*/
-           _getQuery = query;
+            _getQuery = query;
         }
 
         private static var _renderedAndLock:Object = {};
         private static var _stack:Object = {};
         public var mc:MovieClip;
         public var frames:Vector.<AssetFrame> = new Vector.<AssetFrame>(); // чтобы не грузить запросами геттер
+        public var completeRenderPromise:Promise = new Promise();
+        public var renderInitParams:Array;
+        public var render:LoopTask;
         private var _useCount:int = 0;
         private var _maxBounds:Rect = new Rect();
         private var _isRenderWork:Boolean = false;
@@ -38,8 +40,6 @@ package com.berry.animation.library {
         private var _renderAction:Action;
         private var _movies:Dictionary = new Dictionary();
         private var _isFalled:Boolean;
-        public var completeRenderPromise:Promise = new Promise();
-        public var renderInitParams:Array;
 
         public function finishRender():void {
             _isRenderWork = false;
@@ -104,16 +104,16 @@ package com.berry.animation.library {
             _isRenderWork = true;
             if (_getQuery.isBitmapRendering) {
                 /*if (_getQuery.asynchRender) {
-                    _renderAction = EnterFrame.addAction(0, renderInstruct);
-                    _renderAction.name = "AssetData:render "+name;
-                } else if (_getQuery.renderInTread) {*/
-                    _renderAction = EnterFrame.addThread(0, 0, renderInstruct);
-                    _renderAction.name = "AssetData:render " + name;
+                 _renderAction = EnterFrame.addAction(0, renderInstruct);
+                 _renderAction.name = "AssetData:render "+name;
+                 } else if (_getQuery.renderInTread) {*/
+                _renderAction = EnterFrame.addThread(0, 0, renderInstruct);
+                _renderAction.name = "AssetData:render " + name;
                 /*} else {
-                    while (renderInstruct.execute() == false) {}
-                    renderInstruct.finish();
-                    renderInstruct = null;
-                }*/
+                 while (renderInstruct.execute() == false) {}
+                 renderInstruct.finish();
+                 renderInstruct = null;
+                 }*/
             } else {
                 finishRender();
             }
@@ -158,9 +158,9 @@ package com.berry.animation.library {
             _getQuery = value;
         }
 
-       /* public function get isBitmap():Boolean {
-            return _getQuery.isBitmapRendering;
-        }*/
+        /* public function get isBitmap():Boolean {
+         return _getQuery.isBitmapRendering;
+         }*/
 
         public function get isDestroyed():Boolean {
             return _isDestroyed;
