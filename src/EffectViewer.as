@@ -1,6 +1,7 @@
 package {
-    import com.berry.animation.core.AssetView;
     import animation.AnimationsList;
+
+    import com.berry.animation.core.AssetView;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 
@@ -36,7 +37,7 @@ package {
             _frame.selectable = true;
             _frame.border = true;
             _frame.type = TextFieldType.INPUT;
-            _frame.addEventListener(Event.CHANGE, onChangeFrame)
+            _frame.addEventListener(Event.CHANGE, onChangeFrame);
             addChild(_frame);
 
             _log = new TextField();
@@ -119,35 +120,40 @@ package {
             if (clipClass) {
 
                 if (_asset) {
-                    removeChild(_asset.mainSprite);
-                    removeChild(_asset.shadowSprite);
-                    _asset.cleanUp();
+                    removeChild(_asset.view);
+                    removeChild(_asset.shadow);
+                    _asset.clear();
                     _assetLib.gcForce();
                 }
 
                 _assetLib.registerAsset(clipClass, _name, loaderInfo);
                 _animLib.parseAsset(_name, new clipClass);
 
-                _asset = new AssetView(_name, _name);
-                _asset.animationLibrary = _animLib;
-                _asset.assetLibrary = _assetLib;
+                _asset = new AssetView(_name, _name)
+                        .shadowAspectInit()
+                        .classicMainAspectInit()
+                        .effectAspectInit();
                 _asset.cache = false;
                 _asset.effectMode = true;
-                _asset.preloaderMode = false;
                 _asset.stepFrame = int(_frame.text);
-                _asset.init();
+                _asset.init(_assetLib, _animLib);
 
-                _asset.shadowSprite.x = 600;
-                _asset.shadowSprite.y = 600;
-                _asset.shadowSprite.alpha = 0.4;
+                _asset.shadow.alpha = 0.4;
 
-                _asset.mainSprite.x = 600;
-                _asset.mainSprite.y = 600;
+                _asset.x = 600;
+                _asset.y = 600;
                 _asset.visible = true;
 
-                addChildAt(_asset.mainSprite, 0);
-                addChildAt(_asset.shadowSprite, 0);
+                _asset.play();
+
+                addChildAt(_asset.view, 0);
+                addChildAt(_asset.shadow, 0);
             }
+
+        }
+
+        private function enteframe(event:Event):void {
+            trace(_asset.shadow.y)
         }
 
     }

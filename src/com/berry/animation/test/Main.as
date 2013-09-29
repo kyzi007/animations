@@ -1,9 +1,8 @@
 package com.berry.animation.test {
+    import animation.AnimationsList;
     import animation.MidnightAssetLibrary;
 
     import com.berry.animation.core.AssetView;
-
-    import animation.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 

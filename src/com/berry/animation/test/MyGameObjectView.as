@@ -22,18 +22,18 @@ package com.berry.animation.test {
 
         public function set flip(value:Boolean):void {
             _flip = value;
-            if(_data.animationModel){
+            if(data.animationModel){
                 _flipWaitUpdate = false;
-                if (_data.animationModel.currentPart().isRotateSupport(RotateEnum.FLIP)) {
+                if (data.animationModel.currentPart().isRotateSupport(RotateEnum.FLIP)) {
 
                 } else {
-                    shadowSprite.scaleX = _flip ? -1 : 1;
-                    mainSprite.scaleX = _flip ? -1 : 1;
+                    shadow.scaleX = _flip ? -1 : 1;
+                    view.scaleX = _flip ? -1 : 1;
                 }
                 var tmp:Number = _widthInCell;
                 _widthInCell = _heightInCell;
                 _heightInCell = tmp;
-                rotation = _flip ? AssetView.ROTATE_FLIP : AssetView.ROTATE_NONE;
+                //rotation = _flip ? AssetViewOld.ROTATE_FLIP : AssetViewOld.ROTATE_NONE;
 
             } else {
                 _flipWaitUpdate = true;
@@ -43,7 +43,7 @@ package com.berry.animation.test {
 
         override public function playByModel(animationModel:AnimationModel):void {
             if(_flipWaitUpdate && animationModel){
-                _data.animationModel = animationModel;
+                data.animationModel = animationModel;
                 flip = _flip;
             }
             super.playByModel(animationModel);

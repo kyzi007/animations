@@ -1,6 +1,6 @@
 package com.berry.animation.core {
     import animation.*;
-    import com.berry.animation.core.AssetSprite;
+
     import com.berry.animation.library.AssetData;
 
     import common.map.view.component.Cell;
@@ -8,6 +8,7 @@ package com.berry.animation.core {
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
 
+    import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
@@ -15,12 +16,12 @@ package com.berry.animation.core {
     public class TileMainAspect implements IAssetViewAspect {
         private var _view:Bitmap;
         private var _assetSprite:AssetSprite;
-        public function TileMainAspect(parent:AssetViewNew) {
+        public function TileMainAspect(parent:AssetView) {
             _parent = parent;
         }
 
         private const _BOUNDS:Rect = new Rect(-Cell.CELL_DX, -Cell.CELL_DY, Cell.CELL_WIDTH, Cell.CELL_HEIGHT);
-        private var _parent:AssetViewNew;
+        private var _parent:AssetView;
         private var _assetData:AssetData;
         private var _visible:Boolean;
 
@@ -30,7 +31,6 @@ package com.berry.animation.core {
                 _assetSprite.setVisible(true);
                 _assetSprite.draw(_assetData.frames[int(Math.random()* _assetData.frames.length)]);
                 _assetSprite.setVisible(_visible);
-
                 _assetData.completeRenderPromise.callbackRemove(renderFinishCallback);
             }
         }
@@ -61,8 +61,8 @@ package com.berry.animation.core {
         }
 
         public function init():void {
-            _assetSprite = new AssetSprite(_parent._data.assetName);
-            _assetData = _parent._assetLibrary.getAssetData(_parent._data.getQuery(AnimationsList.IDLE));
+            _assetSprite = new AssetSprite(_parent.data.assetName);
+            _assetData = _parent.assetLibrary.getAssetData(_parent.data.getQuery(AnimationsList.IDLE));
             _assetData.useCount++;
             if(_assetData.isRenderFinish){
                 play();
@@ -77,6 +77,29 @@ package com.berry.animation.core {
 
         public function clear():void {
             _assetData.useCount--;
+        }
+
+        public function get boundsUpdatePromise():Promise {
+            return _assetSprite.boundsUpdatePromise;
+        }
+
+        public function set x(value:int):void {
+            view.x = value;
+        }
+
+        public function set y(value:int):void {
+            view.y = value;
+        }
+
+        public function applyFilter(value:ColorMatrix):void {
+            // TODO
+        }
+
+        public function removeFilter():void {
+        }
+
+        public function set animationSpeed(value:Number):void {
+            // none
         }
     }
 }

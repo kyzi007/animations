@@ -1,8 +1,8 @@
 package com.berry.animation.test {
+    import animation.AnimationsList;
     import animation.MidnightAssetLibrary;
     import animation.MidnightAssetView;
 
-    import animation.AnimationsList;
     import com.berry.animation.library.AnimationLibrary;
 
     import flash.display.Sprite;

@@ -1,10 +1,9 @@
 package {
-    import com.berry.animation.core.AssetView;
     import animation.AnimationsList;
+
+    import com.berry.animation.core.AssetView;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
-
-    import common.objects.view.components.TileView;
 
     import flash.display.Loader;
     import flash.display.LoaderInfo;
@@ -84,22 +83,19 @@ package {
         }
 
         private function place(i2:int, i22:int):void {
-            _asset = new TileView(_name, _name);
-            _asset.animationLibrary = _animLib;
-            _asset.assetLibrary = _assetLib;
+            _asset = new AssetView(_name, _name).tileMainAspectInit();
             _asset.cache = false;
             _asset.effectMode = true;
-            _asset.preloaderMode = false;
             _asset.stepFrame = int(_frame.text);
-            _asset.init();
+            _asset.init(_assetLib, _animLib);
 
-            _asset.mainSprite.x = 600;
-            _asset.mainSprite.y = 600;
+            _asset.view.x = 600;
+            _asset.view.y = 600;
             _asset.visible = true;
 
-            addChildAt(_asset.mainSprite, 0);
-            _asset.mainSprite.x = i2;
-            _asset.mainSprite.y = i22;
+            addChildAt(_asset.view, 0);
+            _asset.view.x = i2;
+            _asset.view.y = i22;
         }
 
         private function onChangeFrame(event:Event):void {

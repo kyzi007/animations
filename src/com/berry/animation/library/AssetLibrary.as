@@ -102,18 +102,20 @@ package com.berry.animation.library {
             }
         }
 
-        public function loadData(name:String, type:SourceTypeEnum, finishCallback:Function):void {
+        public function loadData(name:String, type:String, finishCallback:Function):void {
             var data:* = _classHash[name] || _doHash[name];
 
             if (!data) {
-                var loader:AssetLoader = new AssetLoader(name, getUrl(name, type.value), null);
+                var loader:AssetLoader = new AssetLoader(name, getUrl(name, type), null);
                 _classHash[name] = loader;
-                loader.addCallback(function (loadedData:*, loaderContext:*):void {
-                    registerAsset(loadedData, name, loaderContext);
-                    finishCallback(loadedData, loaderContext);
-                });
+                loader.completePromise.callbackRegister(
+                        function (loadedData:*, loaderContext:*):void {
+                            registerAsset(loadedData, name, loaderContext);
+                            finishCallback(loadedData, loaderContext);
+                        }
+                )
             } else if (data is AssetLoader) {
-                AssetLoader(data).addCallback(function (loadedData:*, loaderContext:*):void {
+                AssetLoader(data).completePromise.callbackRegister(function (loadedData:*, loaderContext:*):void {
                     finishCallback(loadedData, loaderContext);
                 });
             } else if (data) {
@@ -160,16 +162,17 @@ package com.berry.animation.library {
                 assetData = new AssetData();
                 assetData.renderInitParams = renderProps;
                 assetData.getQuery = query;
-
-                //classic render
-                if(!_partAsset[query.name]){
-                    assetData.startRender(getRender(assetData));
+                assetData.renderClass = getRender(assetData);
+                assetData.sourceCallback = getSource;
+                var data:* = _classHash[query.name] || _doHash[query.name];
+                if(data is AssetLoader){
+                    AssetLoader(data).completePromise.callbackRegister(assetData.startRender);
+                }else if(!data){
+                    loadData(query.name,query.sourceType, assetData.startRender);
                 } else {
-                    var mcClass:Class = _partAsset[query.name].applicationDomain.getDefinition(query.name + '__' + query.step + '__'+ query.animation) as Class;
-                    assetData.mc = new mcClass;
-                    assetData.mc.cacheAsBitmap = true;
-                    assetData.finishRender();
+                    assetData.startRender();
                 }
+                //assetData.startRender(getRender(assetData));
                 addAssetData(assetData);
             } else {
                 Pool.put(query);
@@ -191,15 +194,16 @@ package com.berry.animation.library {
             return new _classHash[name]();
         }
 
-        protected function getRender(assetData:AssetData):IInstruct {
-            var render:BaseDrawInstruct;
+        protected function getRender(assetData:AssetData):Class {
+            //var render:BaseDrawInstruct;
             if (assetData.getQuery.sourceType == SourceTypeEnum.SOURCE_PNG) {
-                render = new TileDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name));
+                return TileDrawInstruct;
+                //render = new TileDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name));
             } else {
-                render = new WyseDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name) as Sprite);
+                return WyseDrawInstruct;
+                //render = new WyseDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name) as Sprite);
             }
-
-            return render;
+            //return render;
         }
 
         public function getUrl(name:String, type:String):String {

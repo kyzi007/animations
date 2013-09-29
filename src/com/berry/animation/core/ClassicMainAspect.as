@@ -1,50 +1,49 @@
 package com.berry.animation.core {
-    import animation.*;
-    import com.berry.animation.core.AdvancedAssetMovieClip;
-    import com.berry.animation.core.AssetMovieClip;
     import com.berry.animation.library.AssetData;
-
-    import fl.video.ParseResults;
 
     import flash.display.DisplayObject;
     import flash.display.Sprite;
-    import flash.geom.Point;
 
+    import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
     public class ClassicMainAspect implements IAssetViewAspect {
-        public function ClassicMainAspect(parent:AssetViewNew) {
+        public function ClassicMainAspect(parent:AssetView) {
             _parent = parent;
         }
 
-        private var _parent:AssetViewNew;
+        private var _parent:AssetView;
         private var _preloader:AssetMovieClip;
         private var _main:AdvancedAssetMovieClip;
         private var _view:Sprite = new Sprite;
         private var _visible:Boolean;
-        private var _assetData:AssetData;
 
         public function play():void {
-            _main.playAnimationSet(_parent._data.animationModel);
+            _main.playAnimationSet(_parent.data.animationModel);
             if(!_main.isRenderFinish){
                 showPreloader();
                 _main.renderCompletePromise.callbackRegister(hidePreloader);
             }
-            _view.addChild(_main.assetMovieClip.view);
         }
 
         private function hidePreloader(...params):void {
             _main.renderCompletePromise.callbackRemove(hidePreloader);
-            _view.removeChild(_preloader.view);
-            _preloader.cleanUp();
-            _preloader = null;
+            if(_preloader){
+                _view.removeChild(_preloader.view);
+                _preloader.clear();
+                _preloader = null;
+            }
         }
 
         private function showPreloader():void {
+            var preloaderAssetData:AssetData = _parent.assetLibrary.getPreloader(_parent.data.assetName);
+            if(!preloaderAssetData) {
+                return;
+            }
             _preloader = new AssetMovieClip('preloader');
-            _preloader.assetData = _parent._assetLibrary.getPreloader(_parent._data.assetName);
+            _preloader.assetData = preloaderAssetData;
             if(!_preloader.assetData.isRenderFinish){
                 _preloader.assetData.completeRenderPromise.callbackRegister(playPreloader);
             } else {
@@ -74,7 +73,7 @@ package com.berry.animation.core {
         }
 
         public function get isRendered():Boolean {
-            return _assetData && _assetData.isRenderFinish;
+            return _main.isRenderFinish;
         }
 
         public function get finishRenderPromise():Promise {
@@ -87,22 +86,45 @@ package com.berry.animation.core {
         }
 
         public function get bounds():Rect {
-            return _main.isRenderFinish ?_main.bounds : _preloader.bounds;
+            return _main.bounds;
         }
 
         public function init():void {
-            _main = new AdvancedAssetMovieClip(_parent._data.assetName);
+            _main = new AdvancedAssetMovieClip(_parent.data.assetName);
+            _main.data = _parent.data;
+            _main.assetLibrary = _parent.assetLibrary;
+            _view.addChild(_main.assetMovieClip.view);
         }
 
         public function clear():void {
             if(_preloader){
-                _preloader.cleanUp();
+                _preloader.clear();
             }
             _main.cleanUp();
         }
 
         public function get boundsUpdatePromise():Promise {
             return _main.assetMovieClip.boundsUpdatePromise;
+        }
+
+        public function set x(value:int):void {
+            _view.x = value;
+        }
+
+        public function set y(value:int):void {
+            _view.y = value;
+        }
+
+        public function applyFilter(value:ColorMatrix):void {
+            _main.applyFilter(value);
+        }
+
+        public function removeFilter():void {
+            _main.removeFilter();
+        }
+
+        public function set animationSpeed(value:Number):void {
+            _main.speed = value;
         }
     }
 }

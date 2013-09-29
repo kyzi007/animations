@@ -18,12 +18,30 @@ package com.berry.animation.core {
         public var boundsUpdatePromise:Promise = new Promise();
         protected var _assetName:String;
         private var _currentFrameData:AssetFrame;
+        private var _y:int;
+        private var _x:int;
 
         public function setVisible(value:Boolean):void {
             _view.visible = value;
         }
 
-        public function cleanUp():void {
+        public function set x(value:int):void
+        {
+            _x = value;
+            if(_currentFrameData){
+                _view.x = _currentFrameData.x + _x;
+            }
+        }
+
+        public function set y(value:int):void
+        {
+            _y = value;
+            if (_currentFrameData) {
+                _view.y = _currentFrameData.y + _y;
+            }
+        }
+
+        public function clear():void {
             _currentFrameData = null;
             _view.bitmapData = null;
             _view = null;
@@ -46,8 +64,8 @@ package com.berry.animation.core {
 
             if (frame is AssetFrame) {
                 _currentFrameData = frame;
-                _view.x = _currentFrameData.x;
-                _view.y = _currentFrameData.y;
+                _view.x = _currentFrameData.x + _x;
+                _view.y = _currentFrameData.y + _y;
                 _view.bitmapData = _currentFrameData.bitmap;
                 _view.smoothing = true;
             }
@@ -66,7 +84,7 @@ package com.berry.animation.core {
                             _currentFrameData.bitmap.width,
                             _currentFrameData.bitmap.height);
 
-                    boundsUpdatePromise.resolve(this);
+                    boundsUpdatePromise.resolve();
                 }
             }
         }

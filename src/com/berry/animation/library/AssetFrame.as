@@ -1,6 +1,5 @@
 package com.berry.animation.library {
     import flash.display.BitmapData;
-    import flash.display.MovieClip;
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
 

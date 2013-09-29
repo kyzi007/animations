@@ -1,7 +1,6 @@
 package com.berry.animation.test {
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
-    import com.berry.animation.library.MidnightAssetLibrary;
 
     import common.objects.view.components.TileView;
 

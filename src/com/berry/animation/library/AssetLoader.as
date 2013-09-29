@@ -9,6 +9,8 @@ package com.berry.animation.library {
 
     import log.logServer.KLog;
 
+    import org.dzyga.callbacks.Promise;
+
     public class AssetLoader extends Loader {
 
         public function AssetLoader(name:String, url:String, callback:Function) {
@@ -23,23 +25,18 @@ package com.berry.animation.library {
             contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
             contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
 
-            addCallback(callback);
+            if(callback){
+                completePromise.callbackRegister(callback)
+            }
             loadSwf(url);
         }
 
-        private static const HTTP_PREFIX:String = 'http://';
-        private const LIB_PROP:String = 'library';
+        private static const LIB_PROP:String = 'library';
         public var data:Class;
-        private var _callback:Vector.<Function> = new Vector.<Function>();
         private var _url:String;
         private var _context:LoaderContext;
         private var _name:String;
-
-        public function addCallback(callback:Function):void {
-            if (callback != null) {
-                _callback.push(callback);
-            }
-        }
+        public var completePromise:Promise = new Promise();
 
         private function loadSwf(url:String):void {
             _url = url;
@@ -52,7 +49,6 @@ package com.berry.animation.library {
         }
 
         private function error(event:IOErrorEvent):void {
-
             CONFIG::debug{ KLog.log("SwfLoader:error " + event.toString() + ' url=' + _url, KLog.ERROR); }
             complete(null);
         }
@@ -77,13 +73,9 @@ package com.berry.animation.library {
 
                     data = contentLoaderInfo.applicationDomain.getDefinition(className) as Class;
                 }
-
-                for (var i:int = 0; i < _callback.length; i++) {
-                    _callback[i](data, contentLoaderInfo);
-                }
+                completePromise.resolve(data, contentLoaderInfo);
             }
             clean();
         }
     }
-
 }

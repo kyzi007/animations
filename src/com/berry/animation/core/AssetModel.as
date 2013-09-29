@@ -23,7 +23,7 @@ package com.berry.animation.core {
         public var sourceType:SourceTypeEnum = new SourceTypeEnum();
         public var text:String;
         public var visible:Boolean = false;
-        private var _rotation:RotateEnum = AssetView.ROTATE_NONE;
+        private var _rotation:RotateEnum = new RotateEnum(RotateEnum.NONE);
         private var _animation:String;
         private var _stepFrame:int = 1;
         private var _effectMode:Boolean = true;
@@ -99,14 +99,14 @@ package com.berry.animation.core {
             }
         }
 
-        public function get rotation():RotateEnum {
-            return _rotation;
+        public function get rotation():String {
+            return _rotation.value;
         }
 
-        public function set rotation(value:RotateEnum):void {
-            if (_rotation.value != value.value) {
+        public function set rotation(value:String):void {
+            if (_rotation.value != value) {
                 _rotationUpdated = true;
-                _rotation = value;
+                _rotation.setValue(value);
             }
         }
     }

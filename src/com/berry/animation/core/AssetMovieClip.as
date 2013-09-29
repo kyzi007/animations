@@ -45,7 +45,7 @@ package com.berry.animation.core {
             }
         }
 
-        public override function cleanUp():void {
+        public override function clear():void {
             EnterFrame.removeAction(_playAction);
             _playAction = null;
             _onEnterFrame = null;
@@ -53,7 +53,7 @@ package com.berry.animation.core {
                 _assetData.useCount--;
             }
             _assetData = null;
-            super.cleanUp();
+            super.clear();
         }
 
         public function gotoAndPlay(frame:uint = 0):void {

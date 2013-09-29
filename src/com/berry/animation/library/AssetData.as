@@ -1,5 +1,10 @@
 package com.berry.animation.library {
     import com.berry.animation.data.AnimationSettings;
+    import com.berry.animation.draw.BaseDrawInstruct;
+
+    import flash.display.Bitmap;
+
+    import flash.display.DisplayObject;
 
     import flash.display.MovieClip;
     import flash.display.Sprite;
@@ -30,7 +35,9 @@ package com.berry.animation.library {
         public var frames:Vector.<AssetFrame> = new Vector.<AssetFrame>(); // чтобы не грузить запросами геттер
         public var completeRenderPromise:Promise = new Promise();
         public var renderInitParams:Array;
-        public var render:LoopTask;
+        //public var render:LoopTask;
+        public var renderClass:Class;
+        public var sourceCallback:Function;
         private var _useCount:int = 0;
         private var _maxBounds:Rect = new Rect();
         private var _isRenderWork:Boolean = false;
@@ -86,9 +93,21 @@ package com.berry.animation.library {
             nextByStack();
             update();
         }
+        // TODO: move
+        public function startRender(...params):void {
+            if (_isRenderWork || frames.length) return;
 
-        public function startRender(renderInstruct:IInstruct):void {
-            if (_isRenderWork) return;
+            var source : DisplayObject;
+            if(params.length){ // finish load callback run
+                if(params[0] is Bitmap){
+                    source = params[0];
+                } else {
+                    source = new params[0];
+                }
+            } else {
+                source = sourceCallback(getQuery.name);
+            }
+            var renderInstruct:BaseDrawInstruct = new renderClass(this, getQuery, source);
 
             if (_renderedAndLock[name]) {
                 if (!_stack[name]) {
@@ -132,7 +151,7 @@ package com.berry.animation.library {
             if (_stack[name]) {
                 var data:Array = _stack[name].shift();
                 if (data) {
-                    AssetData(data[0]).startRender(data[1]);
+                    AssetData(data[0]).startRender();
                 }
                 if (_stack[name] && _stack[name].length == 0) delete _stack[name];
             }

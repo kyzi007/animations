@@ -6,15 +6,16 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetLibrary;
 
     import org.ColorMatrix;
+    import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
-    import org.dzyga.callbacks.Promise;
     import org.dzyga.geom.Rect;
 
     public class AdvancedAssetMovieClip {
         public function AdvancedAssetMovieClip(name:String) {
             _assetMovieClip = new AssetMovieClip(name)
         }
+
 
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
@@ -32,7 +33,7 @@ package com.berry.animation.core {
         private var _lastPreset:AnimationPart;
         private var _pauseAction:Action;
         private var _rendered:Boolean;
-        private var startRenderPromise:Promise = new Promise();
+        public var startRenderPromise:Promise = new Promise();
 
         public function get isActive():Boolean
         {
@@ -47,7 +48,7 @@ package com.berry.animation.core {
         }
 
         public function cleanUp():void {
-            _assetMovieClip.cleanUp();
+            _assetMovieClip.clear();
         }
 
         public function hitTest(x:int, y:int):Boolean {
@@ -137,7 +138,7 @@ package com.berry.animation.core {
 
         public function get isRenderFinish():Boolean
         {
-            return _rendered;
+            return _assetMovieClip.assetData && _assetMovieClip.assetData.isRenderFinish;
         }
 
         private function getEffect():void {
@@ -157,7 +158,6 @@ package com.berry.animation.core {
 
         private function newAssetRendered(e:* = null):void {
             _rendered = true;
-            renderCompletePromise.resolve();
             if (_assetMovieClip.loop && _assetMovieClip.isPlay) {
                 // wait end animation
                 _assetMovieClip.loop = false;
@@ -165,6 +165,7 @@ package com.berry.animation.core {
             } else {
                 playPart(_animationModel.currentPart());
             }
+            renderCompletePromise.resolve();
         }
 
         private function playCurrentPart(e:* = null):void {

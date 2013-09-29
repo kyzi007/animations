@@ -1,16 +1,17 @@
 package com.berry.animation.utils {
+    import flash.display.DisplayObject;
     import flash.display.Sprite;
 
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
 
     public class AlphaDecorator {
-        public function AlphaDecorator(sprites:Vector.<Sprite>) {
+        public function AlphaDecorator(sprites:Vector.<DisplayObject>) {
             _sprites = sprites;
         }
 
         private var _currentAlpha:Number = 1;
-        private var _sprites:Vector.<Sprite>;
+        private var _sprites:Vector.<DisplayObject>;
         private var _alphaAction:Action;
         private var _targetAlpha:Number;
         private var _startAlpha:Number;

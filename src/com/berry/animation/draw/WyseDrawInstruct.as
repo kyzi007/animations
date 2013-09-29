@@ -14,8 +14,6 @@ package com.berry.animation.draw {
 
     import log.logServer.KLog;
 
-    import EffectViewer;
-
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
         public function WyseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
