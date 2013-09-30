@@ -195,15 +195,11 @@ package com.berry.animation.library {
         }
 
         protected function getRender(assetData:AssetData):Class {
-            //var render:BaseDrawInstruct;
             if (assetData.getQuery.sourceType == SourceTypeEnum.SOURCE_PNG) {
                 return TileDrawInstruct;
-                //render = new TileDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name));
             } else {
                 return WyseDrawInstruct;
-                //render = new WyseDrawInstruct(assetData, assetData.getQuery, getSource(assetData.getQuery.name) as Sprite);
             }
-            //return render;
         }
 
         public function getUrl(name:String, type:String):String {

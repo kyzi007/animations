@@ -2,6 +2,7 @@ package {
     import animation.AnimationsList;
 
     import com.berry.animation.core.AssetView;
+    import com.berry.animation.data.SourceTypeEnum;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AssetLibrary;
 
@@ -85,6 +86,7 @@ package {
         private function place(i2:int, i22:int):void {
             _asset = new AssetView(_name, _name).tileMainAspectInit();
             _asset.cache = false;
+            _asset.data.sourceType.setValue(SourceTypeEnum.SOURCE_PNG);
             _asset.effectMode = true;
             _asset.stepFrame = int(_frame.text);
             _asset.init(_assetLib, _animLib);

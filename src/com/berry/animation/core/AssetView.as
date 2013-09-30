@@ -36,8 +36,6 @@ package com.berry.animation.core {
         //
         public var effectAspect:IAssetViewAspect;
         public var data:AssetModel = new AssetModel();
-        //
-        public var sourceType:String = SourceTypeEnum.SOURCE_SWF;
         private var _x:int;
         private var _y:int;
         //
@@ -97,7 +95,7 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
-        public function init(assetlibrary:AssetLibrary, animationLibrary:AnimationLibrary):void {
+        public function init(assetlibrary:AssetLibrary, animationLibrary:AnimationLibrary):AssetView {
             failIfInit();
             _isInit = true;
             CONFIG::debug{
@@ -122,6 +120,8 @@ package com.berry.animation.core {
                 _view = mainAspect.view;
             }
             assetLibrary.loadData(data.assetName, data.sourceType.value, onLoadCallback);
+
+            return this;
         }
 
         public function playByName(animation:String):void {
@@ -194,10 +194,10 @@ package com.berry.animation.core {
             }
         }
 
-        protected function onLoadCallback(data:*, content:*):void {
+        protected function onLoadCallback(source:*, content:*):void {
             animationLibrary.parseAsset(assetName, assetLibrary.getSource(assetName));
             if (animationLibrary.getIsComplexAsset(data.assetName)) {
-                assetLibrary.registerPartAsset(data.assetName, content);
+                assetLibrary.registerPartAsset(data.assetName, source);
             } else {
                 if (_renderListBeforePlay) {
                     assetLibrary.cacheSource(data.assetName);
