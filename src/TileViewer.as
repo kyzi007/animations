@@ -91,13 +91,10 @@ package {
             _asset.stepFrame = int(_frame.text);
             _asset.init(_assetLib, _animLib);
 
-            _asset.view.x = 600;
-            _asset.view.y = 600;
             _asset.visible = true;
-
             addChildAt(_asset.view, 0);
-            _asset.view.x = i2;
-            _asset.view.y = i22;
+            _asset.x = i2;
+            _asset.y = i22;
         }
 
         private function onChangeFrame(event:Event):void {

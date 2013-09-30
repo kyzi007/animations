@@ -93,11 +93,11 @@ package com.berry.animation.core {
         }
 
         public function set x(value:int):void {
-            view.x = value;
+            _assetSprite.x = value;
         }
 
         public function set y(value:int):void {
-            view.y = value;
+            _assetSprite.y = value;
         }
 
         public function set animationSpeed(value:Number):void {
