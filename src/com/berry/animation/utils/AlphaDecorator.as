@@ -1,7 +1,5 @@
 package com.berry.animation.utils {
     import flash.display.DisplayObject;
-    import flash.display.Sprite;
-
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
 
@@ -33,7 +31,7 @@ package com.berry.animation.utils {
                     _alphaAction = null;
                 }
             }
-            for each (var sprite:Sprite in _sprites) {
+            for each (var sprite:DisplayObject in _sprites) {
                 sprite.alpha = _currentAlpha;
             }
         }

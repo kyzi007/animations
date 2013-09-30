@@ -44,7 +44,7 @@ package com.berry.animation.core {
             }
             _assetData = assetData;
             _assetData.useCount++;
-            if (_assetData.isRenderFinish) {
+            if (_assetData.isRenderFinish && _assetData.frames.length) {
                 _assetSprite.draw(_assetData.frames[0]);
                 _assetData.completeRenderPromise.callbackRemove(tryPlayCallback);
             } else {

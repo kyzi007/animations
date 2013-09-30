@@ -55,7 +55,7 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation, KLog.ERROR); }
+                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation +' - '+_query.name, KLog.ERROR); }
             }
         }
 

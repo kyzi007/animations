@@ -38,6 +38,9 @@ package com.berry.animation.core {
         }
 
         private function showPreloader():void {
+            if(_preloader) {
+                return;
+            }
             var preloaderAssetData:AssetData = _parent.assetLibrary.getPreloader(_parent.data.assetName);
             if(!preloaderAssetData) {
                 return;
