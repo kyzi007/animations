@@ -46,7 +46,7 @@ package com.berry.animation.core {
             playPart(_animationModel.currentPart());
         }
 
-        public function cleanUp():void {
+        public function clear():void {
             _assetMovieClip.clear();
         }
 

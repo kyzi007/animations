@@ -50,9 +50,6 @@ package com.berry.animation.core {
                 return mainAspect.hitTest(globalX, globalY, checkContainer) || (effectAspect && effectAspect.hitTest(globalX, globalY, checkContainer));
             }
         }
-
-        //
-
         public function applyFilter(value:ColorMatrix):void {
             mainAspect.applyFilter(value);
             if (effectAspect) {
@@ -87,7 +84,7 @@ package com.berry.animation.core {
 
         public function effectAspectInit():AssetView {
             failIfInit();
-            // _effectAspect = new EffectAspect(this);
+            effectAspect = new EffectAspect(this);
             return this;
         }
 
@@ -115,7 +112,7 @@ package com.berry.animation.core {
             if (effectAspect) {
                 _view = new Sprite();
                 Sprite(_view).addChild(mainAspect.view);
-                Sprite(_view).addChild(shadowAspect.view);
+                Sprite(_view).addChild(effectAspect.view);
             } else {
                 _view = mainAspect.view;
             }
@@ -249,9 +246,6 @@ package com.berry.animation.core {
 
         public function set animationSpeed(value:Number):void {
             mainAspect.animationSpeed = value;
-            if (effectAspect) {
-                effectAspect.animationSpeed = value;
-            }
         }
 
         public function get visible():Boolean {
@@ -326,9 +320,10 @@ package com.berry.animation.core {
         }
 
         public function set x(value:int):void {
-            mainAspect.x = value;
             if (effectAspect) {
-                effectAspect.x = value;
+                _view.x = value;
+            } else {
+                mainAspect.x = value;
             }
             if (shadowAspect) {
                 shadowAspect.x = value;
@@ -341,9 +336,10 @@ package com.berry.animation.core {
         }
 
         public function set y(value:int):void {
-            mainAspect.y = value;
-            if (effectAspect) {
-                effectAspect.y = value;
+            if(effectAspect){
+                _view.y = value;
+            } else {
+                mainAspect.y = value;
             }
             if (shadowAspect) {
                 shadowAspect.y = value;

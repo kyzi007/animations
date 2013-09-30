@@ -118,7 +118,6 @@ package {
                 log(_name + ' некорректное имя внутри');
             }
             if (clipClass) {
-
                 if (_asset) {
                     removeChild(_asset.view);
                     removeChild(_asset.shadow);

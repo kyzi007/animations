@@ -103,7 +103,7 @@ package com.berry.animation.core {
             if(_preloader){
                 _preloader.clear();
             }
-            _main.cleanUp();
+            _main.clear();
         }
 
         public function get boundsUpdatePromise():Promise {

@@ -103,10 +103,10 @@ package com.berry.animation.core {
         }
 
         public function cleanUp():void {
-            _main.cleanUp();
+            _main.clear();
             _shadow.clear();
             for each (var effect:AdvancedAssetMovieClip in _effects) {
-                effect.cleanUp();
+                effect.clear();
             }
             _assetLibrary.cleanUp(name);
             _data.cleanUp();
@@ -158,7 +158,7 @@ package com.berry.animation.core {
             }
             var effect:AdvancedAssetMovieClip;
             for each (effect in _effects) {
-                effect.cleanUp();
+                effect.clear();
                 mainSprite.removeChild(effect.assetMovieClip);
             }
             _effects = [];
