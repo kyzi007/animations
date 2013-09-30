@@ -43,7 +43,9 @@ package com.berry.animation.core {
 
         public function clear():void {
             _currentFrameData = null;
-            _view.bitmapData = null;
+           if(_view){
+               _view.bitmapData = null;
+           }
             _view = null;
             _bounds = null;
         }
@@ -60,7 +62,7 @@ package com.berry.animation.core {
          * @param isUpdateBounds
          */
         public function draw(frame:AssetFrame, isUpdateBounds:Boolean = false):void {
-            if (!_view.visible && !isUpdateBounds || !_view) return;
+            if (_view && !_view.visible && !isUpdateBounds || !_view) return;
 
             if (frame is AssetFrame) {
                 _currentFrameData = frame;
