@@ -1,5 +1,6 @@
 package {
     import animation.AnimationsList;
+    import animation.MidnightAssetView;
 
     import com.berry.animation.core.AssetView;
     import com.berry.animation.library.AnimationLibrary;
@@ -31,7 +32,7 @@ package {
             loadBtn.y = 10;
             addChild(loadBtn);
 
-            _frame = createButton('1', null);
+            _frame = createButton('2', null);
             _frame.x = 150;
             _frame.y = 10;
             _frame.selectable = true;
@@ -55,7 +56,7 @@ package {
         private var _name:String;
         private var _assetLib:AssetLibrary = new AssetLibrary('');
         private var _animLib:AnimationLibrary = new AnimationLibrary();
-        private var _asset:AssetView;
+        private var _asset:MidnightAssetView;
         private var _f:FileReference;
 
         public static function log(...strings):void {
@@ -128,8 +129,8 @@ package {
                 _assetLib.registerAsset(clipClass, _name, loaderInfo);
                 _animLib.parseAsset(_name, new clipClass);
 
-                _asset = new AssetView(_name, _name)
-                        .shadowAspectInit()
+                _asset = new MidnightAssetView(_name, _name);
+                _asset.shadowAspectInit()
                         .classicMainAspectInit()
                         .effectAspectInit();
                 _asset.cache = false;
@@ -143,6 +144,8 @@ package {
                 _asset.y = 600;
                 _asset.visible = true;
 
+
+                _asset.flip = true;
                 _asset.play();
 
                 addChildAt(_asset.view, 0);

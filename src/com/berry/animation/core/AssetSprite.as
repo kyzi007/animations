@@ -22,7 +22,7 @@ package com.berry.animation.core {
         private var _x:int;
 
         public function setVisible(value:Boolean):void {
-            _view.visible = value;
+           if(_view) _view.visible = value;
         }
 
         public function set x(value:int):void

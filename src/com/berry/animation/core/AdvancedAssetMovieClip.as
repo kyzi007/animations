@@ -1,4 +1,5 @@
 package com.berry.animation.core {
+    import com.berry.animation.data.RotateEnum;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AnimationPart;
     import com.berry.animation.library.AssetData;
@@ -33,6 +34,7 @@ package com.berry.animation.core {
         private var _pauseAction:Action;
         private var _rendered:Boolean;
         public var startRenderPromise:Promise = new Promise();
+        private var _currPreset:AnimationPart;
 
         public function get isActive():Boolean
         {
@@ -70,7 +72,10 @@ package com.berry.animation.core {
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
-
+_currPreset = currPreset;
+            if(currPreset.isEffect){
+                query.setRotate(RotateEnum.NONE);
+            }
            //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
@@ -79,6 +84,9 @@ package com.berry.animation.core {
                 if (!isOneFrame) {
                     if (assetData.isRenderFinish) {
                         query = _data.getQuery(currPreset.fullName).setIsFullAnimation(true);
+                        if (currPreset.isEffect) {
+                            query.setRotate(RotateEnum.NONE);
+                        }
                         if (assetLibrary.assetRendered(query)) {
                             assetData = assetLibrary.getAssetData(query);
                         } else {
@@ -142,7 +150,11 @@ package com.berry.animation.core {
 
         private function getEffect():void {
             var query:AssetDataGetQuery = _data.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
+            if (_currPreset.isEffect) {
+                query.setRotate(RotateEnum.NONE);
+            }
             var fullAssetData:AssetData = assetLibrary.getAssetData(query);
+
             if (fullAssetData.isRenderFinish) {
                 playCurrentPart();
             } else {
