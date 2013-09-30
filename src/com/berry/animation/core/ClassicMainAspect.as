@@ -56,7 +56,7 @@ package com.berry.animation.core {
             _preloader.setVisible(_visible);
         }
 
-        private function playPreloader():void {
+        private function playPreloader(...params):void {
             if(_preloader){
                 _preloader.gotoAndPlay(0);
                 _preloader.assetData.completeRenderPromise.callbackRemove(playPreloader);
