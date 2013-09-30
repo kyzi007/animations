@@ -73,7 +73,7 @@ package com.berry.animation.core {
             var assetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
 _currPreset = currPreset;
-            if(currPreset.isEffect){
+            if(!currPreset.isRotateSupport(query.rotate)){
                 query.setRotate(RotateEnum.NONE);
             }
            //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
@@ -84,7 +84,7 @@ _currPreset = currPreset;
                 if (!isOneFrame) {
                     if (assetData.isRenderFinish) {
                         query = _data.getQuery(currPreset.fullName).setIsFullAnimation(true);
-                        if (currPreset.isEffect) {
+                        if (!currPreset.isRotateSupport(query.rotate)) {
                             query.setRotate(RotateEnum.NONE);
                         }
                         if (assetLibrary.assetRendered(query)) {
@@ -150,7 +150,7 @@ _currPreset = currPreset;
 
         private function getEffect():void {
             var query:AssetDataGetQuery = _data.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
-            if (_currPreset.isEffect) {
+            if (!_currPreset.isRotateSupport(query.rotate)) {
                 query.setRotate(RotateEnum.NONE);
             }
             var fullAssetData:AssetData = assetLibrary.getAssetData(query);

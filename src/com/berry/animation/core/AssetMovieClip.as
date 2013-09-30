@@ -206,8 +206,7 @@ package com.berry.animation.core {
             }
         }
 
-        public function set name(value:String):void
-        {
+        public function set name(value:String):void {
             _assetName = value;
         }
     }
