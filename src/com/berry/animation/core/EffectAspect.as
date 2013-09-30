@@ -22,11 +22,14 @@ package com.berry.animation.core {
         private var _visible:Boolean;
         private var _effects:Array = [];
         private var _waitPlay:Boolean;
+        private var _filter:ColorMatrix;
 
         public function play():void {
             var effect:AdvancedAssetMovieClip;
             for each (effect in _effects) {
-                _view.removeChild(effect.assetMovieClip.view);
+                if(effect.assetMovieClip.view){
+                    _view.removeChild(effect.assetMovieClip.view);
+                }
                 effect.clear();
             }
             if(!_visible || !_parent.data.animationModel){
@@ -38,10 +41,13 @@ package com.berry.animation.core {
                 effect = new AdvancedAssetMovieClip(_parent.assetName + 'effect');
                 effect.assetLibrary = _parent.assetLibrary;
                 effect.data = _parent.data;
-                effect.fullAnimation = _parent.data.effectMode;
+                effect.fullAnimation = _filter ? false : _parent.data.effectMode;
                 effect.loadOneFrameFirst = true;
                 effect.playAnimationSet(animationModel);
                 effect.setVisible(true);
+                if (_filter) {
+                    effect.applyFilter(_filter);
+                }
                 _effects.push(effect);
                 _view.addChild(effect.assetMovieClip.view);
             }
@@ -96,19 +102,17 @@ package com.berry.animation.core {
         public function set y(value:int):void {CONFIG::debug{ KLog.log("EffectAspect : set y  " + 'not work', KLog.CRITICAL); }}
 
         public function applyFilter(value:ColorMatrix):void {
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
+            _filter = value;
+            play();
+            /*for each (var effect:AdvancedAssetMovieClip in _effects) {
                 effect.applyFilter(value);
                 effect.fullAnimation = false;
-                play();
-            }
+            }*/
         }
 
         public function removeFilter():void {
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
-                effect.removeFilter();
-                effect.fullAnimation = _parent.data.effectMode;
-                play();
-            }
+            _filter = null;
+            play();
         }
 
         public function set animationSpeed(value:Number):void {CONFIG::debug{ KLog.log("EffectAspect : animationSpeed  " + 'not work', KLog.CRITICAL); }}
