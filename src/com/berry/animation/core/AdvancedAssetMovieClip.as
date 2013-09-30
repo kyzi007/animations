@@ -16,7 +16,6 @@ package com.berry.animation.core {
             _assetMovieClip = new AssetMovieClip(name)
         }
 
-
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
         public var assetLibrary:AssetLibrary;
