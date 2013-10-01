@@ -12,6 +12,8 @@ package com.berry.animation.library {
     import flash.display.Sprite;
     import flash.net.SharedObject;
 
+    import org.dzyga.eventloop.Loop;
+
     import org.dzyga.events.EnterFrame;
     import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
@@ -25,10 +27,10 @@ package com.berry.animation.library {
         protected var _assets:Object = {};
         protected var _doHash:Object = {};
         protected var _classHash:Object = {};
-        private var _dispatcher:SimpleEventDispatcher = new SimpleEventDispatcher();
         private var _baseUrl:String;
         private var _cached:Object = {};
         private var _partAsset:Object = {};
+        private var _loop:Loop;
 
         public function gcForce():void {
             for (var assetsName:String in _assets) {
@@ -246,12 +248,12 @@ package com.berry.animation.library {
             _baseUrl = value;
         }
 
-        public function get dispatcher():SimpleEventDispatcher {
-            return _dispatcher;
-        }
-
         public function registerPartAsset(name:String, content:*):void {
             _partAsset[name] = content;
+        }
+
+        public function get loop():Loop{
+            return _loop;
         }
     }
 }
