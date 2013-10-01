@@ -1,5 +1,5 @@
 package com.berry.animation.core {
-    import animation.AnimationsList;
+    import com.berry.animation.library.AnimationsList;
 
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.data.SourceTypeEnum;

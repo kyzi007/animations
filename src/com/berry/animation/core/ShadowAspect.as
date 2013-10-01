@@ -1,6 +1,8 @@
 package com.berry.animation.core {
     import animation.*;
 
+    import com.berry.animation.library.AnimationsList;
+
     import com.berry.animation.library.AssetData;
 
     import flash.display.Bitmap;

@@ -1,5 +1,5 @@
 package {
-    import animation.AnimationsList;
+    import com.berry.animation.library.AnimationsList;
 
     import com.berry.animation.core.AssetView;
     import com.berry.animation.data.SourceTypeEnum;
