@@ -17,7 +17,7 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayProxy;
     import org.dzyga.geom.Rect;
 
-    public class AssetView extends DisplayProxy implements IMidnightView {
+    public class AssetView extends DisplayProxy{
         public function AssetView(id:String, name:String) {
             data.id = id;
             data.assetName = name;
