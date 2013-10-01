@@ -72,7 +72,7 @@ package com.berry.animation.core {
 
         public function tileMainAspectInit():AssetView {
             failIfInit();
-            mainAspect = new TileMainAspect(this);
+            mainAspect = new TileViewAspect(this);
             return this;
         }
 

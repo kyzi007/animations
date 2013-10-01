@@ -13,8 +13,8 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class TileMainAspect implements IAssetViewAspect {
-        public function TileMainAspect(parent:AssetView) {
+    public class TileViewAspect implements IAssetViewAspect {
+        public function TileViewAspect(parent:AssetView) {
             _parent = parent;
         }
 
@@ -26,7 +26,7 @@ package com.berry.animation.core {
 
         public function play():void {
             // drawn only once
-            if (!_assetSprite.currentFrameData) {
+            if (!_assetSprite.currentFrameData && _assetData.isRenderFinish) {
                 _assetSprite.setVisible(true);
                 _assetSprite.draw(_assetData.frames[int(Math.random() * _assetData.frames.length)]);
                 _assetSprite.setVisible(_visible);
