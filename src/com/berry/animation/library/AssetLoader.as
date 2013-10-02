@@ -24,10 +24,7 @@ package com.berry.animation.library {
 
             contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
             contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
-
-            if(callback){
-                completePromise.callbackRegister(callback)
-            }
+            completePromise.callbackRegister(callback);
             loadSwf(url);
         }
 

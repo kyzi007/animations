@@ -7,8 +7,6 @@ package com.berry.animation.core {
 
     import com.berry.animation.library.AssetData;
 
-    import common.map.view.component.Cell;
-
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
 

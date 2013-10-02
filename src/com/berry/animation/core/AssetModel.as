@@ -36,7 +36,8 @@ package com.berry.animation.core {
 
         }
 
-        public function getQuery(animation:String, rotateOn:Boolean = true, checkDuplicate:int = AssetDataGetQuery.CHECK_DUPLICATE_NONE):AssetDataGetQuery {
+        public function getQuery(animation:String, rotateOn:Boolean = true,
+                                 checkDuplicate:int = 0):AssetDataGetQuery {
             var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
             query.setAssetName(assetName)
                     .setSourceType(sourceType.value)
@@ -48,7 +49,7 @@ package com.berry.animation.core {
                     .setStep(_stepFrame)
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
                     .setIsAutoClear(!getCache(animation))
-                    .setRenderInTread(renderInTread)
+                    .setRenderInTread(renderInTread);
             return query;
         }
 

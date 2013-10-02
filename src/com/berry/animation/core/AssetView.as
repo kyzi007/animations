@@ -28,8 +28,8 @@ package com.berry.animation.core {
         public var cacheAnimationFinishPromise:Promise = new Promise();
         public var loadCompletePromise:Promise = new Promise();
         //
-        public var assetLibrary:AssetLibrary;
-        public var animationLibrary:AnimationLibrary;
+        private var _assetLibrary:AssetLibrary;
+        private var _animationLibrary:AnimationLibrary;
         //
         public var mainAspect:IAssetViewAspect;
         public var shadowAspect:IAssetViewAspect;
@@ -44,7 +44,6 @@ package com.berry.animation.core {
         internal var _renderListBeforePlay:Array;
 
         // create init preloader, init presets
-
         override public function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean {
             if (!mainAspect.isRendered) {
                 return true;
@@ -52,6 +51,7 @@ package com.berry.animation.core {
                 return mainAspect.hitTest(globalX, globalY, checkContainer) || (effectAspect && effectAspect.hitTest(globalX, globalY, checkContainer));
             }
         }
+
         public function applyFilter(value:ColorMatrix):void {
             mainAspect.applyFilter(value);
             if (effectAspect) {
@@ -94,15 +94,20 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
-        public function init(assetlibrary:AssetLibrary, animationLibrary:AnimationLibrary):AssetView {
+        public function get assetLibrary ():AssetLibrary {
+            return _assetLibrary || AnimationManager.ASSET_LIBRARY;
+        }
+
+        public function get animationLibrary ():AnimationLibrary {
+            return _animationLibrary || AnimationManager.ANIMATION_LIBRARY;
+        }
+
+        public function init(assetLibrary:AssetLibrary = null, animationLibrary:AnimationLibrary = null):AssetView {
             failIfInit();
             _isInit = true;
-            CONFIG::debug{
-                if (!mainAspect) {KLog.log("AssetViewNew : init  " + "main view is null", KLog.CRITICAL); }
-            }
+            _assetLibrary = assetLibrary;
+            _animationLibrary = animationLibrary;
 
-            this.assetLibrary = assetlibrary;
-            this.animationLibrary = animationLibrary;
             mainAspect.init();
             if (effectAspect) {
                 effectAspect.init();
@@ -118,8 +123,7 @@ package com.berry.animation.core {
             } else {
                 _view = mainAspect.view;
             }
-            assetLibrary.loadData(data.assetName, data.sourceType.value, onLoadCallback);
-
+            this.assetLibrary.loadData(data.assetName, data.sourceType.value, onLoadCallback);
             return this;
         }
 
@@ -127,7 +131,7 @@ package com.berry.animation.core {
             data.animation = animation;
             if (isLoadComplete && data.visible) {
                 _waitPlay = false;
-                playByModel(animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
+                playByModel(_animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
             } else {
                 _waitPlay = true;
             }
