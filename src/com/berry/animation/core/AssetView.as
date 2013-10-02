@@ -27,8 +27,8 @@ package com.berry.animation.core {
         public var cacheAnimationFinishPromise:Promise = new Promise();
         public var loadCompletePromise:Promise = new Promise();
         //
-        private var _assetLibrary:AssetLibrary;
-        private var _animationLibrary:AnimationLibrary;
+        protected var _assetLibrary:AssetLibrary;
+        protected var _animationLibrary:AnimationLibrary;
         //
         public var mainAspect:IAssetViewAspect;
         public var shadowAspect:IAssetViewAspect;
