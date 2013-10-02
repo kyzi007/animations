@@ -1,6 +1,4 @@
 package com.berry.animation.core {
-    import animation.*;
-
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AssetData;
@@ -12,10 +10,13 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
+    import org.as3commons.collections.framework.IIterator;
+    import org.as3commons.collections.iterators.ArrayIterator;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayProxy;
     import org.dzyga.display.IDisplayProxy;
     import org.dzyga.geom.Rect;
+    import org.dzyga.utils.ArrayUtils;
 
     public class AssetView extends DisplayProxy{
         public function AssetView(id:String, name:String) {
@@ -94,6 +95,20 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
+        public function getAspectList ():Array {
+            var aspectList:Array = [];
+            if (mainAspect) {
+                aspectList.push(mainAspect);
+            }
+            if (shadowAspect) {
+                aspectList.push(shadowAspect);
+            }
+            if (effectAspect) {
+                aspectList.push(effectAspect);
+            }
+            return aspectList;
+        }
+
         public function get assetLibrary ():AssetLibrary {
             return _assetLibrary;
         }
@@ -108,13 +123,7 @@ package com.berry.animation.core {
             _assetLibrary = assetLibrary;
             _animationLibrary = animationLibrary;
 
-            mainAspect.init();
-            if (effectAspect) {
-                effectAspect.init();
-            }
-            if (shadowAspect) {
-                shadowAspect.init();
-            }
+            ArrayUtils.map(getAspectList(), 'init');
 
             if (effectAspect) {
                 _view = new Sprite();
@@ -147,13 +156,7 @@ package com.berry.animation.core {
                 data.animationModel = animationModel;
                 data.animation = animationModel.shotName;
 
-                mainAspect.play();
-                if (effectAspect) {
-                    effectAspect.play();
-                }
-                if (shadowAspect) {
-                    shadowAspect.play();
-                }
+                ArrayUtils.map(getAspectList(), 'play');
             } else {
                 trace('no animationModel', data.id);
             }
@@ -357,6 +360,12 @@ package com.berry.animation.core {
             this.x = truncate ? int(x) : x;
             this.y = truncate ? int(y) : y;
             return this;
+        }
+
+
+        override public function match (target:DisplayObject):IDisplayProxy {
+
+            return super.match(target);
         }
     }
 }
