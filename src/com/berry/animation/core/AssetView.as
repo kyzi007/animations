@@ -14,6 +14,7 @@ package com.berry.animation.core {
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayProxy;
+    import org.dzyga.display.IDisplayProxy;
     import org.dzyga.geom.Rect;
 
     public class AssetView extends DisplayProxy{
@@ -350,6 +351,12 @@ package com.berry.animation.core {
                 shadowAspect.y = value;
             }
             _y = value;
+        }
+
+        override public function moveTo (x:Number, y:Number, truncate:Boolean = false):IDisplayProxy {
+            this.x = truncate ? int(x) : x;
+            this.y = truncate ? int(y) : y;
+            return this;
         }
     }
 }
