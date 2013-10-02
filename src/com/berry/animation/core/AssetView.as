@@ -10,10 +10,9 @@ package com.berry.animation.core {
     import log.logServer.KLog;
 
     import org.ColorMatrix;
-    import org.as3commons.collections.framework.IIterator;
-    import org.as3commons.collections.iterators.ArrayIterator;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayProxy;
+    import org.dzyga.display.DisplayUtils;
     import org.dzyga.display.IDisplayProxy;
     import org.dzyga.geom.Rect;
     import org.dzyga.utils.ArrayUtils;
@@ -45,11 +44,11 @@ package com.berry.animation.core {
         internal var _renderListBeforePlay:Array;
 
         // create init preloader, init presets
-        override public function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean {
+        override public function hitTest (globalX:int, globalY:int):Boolean {
             if (!mainAspect.isRendered) {
                 return true;
             } else {
-                return mainAspect.hitTest(globalX, globalY, checkContainer) || (effectAspect && effectAspect.hitTest(globalX, globalY, checkContainer));
+                return mainAspect.hitTest(globalX, globalY) || (effectAspect && effectAspect.hitTest(globalX, globalY));
             }
         }
 
@@ -107,6 +106,19 @@ package com.berry.animation.core {
                 aspectList.push(effectAspect);
             }
             return aspectList;
+        }
+
+        public function getAspectViewList ():Array {
+            var viewList:Array = [];
+            if (effectAspect) {
+                viewList.push(_view);
+            } else {
+                viewList.push(mainAspect.view);
+            }
+            if (shadowAspect) {
+                viewList.push(shadowAspect.view);
+            }
+            return viewList;
         }
 
         public function get assetLibrary ():AssetLibrary {
@@ -325,35 +337,23 @@ package com.berry.animation.core {
         }
 
         public function get x():int {
-            return _x;
+            return view.x;
         }
 
-        public function set x(value:int):void {
-            if (effectAspect) {
-                _view.x = value;
-            } else {
-                mainAspect.x = value;
+        public function set x (value:int):void {
+            for each (var aspectView:DisplayObject in getAspectViewList()) {
+                aspectView.x = value;
             }
-            if (shadowAspect) {
-                shadowAspect.x = value;
-            }
-            _x = value;
         }
 
         public function get y():int {
-            return _y;
+            return view.y;
         }
 
         public function set y(value:int):void {
-            if(effectAspect){
-                _view.y = value;
-            } else {
-                mainAspect.y = value;
+            for each (var aspectView:DisplayObject in getAspectViewList()) {
+                aspectView.y = value;
             }
-            if (shadowAspect) {
-                shadowAspect.y = value;
-            }
-            _y = value;
         }
 
         override public function moveTo (x:Number, y:Number, truncate:Boolean = false):IDisplayProxy {
@@ -362,10 +362,50 @@ package com.berry.animation.core {
             return this;
         }
 
-
         override public function match (target:DisplayObject):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, target);
+            return this;
+        }
 
-            return super.match(target);
+        override public function scale (scaleX:Number, scaleY:Number = NaN):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, scaleX, scaleY);
+            return this;
+        }
+
+        override public function offset (dx:Number, dy:Number, truncate:Boolean = false):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.offset, null, dx, dy, truncate);
+            return this;
+
+        }
+
+        override public function show ():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.show);
+            return this;
+        }
+
+        override public function hide ():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.hide);
+            return this;
+        }
+
+        override public function toggle ():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.toggle);
+            return this;
+        }
+
+        override public function detach ():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.detach);
+            return this;
+        }
+
+        override public function alpha (alpha:Number = 1):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.alpha);
+            return this;
+        }
+
+
+        override public function removeChild (child:DisplayObject):IDisplayProxy {
+            return super.removeChild(child);
         }
     }
 }
