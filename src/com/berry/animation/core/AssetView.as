@@ -36,8 +36,6 @@ package com.berry.animation.core {
         //
         public var effectAspect:IAssetViewAspect;
         public var data:AssetModel = new AssetModel();
-        private var _x:int;
-        private var _y:int;
         //
         private var _waitPlay:Boolean;
         internal var _isInit:Boolean;
