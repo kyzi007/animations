@@ -1,7 +1,6 @@
 package com.berry.animation.core {
     import animation.*;
 
-    import com.berry.animation.data.SourceTypeEnum;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AssetData;
@@ -95,11 +94,11 @@ package com.berry.animation.core {
         }
 
         public function get assetLibrary ():AssetLibrary {
-            return _assetLibrary || AnimationManager.ASSET_LIBRARY;
+            return _assetLibrary;
         }
 
         public function get animationLibrary ():AnimationLibrary {
-            return _animationLibrary || AnimationManager.ANIMATION_LIBRARY;
+            return _animationLibrary;
         }
 
         public function init(assetLibrary:AssetLibrary = null, animationLibrary:AnimationLibrary = null):AssetView {
