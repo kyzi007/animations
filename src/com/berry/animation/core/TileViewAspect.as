@@ -1,6 +1,8 @@
 package com.berry.animation.core {
     import animation.*;
 
+    import com.berry.animation.data.AnimationSettings;
+
     import com.berry.animation.library.AnimationsList;
 
     import com.berry.animation.library.AssetData;
@@ -20,7 +22,12 @@ package com.berry.animation.core {
             _parent = parent;
         }
 
-        private const _BOUNDS:Rect = new Rect(-Cell.CELL_DX, -Cell.CELL_DY, Cell.CELL_WIDTH, Cell.CELL_HEIGHT);
+        private static const _BOUNDS:Rect = new Rect(
+                -AnimationSettings.tileWidth/2,
+                -AnimationSettings.tileHeight / 2,
+                AnimationSettings.tileWidth,
+                AnimationSettings.tileHeight
+        );
         private var _assetSprite:AssetSprite;
         private var _parent:AssetView;
         private var _assetData:AssetData;

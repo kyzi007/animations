@@ -43,6 +43,8 @@ package com.berry.animation.core {
         internal var _isInit:Boolean;
         internal var _renderListBeforePlay:Array;
 
+        // create init preloader, init presets
+
         override public function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean {
             if (!mainAspect.isRendered) {
                 return true;
