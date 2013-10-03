@@ -45,11 +45,11 @@ package com.berry.animation.core {
 
         // create init preloader, init presets
 
-        override public function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean {
+        override public function hitTest(globalX:int, globalY:int):Boolean {
             if (!mainAspect.isRendered) {
                 return true;
             } else {
-                return mainAspect.hitTest(globalX, globalY, checkContainer) || (effectAspect && effectAspect.hitTest(globalX, globalY, checkContainer));
+                return mainAspect.hitTest(globalX, globalY) || (effectAspect && effectAspect.hitTest(globalX, globalY));
             }
         }
         public function applyFilter(value:ColorMatrix):void {
