@@ -135,14 +135,13 @@ package com.berry.animation.core {
 
         public function playByModel(animationModel:AnimationModel):void {
             if (animationModel) {
+                data.animationModel = animationModel;
+                data.animation = animationModel.shotName;
                 if (!data.visible) {
                     _waitPlay = true;
                     return;
                 }
                 _waitPlay = false;
-                data.animationModel = animationModel;
-                data.animation = animationModel.shotName;
-
                 mainAspect.play();
                 if (effectAspect) {
                     effectAspect.play();
@@ -175,9 +174,7 @@ package com.berry.animation.core {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
                     cacheAnimationFinishPromise.resolve();
-                    if (visible) {
                         play();
-                    }
                 } else {
                     assetData = assetLibrary.getAssetData(data.getQuery(_renderListBeforePlay.shift()));
                     if (assetData.isRenderFinish) {
@@ -264,7 +261,7 @@ package com.berry.animation.core {
                 if (effectAspect) {
                     effectAspect.setVisible(value);
                 }
-                if (_waitPlay) {
+                if (_waitPlay && value) {
                     play();
                 }
             }
