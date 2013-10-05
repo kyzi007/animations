@@ -22,6 +22,7 @@ package {
 
     [SWF(width=900, height=800)]
     public class EffectViewer extends Sprite {
+        private var _flip:Boolean;
         public function EffectViewer() {
             stage.align = StageAlign.TOP_LEFT;
             stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -41,6 +42,11 @@ package {
             _frame.addEventListener(Event.CHANGE, onChangeFrame);
             addChild(_frame);
 
+            var flip:TextField = createButton('flip', flipUpdate);
+            flip.x = 300;
+            flip.y = 10;
+            addChild(flip);
+
             _log = new TextField();
             _log.width = 400;
             _log.height = 500;
@@ -49,7 +55,12 @@ package {
             _log.y = 50;
             addChild(_log);
 
-        } 
+        }
+
+        private function flipUpdate(e):void {
+            _flip =!_flip;
+            _asset.flip = _flip
+        }
 
         private static var _log:TextField;
         private var _frame:TextField;
@@ -145,7 +156,7 @@ package {
                 _asset.visible = true;
 
 
-                _asset.flip = true;
+                //_asset.flip = true;
                 _asset.play();
 
                 addChildAt(_asset.view, 0);
