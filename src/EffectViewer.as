@@ -153,7 +153,6 @@ package {
 
                 _asset.x = 600;
                 _asset.y = 600;
-                _asset.visible = true;
 
 
                 //_asset.flip = true;

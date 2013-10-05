@@ -10,7 +10,7 @@ package com.berry.animation.core {
         public function AssetModel() {
             sourceType.setValue(SourceTypeEnum.SOURCE_SWF);
         }
-
+//TODO delete
         public var cachedList:Array;
         public var renderInTread:Boolean;
         public var id:String;
@@ -22,7 +22,6 @@ package com.berry.animation.core {
         public var vectorMode:Boolean;
         public var sourceType:SourceTypeEnum = new SourceTypeEnum();
         public var text:String;
-        public var visible:Boolean = false;
         private var _rotation:RotateEnum = new RotateEnum(RotateEnum.NONE);
         private var _animation:String;
         private var _stepFrame:int = 1;

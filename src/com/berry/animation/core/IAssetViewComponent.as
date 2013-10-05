@@ -5,7 +5,7 @@ package com.berry.animation.core {
     import org.dzyga.callbacks.Promise;
     import org.dzyga.geom.Rect;
 
-    public interface IAssetViewAspect {
+    public interface IAssetViewComponent {
         function get view():DisplayObject
 
         function set animationSpeed(value:Number):void
@@ -27,7 +27,9 @@ package com.berry.animation.core {
          */
         function play():void
 
-        function setVisible(value:Boolean):void
+        function renderAndDrawLock():void
+
+        function renderAndDrawUnLock():void
 
         function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean;
 
@@ -38,6 +40,5 @@ package com.berry.animation.core {
         function applyFilter(value:ColorMatrix):void
 
         function removeFilter():void
-
     }
 }

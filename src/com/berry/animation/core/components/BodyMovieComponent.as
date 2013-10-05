@@ -1,4 +1,7 @@
-package com.berry.animation.core {
+package com.berry.animation.core.components {
+    import com.berry.animation.core.*;
+    import com.berry.animation.core.view.ComplexMoveAssetCanvas;
+    import com.berry.animation.core.view.MovieAssetCanvas;
     import com.berry.animation.library.AssetData;
 
     import flash.display.DisplayObject;
@@ -9,18 +12,23 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class ClassicMainAspect implements IAssetViewAspect {
-        public function ClassicMainAspect(parent:AssetView) {
+    public class BodyMovieComponent implements IAssetViewComponent {
+        public function BodyMovieComponent(parent:AssetView) {
             _parent = parent;
         }
 
         private var _parent:AssetView;
-        private var _preloader:AssetMovieClip;
-        private var _main:AdvancedAssetMovieClip;
+        private var _preloader:MovieAssetCanvas;
+        private var _main:ComplexMoveAssetCanvas;
         private var _view:Sprite = new Sprite;
-        private var _visible:Boolean;
+        private var _lock:Boolean;
+        private var _waitPlay:Boolean;
 
         public function play():void {
+            if(_lock){
+                _waitPlay = true;
+                return;
+            }
             _main.playAnimationSet(_parent.data.animationModel);
             if(!_main.isRenderFinish){
                 showPreloader();
@@ -31,7 +39,7 @@ package com.berry.animation.core {
         private function hidePreloader(...params):void {
             _main.renderCompletePromise.callbackRemove(hidePreloader);
             if(_preloader){
-                _view.removeChild(_preloader.view);
+                _view.removeChild(_preloader);
                 _preloader.clear();
                 _preloader = null;
             }
@@ -45,15 +53,14 @@ package com.berry.animation.core {
             if(!preloaderAssetData) {
                 return;
             }
-            _preloader = new AssetMovieClip('preloader');
+            _preloader = new MovieAssetCanvas('preloader');
             _preloader.assetData = preloaderAssetData;
             if(!_preloader.assetData.isRenderFinish){
                 _preloader.assetData.completeRenderPromise.callbackRegister(playPreloader);
             } else {
                 _preloader.gotoAndPlay(0);
             }
-            _view.addChild(_preloader.view);
-            _preloader.setVisible(_visible);
+            _view.addChild(_preloader);
         }
 
         private function playPreloader(...params):void {
@@ -61,14 +68,6 @@ package com.berry.animation.core {
                 _preloader.gotoAndPlay(0);
                 _preloader.assetData.completeRenderPromise.callbackRemove(playPreloader);
             }
-        }
-
-        public function setVisible(value:Boolean):void {
-            _visible = value;
-            if(_preloader){
-                _preloader.setVisible(value);
-            }
-            _main.setVisible(value);
         }
 
         public function get view():DisplayObject {
@@ -93,10 +92,10 @@ package com.berry.animation.core {
         }
 
         public function init():void {
-            _main = new AdvancedAssetMovieClip(_parent.data.assetName);
+            _main = new ComplexMoveAssetCanvas(_parent.data.assetName);
             _main.data = _parent.data;
             _main.assetLibrary = _parent.assetLibrary;
-            _view.addChild(_main.assetMovieClip.view);
+            _view.addChild(_main);
         }
 
         public function clear():void {
@@ -107,7 +106,7 @@ package com.berry.animation.core {
         }
 
         public function get boundsUpdatePromise():Promise {
-            return _main.assetMovieClip.boundsUpdatePromise;
+            return _main.boundsUpdatePromise;
         }
 
         public function set x(value:int):void {
@@ -128,6 +127,30 @@ package com.berry.animation.core {
 
         public function set animationSpeed(value:Number):void {
             _main.speed = value;
+        }
+
+        public function renderAndDrawLock():void {
+            _lock = true;
+            if(_preloader){
+                _preloader.drawLock();
+            }
+            if(_main){
+                _main.drawLock();
+            }
+        }
+
+        public function renderAndDrawUnLock():void {
+            _lock = false;
+            if (_preloader) {
+                _preloader.drawUnLock();
+            }
+            if (_main) {
+                _main.drawUnLock();
+            }
+            if(_waitPlay){
+                _waitPlay = false;
+                play();
+            }
         }
     }
 }

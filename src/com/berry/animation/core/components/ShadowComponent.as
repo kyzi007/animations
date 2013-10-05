@@ -1,5 +1,9 @@
-package com.berry.animation.core {
+package com.berry.animation.core.components {
+    import com.berry.animation.core.*;
+
     import animation.*;
+
+    import com.berry.animation.core.view.AssetCanvas;
 
     import com.berry.animation.library.AnimationsList;
 
@@ -8,37 +12,38 @@ package com.berry.animation.core {
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
 
+    import log.logServer.KLog;
+
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class ShadowAspect implements IAssetViewAspect {
-        public function ShadowAspect(parent:AssetView) {
+    public class ShadowComponent implements IAssetViewComponent {
+        public function ShadowComponent(parent:AssetView) {
             _parent = parent;
         }
 
-        private var _assetSprite:AssetSprite;
+        private var _canvas:AssetCanvas;
         private var _parent:AssetView;
         private var _assetData:AssetData;
-        private var _visible:Boolean;
         private var _view:Bitmap;
         private var _waitPlay:Boolean;
+        private var _lock:Boolean;
 
         /*
-        show after rendering, visible and parent asset body render finish
+         show after rendering, visible and parent asset body render finish
          */
         public function play():void {
-            if (!_visible) {
+            if (_lock) {
                 _waitPlay = true;
                 return;
             }
-            if(!_parent.mainAspect.isRendered){
+            if (!_parent.mainAspect.isRendered) {
                 _parent.mainAspect.finishRenderPromise.callbackRegister(tryPlayCallback);
                 _waitPlay = true;
                 return;
             }
-            _waitPlay = false;
             _parent.mainAspect.finishRenderPromise.callbackRemove(tryPlayCallback);
             var assetData:AssetData = _parent.assetLibrary.getAssetData(_parent.data.getQuery(AnimationsList.SHADOW));
             if (_assetData && assetData != _assetData) {
@@ -47,18 +52,10 @@ package com.berry.animation.core {
             _assetData = assetData;
             _assetData.useCount++;
             if (_assetData.isRenderFinish && _assetData.frames.length) {
-                _assetSprite.draw(_assetData.frames[0]);
+                _canvas.draw(_assetData.frames[0]);
                 _assetData.completeRenderPromise.callbackRemove(tryPlayCallback);
             } else {
                 _assetData.completeRenderPromise.callbackRegister(tryPlayCallback);
-            }
-        }
-
-        public function setVisible(value:Boolean):void {
-            _visible = value;
-            _assetSprite.setVisible(value);
-            if (_waitPlay) {
-                play();
             }
         }
 
@@ -67,8 +64,8 @@ package com.berry.animation.core {
         }
 
         public function init():void {
-            _assetSprite = new AssetSprite(_parent.data.assetName);
-            _view = _assetSprite.view;
+            _canvas = new AssetCanvas(_parent.data.assetName);
+            _view = _canvas;
             play();
         }
 
@@ -97,27 +94,44 @@ package com.berry.animation.core {
         }
 
         public function get finishRenderPromise():Promise {
+            CONFIG::debug{ KLog.log("ShadowComponent : finishRenderPromise  " + "not work", KLog.ERROR); }
             return null;
         }
 
         public function get bounds():Rect {
+            CONFIG::debug{ KLog.log("ShadowComponent : bounds  " + "not work", KLog.ERROR); }
             return null;
         }
 
         public function get boundsUpdatePromise():Promise {
+            CONFIG::debug{ KLog.log("ShadowComponent : boundsUpdatePromise  " + "not work", KLog.ERROR); }
             return null;
         }
 
         public function set x(value:int):void {
-            _assetSprite.x = value;
+            _canvas.x = value;
         }
 
         public function set y(value:int):void {
-            _assetSprite.y = value;
+            _canvas.y = value;
         }
 
         public function set animationSpeed(value:Number):void {
-            // none
+            CONFIG::debug{ KLog.log("ShadowComponent : animationSpeed  " + "not work", KLog.ERROR); }
+        }
+
+        public function renderAndDrawLock():void {
+            _lock = true;
+            _canvas.drawLock();
+        }
+
+        public function renderAndDrawUnLock():void {
+            _canvas.drawUnLock();
+            _lock = false;
+            if (_waitPlay) {
+                _waitPlay = false;
+                play();
+            }
         }
     }
 }

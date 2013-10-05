@@ -1,5 +1,8 @@
-package com.berry.animation.core {
+package com.berry.animation.core.components {
+    import com.berry.animation.core.*;
     import animation.*;
+
+    import com.berry.animation.core.view.AssetCanvas;
 
     import com.berry.animation.data.AnimationSettings;
 
@@ -15,8 +18,8 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class TileViewAspect implements IAssetViewAspect {
-        public function TileViewAspect(parent:AssetView) {
+    public class BodyTileComponent implements IAssetViewComponent {
+        public function BodyTileComponent(parent:AssetView) {
             _parent = parent;
         }
 
@@ -26,24 +29,16 @@ package com.berry.animation.core {
                 AnimationSettings.tileWidth,
                 AnimationSettings.tileHeight
         );
-        private var _assetSprite:AssetSprite;
+        private var _assetSprite:AssetCanvas;
         private var _parent:AssetView;
         private var _assetData:AssetData;
-        private var _visible:Boolean;
 
         public function play():void {
             // drawn only once
             if (!_assetSprite.currentFrameData && _assetData.isRenderFinish) {
-                _assetSprite.setVisible(true);
                 _assetSprite.draw(_assetData.frames[int(Math.random() * _assetData.frames.length)]);
-                _assetSprite.setVisible(_visible);
                 _assetData.completeRenderPromise.callbackRemove(renderFinishCallback);
             }
-        }
-
-        public function setVisible(value:Boolean):void {
-            _visible = value;
-            _assetSprite.setVisible(value);
         }
 
         public function hitTest(globalX:int, globalY:int, checkContainer:Boolean = false):Boolean {
@@ -51,8 +46,8 @@ package com.berry.animation.core {
         }
 
         public function init():void {
-            _assetSprite = new AssetSprite(_parent.data.assetName);
-            _view = _assetSprite.view;
+            _assetSprite = new AssetCanvas(_parent.data.assetName);
+            _view = _assetSprite;
             _assetData = _parent.assetLibrary.getAssetData(_parent.data.getQuery(AnimationsList.IDLE));
             _assetData.useCount++;
             if (_assetData.isRenderFinish) {
@@ -109,6 +104,12 @@ package com.berry.animation.core {
 
         public function set animationSpeed(value:Number):void {
             // none
+        }
+
+        public function renderAndDrawLock():void {
+        }
+
+        public function renderAndDrawUnLock():void {
         }
     }
 }

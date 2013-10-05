@@ -1,4 +1,8 @@
 package com.berry.animation.core {
+    import com.berry.animation.core.components.BodyMovieComponent;
+    import com.berry.animation.core.components.BodyTileComponent;
+    import com.berry.animation.core.components.EffectComponent;
+    import com.berry.animation.core.components.ShadowComponent;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AssetData;
@@ -17,7 +21,7 @@ package com.berry.animation.core {
     import org.dzyga.geom.Rect;
     import org.dzyga.utils.ArrayUtils;
 
-    public class AssetView extends DisplayProxy{
+    public class AssetView extends DisplayProxy {
         public function AssetView(id:String, name:String) {
             data.id = id;
             data.assetName = name;
@@ -31,18 +35,18 @@ package com.berry.animation.core {
         protected var _assetLibrary:AssetLibrary;
         protected var _animationLibrary:AnimationLibrary;
         //
-        public var mainAspect:IAssetViewAspect;
-        public var shadowAspect:IAssetViewAspect;
+        public var mainAspect:IAssetViewComponent;
+        public var shadowAspect:IAssetViewComponent;
         //
-        public var effectAspect:IAssetViewAspect;
+        public var effectAspect:IAssetViewComponent;
         public var data:AssetModel = new AssetModel();
         //
-        private var _waitPlay:Boolean;
         internal var _isInit:Boolean;
         internal var _renderListBeforePlay:Array;
+        private var _lock:Boolean;
 
         // create init preloader, init presets
-        override public function hitTest (globalX:int, globalY:int):Boolean {
+        override public function hitTest(globalX:int, globalY:int):Boolean {
             if (!mainAspect.isRendered) {
                 return true;
             } else {
@@ -66,25 +70,25 @@ package com.berry.animation.core {
 
         public function classicMainAspectInit():AssetView {
             failIfInit();
-            mainAspect = new ClassicMainAspect(this);
+            mainAspect = new BodyMovieComponent(this);
             return this;
         }
 
         public function tileMainAspectInit():AssetView {
             failIfInit();
-            mainAspect = new TileViewAspect(this);
+            mainAspect = new BodyTileComponent(this);
             return this;
         }
 
         public function shadowAspectInit():AssetView {
             failIfInit();
-            shadowAspect = new ShadowAspect(this);
+            shadowAspect = new ShadowComponent(this);
             return this;
         }
 
         public function effectAspectInit():AssetView {
             failIfInit();
-            effectAspect = new EffectAspect(this);
+            effectAspect = new EffectComponent(this);
             return this;
         }
 
@@ -92,7 +96,7 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
-        public function getAspectList ():Array {
+        public function getAspectList():Array {
             var aspectList:Array = [];
             if (mainAspect) {
                 aspectList.push(mainAspect);
@@ -106,7 +110,7 @@ package com.berry.animation.core {
             return aspectList;
         }
 
-        public function getAspectViewList ():Array {
+        public function getAspectViewList():Array {
             var viewList:Array = [];
             if (effectAspect) {
                 viewList.push(_view);
@@ -119,11 +123,11 @@ package com.berry.animation.core {
             return viewList;
         }
 
-        public function get assetLibrary ():AssetLibrary {
+        public function get assetLibrary():AssetLibrary {
             return _assetLibrary;
         }
 
-        public function get animationLibrary ():AnimationLibrary {
+        public function get animationLibrary():AnimationLibrary {
             return _animationLibrary;
         }
 
@@ -148,24 +152,15 @@ package com.berry.animation.core {
 
         public function playByName(animation:String):void {
             data.animation = animation;
-            if (isLoadComplete && data.visible) {
-                _waitPlay = false;
+            if (isLoadComplete) {
                 playByModel(_animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
-            } else {
-                _waitPlay = true;
             }
         }
 
         public function playByModel(animationModel:AnimationModel):void {
             if (animationModel) {
-                if (!data.visible) {
-                    _waitPlay = true;
-                    return;
-                }
-                _waitPlay = false;
                 data.animationModel = animationModel;
                 data.animation = animationModel.shotName;
-
                 ArrayUtils.map(getAspectList(), 'play');
             } else {
                 trace('no animationModel', data.id);
@@ -192,9 +187,7 @@ package com.berry.animation.core {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
                     cacheAnimationFinishPromise.resolve();
-                    if (visible) {
-                        play();
-                    }
+                    play();
                 } else {
                     assetData = assetLibrary.getAssetData(data.getQuery(_renderListBeforePlay.shift()));
                     if (assetData.isRenderFinish) {
@@ -222,9 +215,7 @@ package com.berry.animation.core {
                 }
             }
             loadCompletePromise.resolve();
-            if (_waitPlay) {
                 play();
-            }
         }
 
         protected function failIfInit():void {
@@ -267,24 +258,12 @@ package com.berry.animation.core {
             mainAspect.animationSpeed = value;
         }
 
-        public function get visible():Boolean {
-            return data.visible;
+        public function renderLock():void {
+            _lock = true;
         }
 
-        public function set visible(value:Boolean):void {
-            if (data.visible != value) {
-                data.visible = value;
-                mainAspect.setVisible(value);
-                if (shadowAspect) {
-                    shadowAspect.setVisible(value);
-                }
-                if (effectAspect) {
-                    effectAspect.setVisible(value);
-                }
-                if (_waitPlay) {
-                    play();
-                }
-            }
+        public function renderUnLock():void {
+            _lock = false;
         }
 
         public function get assetName():String {
@@ -338,7 +317,7 @@ package com.berry.animation.core {
             return view.x;
         }
 
-        public function set x (value:int):void {
+        public function set x(value:int):void {
             for each (var aspectView:DisplayObject in getAspectViewList()) {
                 aspectView.x = value;
             }
@@ -354,55 +333,54 @@ package com.berry.animation.core {
             }
         }
 
-        override public function moveTo (x:Number, y:Number, truncate:Boolean = false):IDisplayProxy {
+        override public function moveTo(x:Number, y:Number, truncate:Boolean = false):IDisplayProxy {
             this.x = truncate ? int(x) : x;
             this.y = truncate ? int(y) : y;
             return this;
         }
 
-        override public function match (target:DisplayObject):IDisplayProxy {
+        override public function match(target:DisplayObject):IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, target);
             return this;
         }
 
-        override public function scale (scaleX:Number, scaleY:Number = NaN):IDisplayProxy {
+        override public function scale(scaleX:Number, scaleY:Number = NaN):IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, scaleX, scaleY);
             return this;
         }
 
-        override public function offset (dx:Number, dy:Number, truncate:Boolean = false):IDisplayProxy {
+        override public function offset(dx:Number, dy:Number, truncate:Boolean = false):IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.offset, null, dx, dy, truncate);
             return this;
 
         }
 
-        override public function show ():IDisplayProxy {
+        override public function show():IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.show);
             return this;
         }
 
-        override public function hide ():IDisplayProxy {
+        override public function hide():IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.hide);
             return this;
         }
 
-        override public function toggle ():IDisplayProxy {
+        override public function toggle():IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.toggle);
             return this;
         }
 
-        override public function detach ():IDisplayProxy {
+        override public function detach():IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.detach);
             return this;
         }
 
-        override public function alpha (alpha:Number = 1):IDisplayProxy {
+        override public function alpha(alpha:Number = 1):IDisplayProxy {
             ArrayUtils.map(getAspectViewList(), DisplayUtils.alpha);
             return this;
         }
 
-
-        override public function removeChild (child:DisplayObject):IDisplayProxy {
+        override public function removeChild(child:DisplayObject):IDisplayProxy {
             return super.removeChild(child);
         }
     }
