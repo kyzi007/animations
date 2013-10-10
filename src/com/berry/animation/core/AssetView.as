@@ -21,10 +21,10 @@ package com.berry.animation.core {
     import org.dzyga.geom.Rect;
     import org.dzyga.utils.ArrayUtils;
 
-    public class AssetView extends DisplayProxy {
-        public function AssetView(id:String, name:String) {
-            data.id = id;
-            data.assetName = name;
+    public class AssetView extends DisplayProxy{
+        public function AssetView(viewID:String, assetName:String) {
+            data.id = viewID;
+            data.assetName = assetName;
             super(null);
         }
 
@@ -153,7 +153,7 @@ package com.berry.animation.core {
         public function playByName(animation:String):void {
             data.animation = animation;
             if (isLoadComplete) {
-                playByModel(_animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
+                playByModel(animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
             }
         }
 
