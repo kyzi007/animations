@@ -52,10 +52,10 @@ package com.berry.animation.library {
                 loopEnumeration();
                 return;
             }
-            if(!_completeSubStates[_state]){_completeSubStates[_state] = 0}
+            if (!_completeSubStates[_state]) {_completeSubStates[_state] = 0}
             _isListEnd = false;
             if (isSubStates) {
-                if (_completeSubStates[_state] > subStateCount*1.5) {
+                if (_completeSubStates[_state] > subStateCount * 1.5) {
                     _completeSubStates[_state] = 0;
                     _state++;
                     if (isSubStates) {

@@ -1,4 +1,5 @@
 package {
+    import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AnimationsList;
     import animation.MidnightAssetView;
 
@@ -156,7 +157,9 @@ package {
 
 
                 //_asset.flip = true;
-                _asset.play();
+                var animationModel:AnimationModel = _animLib.getAnimationModel(_name,'idle', int(_frame.text));
+                animationModel.loop  =false;
+                _asset.playByModel(animationModel);
 
                 addChildAt(_asset.view, 0);
                 addChildAt(_asset.shadow, 0);

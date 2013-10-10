@@ -162,7 +162,7 @@ package com.berry.animation.core.view {
         private function next():void {
             animationFinishPromise.callbackRemove(next);
             animationPartFinishPromise.resolve();
-            if (_isFinishToEndCurrent) {
+            if (_animationModel.isListEnd) {
                 animationFinishPromise.resolve();
                 if (!_loopList) {
                     _loopCount--;
@@ -177,7 +177,6 @@ package com.berry.animation.core.view {
                 //EffectViewer.log(_view.name + ' next ON_ANIMATION_PART_FINISH');
                 playPart(_animationModel.currentPart());
             }
-            _isFinishToEndCurrent = _animationModel.isListEnd;
         }
 
         public function set data(value:AssetModel):void {
