@@ -43,6 +43,9 @@ package com.berry.animation.library {
             if (_updateCurrent || !_currentPreset) {
                 _currentPreset = findClassInstance(_partList, AnimationPart, null, _state, _subState);
                 _updateCurrent = false;
+                if(_partList.length == 1){
+                    _isListEnd = true;
+                }
             }
             return _currentPreset;
         }
