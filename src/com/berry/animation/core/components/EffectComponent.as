@@ -25,11 +25,17 @@ package com.berry.animation.core.components {
         private var _waitPlay:Boolean;
         private var _filter:ColorMatrix;
         private var _lock:Boolean;
+        private var _smoothing:Boolean;
 
         public function set smoothing(value:Boolean):void {
+            _smoothing = value;
+            updateSmoothing();
+        }
+
+        private function updateSmoothing():void {
             var effect:ComplexMoveAssetCanvas;
             for each (effect in _effects) {
-                effect.smoothing = value;
+                effect.smoothing = _smoothing;
             }
         }
         public function play():void {
@@ -55,6 +61,7 @@ package com.berry.animation.core.components {
                 if (_filter) {
                     effect.applyFilter(_filter);
                 }
+                effect.smoothing = _smoothing;
                 _effects.push(effect);
                 _view.addChild(effect);
             }

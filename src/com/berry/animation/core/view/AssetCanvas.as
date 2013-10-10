@@ -38,6 +38,7 @@ package com.berry.animation.core.view {
 
         override public function set smoothing(value:Boolean):void {
             _smoothing = value;
+            super.smoothing = value;
         }
 
         public function hitTest(globalX:Number, globalY:Number):Boolean {
@@ -54,15 +55,13 @@ package com.berry.animation.core.view {
         public function draw(frame:AssetFrame, isUpdateBounds:Boolean = false):void {
             if (_lock && !isUpdateBounds) return;
 
-            if (frame is AssetFrame) {
-                _currentFrameData = frame;
-                super.x = _currentFrameData.x + _x;
-                super.y = _currentFrameData.y + _y;
-                bitmapData = _currentFrameData.bitmap;
-                super.smoothing = _smoothing;
-            }
+            _currentFrameData = frame;
+            super.x = _currentFrameData.x + _x;
+            super.y = _currentFrameData.y + _y;
+            bitmapData = _currentFrameData.bitmap;
+            super.smoothing = _smoothing;
 
-            if ((isUpdateBounds || !_bounds) && frame is AssetFrame) {
+            if ((isUpdateBounds || !_bounds)) {
                 if (!_bounds) _bounds = new Rect();
                 if (_bounds.x != _currentFrameData.x
                         || _bounds.y != _currentFrameData.y
