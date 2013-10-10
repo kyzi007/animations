@@ -1,4 +1,4 @@
-package com.berry.animation.core {
+package com.berry.animation.core.view {
     import com.berry.animation.library.AssetFrame;
 
     import flash.display.Bitmap;
@@ -7,12 +7,10 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class AssetSprite {
+    public class AssetCanvas extends Bitmap {
 
-        public function AssetSprite(name:String) {
+        public function AssetCanvas(name:String) {
             _assetName = name;
-            _view.smoothing = true;
-            _view.visible = false;
         }
 
         public var boundsUpdatePromise:Promise = new Promise();
@@ -20,39 +18,31 @@ package com.berry.animation.core {
         private var _currentFrameData:AssetFrame;
         private var _y:int;
         private var _x:int;
+        private var _lock:Boolean;
 
-        public function setVisible(value:Boolean):void {
-           if(_view) _view.visible = value;
-        }
-
-        public function set x(value:int):void
-        {
+        public override function set x(value:Number):void {
+            super.x = int(value + (_currentFrameData ? _currentFrameData.x : 0));
             _x = value;
-            if(_currentFrameData){
-                _view.x = _currentFrameData.x + _x;
-            }
         }
 
-        public function set y(value:int):void
-        {
+        public override function set y(value:Number):void {
+            super.y = int(value + (_currentFrameData ? _currentFrameData.y : 0));
             _y = value;
-            if (_currentFrameData) {
-                _view.y = _currentFrameData.y + _y;
-            }
         }
 
         public function clear():void {
             _currentFrameData = null;
-           if(_view){
-               _view.bitmapData = null;
-           }
-            _view = null;
+            bitmapData = null;
             _bounds = null;
+        }
+
+        override public function set smoothing(value:Boolean):void {
+            _smoothing = value;
         }
 
         public function hitTest(globalX:Number, globalY:Number):Boolean {
             if (_currentFrameData && _currentFrameData.bitmap && !_currentFrameData.isDestroyed) {
-                return  DisplayUtils.hitTest(_view, globalX, globalY, true);
+                return  DisplayUtils.hitTest(this, globalX, globalY, true);
             }
             return false;
         }
@@ -62,14 +52,14 @@ package com.berry.animation.core {
          * @param isUpdateBounds
          */
         public function draw(frame:AssetFrame, isUpdateBounds:Boolean = false):void {
-            if (_view && !_view.visible && !isUpdateBounds || !_view) return;
+            if (_lock && !isUpdateBounds) return;
 
             if (frame is AssetFrame) {
                 _currentFrameData = frame;
-                _view.x = _currentFrameData.x + _x;
-                _view.y = _currentFrameData.y + _y;
-                _view.bitmapData = _currentFrameData.bitmap;
-                _view.smoothing = true;
+                super.x = _currentFrameData.x + _x;
+                super.y = _currentFrameData.y + _y;
+                bitmapData = _currentFrameData.bitmap;
+                super.smoothing = _smoothing;
             }
 
             if ((isUpdateBounds || !_bounds) && frame is AssetFrame) {
@@ -91,13 +81,8 @@ package com.berry.animation.core {
             }
         }
 
-        protected var _view:Bitmap = new Bitmap();
-
-        public function get view():Bitmap {
-            return _view;
-        }
-
         private var _bounds:Rect = null;
+        protected var _smoothing:Boolean;
 
         public function get bounds():Rect {
             return _bounds;
@@ -105,6 +90,18 @@ package com.berry.animation.core {
 
         public function get currentFrameData():AssetFrame {
             return _currentFrameData;
+        }
+
+        public function drawLock():void {
+            _lock = true;
+        }
+
+        public function drawUnLock():void {
+            _lock = false;
+        }
+
+        override public function get smoothing():Boolean {
+            return _smoothing;
         }
     }
 }

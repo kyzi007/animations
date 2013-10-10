@@ -1,4 +1,5 @@
-package com.berry.animation.core {
+package com.berry.animation.core.view {
+    import com.berry.animation.core.*;
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AnimationPart;
@@ -6,24 +7,20 @@ package com.berry.animation.core {
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetLibrary;
 
-    import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
-    import org.dzyga.geom.Rect;
 
-    public class AdvancedAssetMovieClip {
-        public function AdvancedAssetMovieClip(name:String) {
-            _assetMovieClip = new AssetMovieClip(name)
+    public class ComplexMoveAssetCanvas extends MovieAssetCanvas {
+        public function ComplexMoveAssetCanvas(name:String) {
+            super(name);
         }
 
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
         public var assetLibrary:AssetLibrary;
-        public var _assetMovieClip:AssetMovieClip;
         public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
-        public var animationFinishPromise:Promise = new Promise();
         private var _data:AssetModel;
         private var _animationModel:AnimationModel;
         private var _nextToTimeAction:Action;
@@ -36,9 +33,8 @@ package com.berry.animation.core {
         public var startRenderPromise:Promise = new Promise();
         private var _currPreset:AnimationPart;
 
-        public function get isActive():Boolean
-        {
-            return _assetMovieClip && _assetMovieClip.assetData && _assetMovieClip.assetData.isRenderFinish
+        public function get isActive():Boolean {
+            return assetData && assetData.isRenderFinish
         }
 
         public function playAnimationSet(animationModel:AnimationModel):void {
@@ -48,47 +44,27 @@ package com.berry.animation.core {
             playPart(_animationModel.currentPart());
         }
 
-        public function clear():void {
-            _assetMovieClip.clear();
-        }
-
-        public function hitTest(x:int, y:int):Boolean {
-            return _assetMovieClip.hitTest(x, y);
-        }
-
-        public function applyFilter(value:ColorMatrix):void {
-            _assetMovieClip.applyFilter(value);
-        }
-
-        public function removeFilter():void {
-            _assetMovieClip.removeFilter();
-        }
-
-        public function showPivot():void {
-            //TODO
-        }
-
         // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
-            var assetData:AssetData;
+            var nextAssetData:AssetData;
             var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
-_currPreset = currPreset;
-            if(!currPreset.isRotateSupport(query.rotate)){
+            _currPreset = currPreset;
+            if (!currPreset.isRotateSupport(query.rotate)) {
                 query.setRotate(RotateEnum.NONE);
             }
-           //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
+            //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
 
             if (loadOneFrameFirst && fullAnimation || isOneFrame) {
                 query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
-                assetData = assetLibrary.getAssetData(query);
+                nextAssetData = assetLibrary.getAssetData(query);
                 if (!isOneFrame) {
-                    if (assetData.isRenderFinish) {
+                    if (nextAssetData.isRenderFinish) {
                         query = _data.getQuery(currPreset.fullName).setIsFullAnimation(true);
                         if (!currPreset.isRotateSupport(query.rotate)) {
                             query.setRotate(RotateEnum.NONE);
                         }
                         if (assetLibrary.assetRendered(query)) {
-                            assetData = assetLibrary.getAssetData(query);
+                            nextAssetData = assetLibrary.getAssetData(query);
                         } else {
                             EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                         }
@@ -97,32 +73,32 @@ _currPreset = currPreset;
                 }
             } else {
                 query.setIsFullAnimation(fullAnimation);
-                assetData = assetLibrary.getAssetData(query);
+                nextAssetData = assetLibrary.getAssetData(query);
             }
 
             EnterFrame.removeScheduledAction(_pauseAction);
 
-            if (assetData.isRenderFinish) {
-                _assetMovieClip.loop = currPreset.isLoop;
-                _assetMovieClip.loopCount = currPreset.loopCount;
+            if (nextAssetData.isRenderFinish) {
+                loop = currPreset.isLoop;
+                loopCount = currPreset.loopCount;
 
-                if (_assetMovieClip.assetData != assetData || !_assetMovieClip.loop) {
-                    _assetMovieClip.assetData = assetData;
+                if (assetData != nextAssetData || !loop) {
+                    assetData = nextAssetData;
                     if (_animationModel.play) {
-                        _assetMovieClip.gotoAndPlay(0);
+                        gotoAndPlay(0);
                         //_view.gotoAndPlay(_animationModel.startFrame);
                     } else {
-                        _assetMovieClip.gotoAndStop(_animationModel.startFrame);
+                        gotoAndStop(_animationModel.startFrame);
                     }
                 }
 
                 EnterFrame.removeScheduledAction(_nextToTimeAction);
-                if (!_assetMovieClip.loop) {
+                if (!loop) {
                     if (currPreset.pauseTime) {
-                        _assetMovieClip.animationFinishPromise.callbackRegister(loadOneFrame);
+                        animationFinishPromise.callbackRegister(loadOneFrame);
                         _nextToTimeAction = EnterFrame.scheduleAction(currPreset.pauseTime + currPreset.pauseTime * Math.random(), next)
                     } else {
-                        _assetMovieClip.animationFinishPromise.callbackRegister(next);
+                        animationFinishPromise.callbackRegister(next);
                     }
                 } else if (currPreset.randomTime) {
                     if (currPreset.pauseTime) {
@@ -139,13 +115,12 @@ _currPreset = currPreset;
                 // wait to the end rendering
                 _rendered = false;
                 startRenderPromise.resolve();
-                assetData.completeRenderPromise.callbackRegister(newAssetRendered);
+                nextAssetData.completeRenderPromise.callbackRegister(newAssetRendered);
             }
         }
 
-        public function get isRenderFinish():Boolean
-        {
-            return _assetMovieClip.assetData && _assetMovieClip.assetData.isRenderFinish;
+        public function get isRenderFinish():Boolean {
+            return assetData && assetData.isRenderFinish;
         }
 
         private function getEffect():void {
@@ -163,16 +138,16 @@ _currPreset = currPreset;
         }
 
         private function loadOneFrame():void {
-            _assetMovieClip.animationFinishPromise.callbackRemove(loadOneFrame);
+            animationFinishPromise.callbackRemove(loadOneFrame);
             playPart(_animationModel.currentPart(), true)
         }
 
         private function newAssetRendered(e:* = null):void {
             _rendered = true;
-            if (_assetMovieClip.loop && _assetMovieClip.isPlay) {
+            if (loop && isPlay) {
                 // wait end animation
-                _assetMovieClip.loop = false;
-                _assetMovieClip.animationFinishPromise.callbackRegister(playCurrentPart);
+                loop = false;
+                animationFinishPromise.callbackRegister(playCurrentPart);
             } else {
                 playPart(_animationModel.currentPart());
             }
@@ -180,12 +155,12 @@ _currPreset = currPreset;
         }
 
         private function playCurrentPart(e:* = null):void {
-            _assetMovieClip.animationFinishPromise.callbackRemove(playCurrentPart);
+            animationFinishPromise.callbackRemove(playCurrentPart);
             playPart(_animationModel.currentPart());
         }
 
         private function next():void {
-            _assetMovieClip.animationFinishPromise.callbackRemove(next);
+            animationFinishPromise.callbackRemove(next);
             animationPartFinishPromise.resolve();
             if (_isFinishToEndCurrent) {
                 animationFinishPromise.resolve();
@@ -205,27 +180,9 @@ _currPreset = currPreset;
             _isFinishToEndCurrent = _animationModel.isListEnd;
         }
 
-        public function get visible():Boolean {
-            return _assetMovieClip.view.visible;
-        }
-
-        public function setVisible(value:Boolean):void {
-            _assetMovieClip.setVisible(value);
-        }
-
-        public function get bounds():Rect {
-            return _assetMovieClip.bounds;
-        }
-
-        public function set speed(speed:Number):void {_assetMovieClip.speed = speed;}
-
         public function set data(value:AssetModel):void {
             _data = value;
-            _assetMovieClip.name = _data.assetName;
-        }
-
-        public function get assetMovieClip():AssetMovieClip {
-            return _assetMovieClip;
+            name = _data.assetName;
         }
 
         public function get animationModel():AnimationModel {

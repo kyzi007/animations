@@ -1,7 +1,8 @@
 package com.berry.animation.core {
-    import animation.*;
-
-    import com.berry.animation.data.SourceTypeEnum;
+    import com.berry.animation.core.components.BodyMovieComponent;
+    import com.berry.animation.core.components.BodyTileComponent;
+    import com.berry.animation.core.components.EffectComponent;
+    import com.berry.animation.core.components.ShadowComponent;
     import com.berry.animation.library.AnimationLibrary;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AssetData;
@@ -15,12 +16,15 @@ package com.berry.animation.core {
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayProxy;
+    import org.dzyga.display.DisplayUtils;
+    import org.dzyga.display.IDisplayProxy;
     import org.dzyga.geom.Rect;
+    import org.dzyga.utils.ArrayUtils;
 
     public class AssetView extends DisplayProxy{
-        public function AssetView(id:String, name:String) {
-            data.id = id;
-            data.assetName = name;
+        public function AssetView(viewID:String, assetName:String) {
+            data.id = viewID;
+            data.assetName = assetName;
             super(null);
         }
 
@@ -28,65 +32,63 @@ package com.berry.animation.core {
         public var cacheAnimationFinishPromise:Promise = new Promise();
         public var loadCompletePromise:Promise = new Promise();
         //
-        public var assetLibrary:AssetLibrary;
-        public var animationLibrary:AnimationLibrary;
+        protected var _assetLibrary:AssetLibrary;
+        protected var _animationLibrary:AnimationLibrary;
         //
-        public var mainAspect:IAssetViewAspect;
-        public var shadowAspect:IAssetViewAspect;
+        public var mainComponent:IAssetViewComponent;
+        public var shadowComponent:IAssetViewComponent;
         //
-        public var effectAspect:IAssetViewAspect;
+        public var effectComponent:IAssetViewComponent;
         public var data:AssetModel = new AssetModel();
-        private var _x:int;
-        private var _y:int;
         //
-        private var _waitPlay:Boolean;
         internal var _isInit:Boolean;
         internal var _renderListBeforePlay:Array;
+        private var _lock:Boolean;
 
         // create init preloader, init presets
-
         override public function hitTest(globalX:int, globalY:int):Boolean {
-            if (!mainAspect.isRendered) {
+            if (!mainComponent.isRendered) {
                 return true;
             } else {
-                return mainAspect.hitTest(globalX, globalY) || (effectAspect && effectAspect.hitTest(globalX, globalY));
+                return mainComponent.hitTest(globalX, globalY) || (effectComponent && effectComponent.hitTest(globalX, globalY));
             }
         }
+
         public function applyFilter(value:ColorMatrix):void {
-            mainAspect.applyFilter(value);
-            if (effectAspect) {
-                effectAspect.applyFilter(value);
+            mainComponent.applyFilter(value);
+            if (effectComponent) {
+                effectComponent.applyFilter(value);
             }
         }
 
         public function removeFilter():void {
-            mainAspect.removeFilter();
-            if (effectAspect) {
-                effectAspect.removeFilter();
+            mainComponent.removeFilter();
+            if (effectComponent) {
+                effectComponent.removeFilter();
             }
         }
 
         public function classicMainAspectInit():AssetView {
             failIfInit();
-            mainAspect = new ClassicMainAspect(this);
+            mainComponent = new BodyMovieComponent(this);
             return this;
         }
 
         public function tileMainAspectInit():AssetView {
             failIfInit();
-            mainAspect = new TileViewAspect(this);
+            mainComponent = new BodyTileComponent(this);
             return this;
         }
 
         public function shadowAspectInit():AssetView {
             failIfInit();
-            shadowAspect = new ShadowAspect(this);
+            shadowComponent = new ShadowComponent(this);
             return this;
         }
 
         public function effectAspectInit():AssetView {
             failIfInit();
-            effectAspect = new EffectAspect(this);
+            effectComponent = new EffectComponent(this);
             return this;
         }
 
@@ -94,42 +96,64 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
-        public function init(assetlibrary:AssetLibrary, animationLibrary:AnimationLibrary):AssetView {
+        public function getAspectList():Array {
+            var aspectList:Array = [];
+            if (mainComponent) {
+                aspectList.push(mainComponent);
+            }
+            if (shadowComponent) {
+                aspectList.push(shadowComponent);
+            }
+            if (effectComponent) {
+                aspectList.push(effectComponent);
+            }
+            return aspectList;
+        }
+
+        public function getAspectViewList():Array {
+            var viewList:Array = [];
+            if (effectComponent) {
+                viewList.push(_view);
+            } else {
+                viewList.push(mainComponent.view);
+            }
+            if (shadowComponent) {
+                viewList.push(shadowComponent.view);
+            }
+            return viewList;
+        }
+
+        public function get assetLibrary():AssetLibrary {
+            return _assetLibrary;
+        }
+
+        public function get animationLibrary():AnimationLibrary {
+            return _animationLibrary;
+        }
+
+        public function init(assetLibrary:AssetLibrary = null, animationLibrary:AnimationLibrary = null):AssetView {
             failIfInit();
             _isInit = true;
-            CONFIG::debug{
-                if (!mainAspect) {KLog.log("AssetViewNew : init  " + "main view is null", KLog.CRITICAL); }
-            }
+            _assetLibrary = assetLibrary;
+            _animationLibrary = animationLibrary;
 
-            this.assetLibrary = assetlibrary;
-            this.animationLibrary = animationLibrary;
-            mainAspect.init();
-            if (effectAspect) {
-                effectAspect.init();
-            }
-            if (shadowAspect) {
-                shadowAspect.init();
-            }
+            ArrayUtils.map(getAspectList(), 'init');
 
-            if (effectAspect) {
+            if (effectComponent) {
                 _view = new Sprite();
-                Sprite(_view).addChild(mainAspect.view);
-                Sprite(_view).addChild(effectAspect.view);
+                Sprite(_view).addChild(mainComponent.view);
+                Sprite(_view).addChild(effectComponent.view);
             } else {
-                _view = mainAspect.view;
+                _view = mainComponent.view;
             }
-            assetLibrary.loadData(data.assetName, data.sourceType.value, onLoadCallback);
-
+            this.assetLibrary.loadData(data.assetName, data.sourceType.value, onLoadCallback);
             return this;
         }
 
         public function playByName(animation:String):void {
             data.animation = animation;
-            if (isLoadComplete && data.visible) {
-                _waitPlay = false;
+            if (isLoadComplete) {
                 playByModel(animationLibrary.getAnimationModel(data.assetName, data.animation, data.stepFrame));
-            } else {
-                _waitPlay = true;
             }
         }
 
@@ -137,18 +161,7 @@ package com.berry.animation.core {
             if (animationModel) {
                 data.animationModel = animationModel;
                 data.animation = animationModel.shotName;
-                if (!data.visible) {
-                    _waitPlay = true;
-                    return;
-                }
-                _waitPlay = false;
-                mainAspect.play();
-                if (effectAspect) {
-                    effectAspect.play();
-                }
-                if (shadowAspect) {
-                    shadowAspect.play();
-                }
+                ArrayUtils.map(getAspectList(), 'play');
             } else {
                 trace('no animationModel', data.id);
             }
@@ -174,7 +187,7 @@ package com.berry.animation.core {
                 if (_renderListBeforePlay.length == 0) {
                     _renderListBeforePlay = null;
                     cacheAnimationFinishPromise.resolve();
-                        play();
+                    play();
                 } else {
                     assetData = assetLibrary.getAssetData(data.getQuery(_renderListBeforePlay.shift()));
                     if (assetData.isRenderFinish) {
@@ -202,9 +215,7 @@ package com.berry.animation.core {
                 }
             }
             loadCompletePromise.resolve();
-            if (_waitPlay) {
                 play();
-            }
         }
 
         protected function failIfInit():void {
@@ -244,27 +255,15 @@ package com.berry.animation.core {
         }
 
         public function set animationSpeed(value:Number):void {
-            mainAspect.animationSpeed = value;
+            mainComponent.animationSpeed = value;
         }
 
-        public function get visible():Boolean {
-            return data.visible;
+        public function renderLock():void {
+            _lock = true;
         }
 
-        public function set visible(value:Boolean):void {
-            if (data.visible != value) {
-                data.visible = value;
-                mainAspect.setVisible(value);
-                if (shadowAspect) {
-                    shadowAspect.setVisible(value);
-                }
-                if (effectAspect) {
-                    effectAspect.setVisible(value);
-                }
-                if (_waitPlay && value) {
-                    play();
-                }
-            }
+        public function renderUnLock():void {
+            _lock = false;
         }
 
         public function get assetName():String {
@@ -281,8 +280,8 @@ package com.berry.animation.core {
         }
 
         public function get bounds():Rect {
-            if (mainAspect.isRendered) {
-                return mainAspect.bounds;
+            if (mainComponent.isRendered) {
+                return mainComponent.bounds;
             }
             return _BOUNDS;
         }
@@ -296,9 +295,9 @@ package com.berry.animation.core {
         }
 
         public function set effectMode(value:Boolean):void {
-            if (data.effectMode != value && effectAspect) {
+            if (data.effectMode != value && effectComponent) {
                 data.effectMode = value;
-                effectAspect.play();
+                effectComponent.play();
             }
         }
 
@@ -307,43 +306,82 @@ package com.berry.animation.core {
         }
 
         public function get shadow():DisplayObject {
-            return shadowAspect ? shadowAspect.view : null;
+            return shadowComponent ? shadowComponent.view : null;
         }
 
         public function get boundsUpdatePromise():Promise {
-            return mainAspect.boundsUpdatePromise;
+            return mainComponent.boundsUpdatePromise;
         }
 
         public function get x():int {
-            return _x;
+            return view.x;
         }
 
         public function set x(value:int):void {
-            if (effectAspect) {
-                _view.x = value;
-            } else {
-                mainAspect.x = value;
+            for each (var aspectView:DisplayObject in getAspectViewList()) {
+                aspectView.x = value;
             }
-            if (shadowAspect) {
-                shadowAspect.x = value;
-            }
-            _x = value;
         }
 
         public function get y():int {
-            return _y;
+            return view.y;
         }
 
         public function set y(value:int):void {
-            if(effectAspect){
-                _view.y = value;
-            } else {
-                mainAspect.y = value;
+            for each (var aspectView:DisplayObject in getAspectViewList()) {
+                aspectView.y = value;
             }
-            if (shadowAspect) {
-                shadowAspect.y = value;
-            }
-            _y = value;
+        }
+
+        override public function moveTo(x:Number, y:Number, truncate:Boolean = false):IDisplayProxy {
+            this.x = truncate ? int(x) : x;
+            this.y = truncate ? int(y) : y;
+            return this;
+        }
+
+        override public function match(target:DisplayObject):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, target);
+            return this;
+        }
+
+        override public function scale(scaleX:Number, scaleY:Number = NaN):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.scale, null, scaleX, scaleY);
+            return this;
+        }
+
+        override public function offset(dx:Number, dy:Number, truncate:Boolean = false):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.offset, null, dx, dy, truncate);
+            return this;
+
+        }
+
+        override public function show():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.show);
+            return this;
+        }
+
+        override public function hide():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.hide);
+            return this;
+        }
+
+        override public function toggle():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.toggle);
+            return this;
+        }
+
+        override public function detach():IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.detach);
+            return this;
+        }
+
+        override public function alpha(alpha:Number = 1):IDisplayProxy {
+            ArrayUtils.map(getAspectViewList(), DisplayUtils.alpha);
+            return this;
+        }
+
+        override public function removeChild(child:DisplayObject):IDisplayProxy {
+            return super.removeChild(child);
         }
     }
 }

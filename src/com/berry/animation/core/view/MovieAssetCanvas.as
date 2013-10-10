@@ -1,9 +1,9 @@
-package com.berry.animation.core {
+package com.berry.animation.core.view {
+    import com.berry.animation.core.view.AssetCanvas;
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetFrame;
 
     import flash.display.BitmapData;
-    import flash.display.MovieClip;
 
     import log.logServer.KLog;
 
@@ -12,22 +12,21 @@ package com.berry.animation.core {
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
 
-    public class AssetMovieClip extends AssetSprite {
+    public class MovieAssetCanvas extends AssetCanvas {
 
-        public function AssetMovieClip(name:String) {
+        public function MovieAssetCanvas(name:String) {
             super(name);
         }
 
         public var loopCount:int;
         public var animationFinishPromise:Promise = new Promise();
-        protected var _filter:ColorMatrix;
-        protected var _currentFrame:uint = 0;
-        protected var _drawPriority:int = 25;
+        private var _filter:ColorMatrix;
+        private var _currentFrame:uint = 0;
+        private var _drawPriority:int = 25;
         private var _frames:Vector.<AssetFrame>;
         private var _playAction:Action;
         private var _lastFrame:int;
         private var _tempForFreeze:BitmapData;
-        private var _clip:MovieClip;
 
         public function applyFilter(filter:ColorMatrix):void {
             if (_filter) return;
@@ -106,17 +105,16 @@ package com.berry.animation.core {
         protected function finishAnimation():void {
             clearAnimation();
             _lastFrame = -1;
-            _clip = null;
             animationFinishPromise.resolve();
         }
 
         private function makeFreeze():void {
             if (_filter) {
                 try {
-                    _tempForFreeze = _view.bitmapData.clone();
-                    _view.bitmapData = _tempForFreeze;
-                    _view.bitmapData.applyFilter(_tempForFreeze, _view.getBounds(_view), _view.getBounds(_view).topLeft, _filter.filter);
-                    _view.smoothing = true;
+                    _tempForFreeze = bitmapData.clone();
+                    bitmapData = _tempForFreeze;
+                    bitmapData.applyFilter(_tempForFreeze, getBounds(this), getBounds(this).topLeft, _filter.filter);
+                    super.smoothing = _smoothing;
                 } catch (err:Error) {
 
                 }
@@ -175,7 +173,7 @@ package com.berry.animation.core {
             if (_assetData) {
                 _assetData.useCount++;
             } else {
-                view.bitmapData = null;
+                bitmapData = null;
             }
         }
 
@@ -188,7 +186,7 @@ package com.berry.animation.core {
         }
 
         private var _onEnterFrame:Function;
-
+        //TODO: delete onEnterFrame after refactoring movie in midnight
         public function set onEnterFrame(value:Function):void {
             _onEnterFrame = value;
         }
@@ -206,7 +204,7 @@ package com.berry.animation.core {
             }
         }
 
-        public function set name(value:String):void {
+        public function set assetName(value:String):void {
             _assetName = value;
         }
     }

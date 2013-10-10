@@ -1,4 +1,6 @@
-package com.berry.animation.core {
+package com.berry.animation.core.components {
+    import com.berry.animation.core.*;
+    import com.berry.animation.core.view.ComplexMoveAssetCanvas;
     import com.berry.animation.library.AnimationModel;
     import com.berry.animation.library.AssetData;
 
@@ -12,53 +14,66 @@ package com.berry.animation.core {
     import org.dzyga.display.DisplayUtils;
     import org.dzyga.geom.Rect;
 
-    public class EffectAspect implements IAssetViewAspect {
-        public function EffectAspect(parent:AssetView) {
+    public class EffectComponent implements IAssetViewComponent {
+        public function EffectComponent(parent:AssetView) {
             _parent = parent;
         }
 
         private var _parent:AssetView;
         private var _view:Sprite = new Sprite;
-        private var _visible:Boolean;
         private var _effects:Array = [];
         private var _waitPlay:Boolean;
         private var _filter:ColorMatrix;
+        private var _lock:Boolean;
 
-        public function play():void {
-            var effect:AdvancedAssetMovieClip;
+        public function set smoothing(value:Boolean):void {
+            var effect:ComplexMoveAssetCanvas;
             for each (effect in _effects) {
-                if(effect.assetMovieClip.view){
-                    _view.removeChild(effect.assetMovieClip.view);
+                effect.smoothing = value;
+            }
+        }
+        public function play():void {
+            var effect:ComplexMoveAssetCanvas;
+            for each (effect in _effects) {
+                if (effect.parent) {
+                    _view.removeChild(effect);
                 }
                 effect.clear();
             }
-            if(!_visible || !_parent.data.animationModel){
+            if (_lock || !_parent.data.animationModel) {
                 _waitPlay = true;
                 return;
             }
             var effectModels:Object = _parent.animationLibrary.getAnimationEffects(_parent.assetName, _parent.data.animationModel.currentPart().fullName, _parent.data.stepFrame);
             for each (var animationModel:AnimationModel in effectModels) {
-                effect = new AdvancedAssetMovieClip(_parent.assetName + 'effect');
+                effect = new ComplexMoveAssetCanvas(_parent.assetName + 'effect');
                 effect.assetLibrary = _parent.assetLibrary;
                 effect.data = _parent.data;
                 effect.fullAnimation = _filter ? false : _parent.data.effectMode;
                 effect.loadOneFrameFirst = true;
                 effect.playAnimationSet(animationModel);
-                effect.setVisible(true);
                 if (_filter) {
                     effect.applyFilter(_filter);
                 }
                 _effects.push(effect);
-                _view.addChild(effect.assetMovieClip.view);
+                _view.addChild(effect);
             }
         }
 
-        public function setVisible(value:Boolean):void {
-            _visible = value;
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
-                effect.setVisible(value);
+        public function renderAndDrawLock():void {
+            _lock = true;
+            for each (var effect:ComplexMoveAssetCanvas in _effects) {
+                effect.drawLock();
             }
-            if(_waitPlay){
+        }
+
+        public function renderAndDrawUnLock():void {
+            _lock = false;
+            for each (var effect:ComplexMoveAssetCanvas in _effects) {
+                effect.drawUnLock();
+            }
+            if (_waitPlay) {
+                _waitPlay = false;
                 play();
             }
         }
@@ -68,7 +83,7 @@ package com.berry.animation.core {
         }
 
         public function get isRendered():Boolean {
-            CONFIG::debug{ KLog.log("EffectAspect : isRendered  "+ 'not work', KLog.CRITICAL); }
+            CONFIG::debug{ KLog.log("EffectAspect : isRendered  " + 'not work', KLog.CRITICAL); }
             return false;
         }
 
@@ -90,7 +105,7 @@ package com.berry.animation.core {
         }
 
         public function clear():void {
-            for each (var effect:AdvancedAssetMovieClip in _effects) {
+            for each (var effect:ComplexMoveAssetCanvas in _effects) {
                 effect.clear();
             }
         }
@@ -104,10 +119,6 @@ package com.berry.animation.core {
         public function applyFilter(value:ColorMatrix):void {
             _filter = value;
             play();
-            /*for each (var effect:AdvancedAssetMovieClip in _effects) {
-                effect.applyFilter(value);
-                effect.fullAnimation = false;
-            }*/
         }
 
         public function removeFilter():void {
