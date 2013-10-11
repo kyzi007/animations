@@ -34,7 +34,7 @@ package {
             loadBtn.y = 10;
             addChild(loadBtn);
 
-            _frame = createButton('2', null);
+            _frame = createButton('1', null);
             _frame.x = 150;
             _frame.y = 10;
             _frame.selectable = true;
@@ -158,7 +158,8 @@ package {
 
                 //_asset.flip = true;
                 var animationModel:AnimationModel = _animLib.getAnimationModel(_name,'idle', int(_frame.text));
-                animationModel.loop  =false;
+                animationModel.loop =false;
+                _asset.animationSpeed = 2;
                 _asset.playByModel(animationModel);
 
                 addChildAt(_asset.view, 0);
