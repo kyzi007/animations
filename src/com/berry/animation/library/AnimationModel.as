@@ -24,7 +24,7 @@ package com.berry.animation.library {
         private var _currentPreset:AnimationPart;
         private var _play:Boolean = true;
 
-        public static function findClassInstance(obj:Object, classId:Class, conditionFunction:Function, ...keys):* {
+        public static function findClassInstance(obj:Object, classId:Class, conditionFunction:Function = null, ...keys):* {
             if (!obj) {
                 return null;
             }
@@ -38,12 +38,28 @@ package com.berry.animation.library {
             }
             return null;
         }
+        public function getCountClassInstance(obj:Object, classId:Class, conditionFunction:Function, ...keys):int
+        {
+            if(!obj){
+                return 0;
+            }
+            var count:int = 0;
+            var res:* = obj;
+            if (res is classId && (conditionFunction == null || conditionFunction(res))) count++;
+            for (var i:int = 0; i < keys.length; i++) {
+                var key:String = keys[i];
+                res = res.hasOwnProperty(key) ? res[key] : null;
+                if (res == null || res == undefined) continue;
+                if (res is classId && (conditionFunction == null || conditionFunction(res))) count++;
+            }
+            return count;
+        }
 
         public function currentPart():AnimationPart {
             if (_updateCurrent || !_currentPreset) {
                 _currentPreset = findClassInstance(_partList, AnimationPart, null, _state, _subState);
                 _updateCurrent = false;
-                if(_partList.length == 1){
+                if(getCountClassInstance(_partList, AnimationPart, null) == 1){
                     _isListEnd = true;
                 }
             }
@@ -52,7 +68,9 @@ package com.berry.animation.library {
 
         public function nextPresetRandom():void {
             if (!isState) {
-                loopEnumeration();
+                _subState = 0;
+                _state = 0;
+                _isListEnd = true;
                 return;
             }
             if (!_completeSubStates[_state]) {_completeSubStates[_state] = 0}
@@ -75,7 +93,9 @@ package com.berry.animation.library {
             }
 
             if (!_partList[_state]) {
-                loopEnumeration();
+                _subState = 0;
+                _state = 0;
+                _isListEnd = true;
             }
 
             _updateCurrent = true;
@@ -107,11 +127,6 @@ package com.berry.animation.library {
             return this;
         }
 
-        private function loopEnumeration():void {
-            _subState = 0;
-            _state = 0;
-            _isListEnd = true;
-        }
 
         public function get complex():Boolean {
             return currentPart().complexSet ? currentPart().complex : complex;
@@ -159,6 +174,7 @@ package com.berry.animation.library {
 
         public function set loop(value:Boolean):void {_loop = value;}
 
+        // todo delete magic
         public function get loopCount():int {
             return currentPart().loopSet ? currentPart().loopCount : _loopCount;
         }
