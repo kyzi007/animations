@@ -25,7 +25,18 @@ package com.berry.animation.library {
         private var _rotate:String = '';
         private var _position:String = '';
         private var _renderInTread:Boolean;
-        
+        private var _optimise:int = 0;
+
+        public function get optimise ():int
+        {
+        	return _optimise;
+        }
+
+        public function setOptimise (value:int):AssetDataGetQuery
+        {
+        	_optimise = value;
+        	return this;
+        }
         public function get renderInTread ():Boolean
         {
         	return _renderInTread;

@@ -25,11 +25,10 @@ package com.berry.animation.draw {
         private var _timline:Vector.<AssetFrame>;
         private var _time:int;
 
-
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-           // EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
+            // EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
             super.finish();
         }
 
@@ -55,7 +54,7 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation +' - '+_query.name, KLog.ERROR); }
+                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation + ' - ' + _query.name, KLog.ERROR); }
             }
         }
 
@@ -66,6 +65,12 @@ package com.berry.animation.draw {
                 return true;
             }
             //trace('draw '+ _query.name + " " + _query.animation)
+
+            if (_query.optimise != 0 && frame % _query.optimise == 0 && frame !=0) {
+                _timline[frame] = new AssetFrame(_timline[frame - 1].x, _timline[frame - 1].y, _timline[frame - 1].bitmap);
+                _timline[frame].dublicate = frame - 1;
+                return (frame + 1 == _totalFrames);
+            }
 
             _render.gotoAndStop(frame + 1);
             var bitmap:BitmapData;
@@ -99,7 +104,7 @@ package com.berry.animation.draw {
                 _timline[frame] = new AssetFrame(stateRect.x, stateRect.y, bitmap);
             }
 
-            return (frame + 1 == _totalFrames)
+            return (frame + 1 == _totalFrames);
         }
 
         private function getMem2():int {
