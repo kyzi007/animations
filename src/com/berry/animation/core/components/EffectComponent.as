@@ -58,6 +58,8 @@ package com.berry.animation.core.components {
                 effect.fullAnimation = _filter ? false : _parent.data.effectMode;
                 effect.loadOneFrameFirst = true;
                 effect.playAnimationSet(animationModel);
+                effect.renderPriority = 300;
+                effect.drawPriority = 200;
                 if (_filter) {
                     effect.applyFilter(_filter);
                 }

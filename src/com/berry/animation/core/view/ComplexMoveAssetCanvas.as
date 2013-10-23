@@ -187,5 +187,7 @@ package com.berry.animation.core.view {
         public function get animationModel():AnimationModel {
             return _animationModel;
         }
+
+        public function set renderPriority(priority:int):void {_data.priority = priority;}
     }
 }

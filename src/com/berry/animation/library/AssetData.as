@@ -126,7 +126,7 @@ package com.berry.animation.library {
                  _renderAction = EnterFrame.addAction(0, renderInstruct);
                  _renderAction.name = "AssetData:render "+name;
                  } else if (_getQuery.renderInTread) {*/
-                _renderAction = EnterFrame.addThread(0, 0, renderInstruct);
+                _renderAction = EnterFrame.addThread(_getQuery.renderPriority, 0, renderInstruct);
                 _renderAction.name = "AssetData:render " + name;
                 /*} else {
                  while (renderInstruct.execute() == false) {}

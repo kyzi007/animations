@@ -27,6 +27,19 @@ package com.berry.animation.library {
         private var _renderInTread:Boolean;
         private var _optimise:int = 0;
 
+        private var _renderPriority:int = 15;
+        
+        public function get renderPriority ():int
+        {
+        	return _renderPriority;
+        }
+        
+        public function setRenderPriority (value:int):AssetDataGetQuery
+        {
+        	_renderPriority = value;
+        	return this;
+        }
+        
         public function get optimise ():int
         {
         	return _optimise;

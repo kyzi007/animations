@@ -7,6 +7,7 @@ package com.berry.animation.core {
     import org.dzyga.pool.Pool;
 
     public class AssetModel {
+        public var priority:int = 10;
         public function AssetModel() {
             sourceType.setValue(SourceTypeEnum.SOURCE_SWF);
         }
@@ -48,6 +49,7 @@ package com.berry.animation.core {
                     .setStep(_stepFrame)
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
                     .setIsAutoClear(!getCache(animation))
+                    .setRenderPriority(priority)
                     .setRenderInTread(renderInTread);
             return query;
         }

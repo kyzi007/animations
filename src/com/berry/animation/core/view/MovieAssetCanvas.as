@@ -22,11 +22,15 @@ package com.berry.animation.core.view {
         public var animationFinishPromise:Promise = new Promise();
         private var _filter:ColorMatrix;
         private var _currentFrame:uint = 0;
-        private var _drawPriority:int = 25;
+        private var _drawPriority:int = 10;
         private var _frames:Vector.<AssetFrame>;
         private var _playAction:Action;
         private var _lastFrame:int;
         private var _tempForFreeze:BitmapData;
+
+        public function set drawPriority(value:int){
+            _drawPriority = value;
+        }
 
         public function applyFilter(filter:ColorMatrix):void {
             if (_filter) return;
