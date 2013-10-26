@@ -1,4 +1,8 @@
 package com.berry.animation.library {
+    import common.GameNotifications;
+    import common.debug.controller.server.DLogError;
+    import common.debug.model.ServerErrorList;
+
     import flash.display.Bitmap;
     import flash.display.Loader;
     import flash.events.Event;
@@ -10,6 +14,7 @@ package com.berry.animation.library {
     import log.logServer.KLog;
 
     import org.dzyga.callbacks.Promise;
+    import org.puremvc.as3.patterns.facade.Facade;
 
     public class AssetLoader extends Loader {
 
@@ -46,6 +51,13 @@ package com.berry.animation.library {
         }
 
         private function error(event:IOErrorEvent):void {
+            Facade.getInstance().sendNotification(
+                    GameNotifications.RUN_DIRECTIVE, {
+                        name: DLogError.NAME, args: {
+                            errorId: ServerErrorList.DOWNLOAD_FAIL, description:_url
+                        }
+                    }
+            );
             CONFIG::debug{ KLog.log("SwfLoader:error " + event.toString() + ' url=' + _url, KLog.ERROR); }
             complete(null);
         }
