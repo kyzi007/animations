@@ -28,7 +28,7 @@ package com.berry.animation.core.view {
         private var _lastFrame:int;
         private var _tempForFreeze:BitmapData;
 
-        public function set drawPriority(value:int){
+        public function set drawPriority(value:int):void{
             _drawPriority = value;
         }
 
