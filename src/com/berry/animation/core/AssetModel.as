@@ -8,43 +8,43 @@ package com.berry.animation.core {
 
     public class AssetModel {
         public var priority:int = 10;
+
         public function AssetModel() {
             sourceType.setValue(SourceTypeEnum.SOURCE_SWF);
         }
-//TODO delete
-        public var cachedList:Array;
-        public var renderInTread:Boolean;
+
         public var id:String;
         public var assetName:String;
-        public var animationModel:AnimationSequenceData;
-        public var cache:Boolean;
+
+        public var text:String;
         public var x:Number;
         public var y:Number;
-        public var vectorMode:Boolean;
+
+        public var cache:Boolean;
+
+        public var cachedList:Array;
+        public var renderInTread:Boolean;
+
+        public var animationModel:AnimationSequenceData;
         public var sourceType:SourceTypeEnum = new SourceTypeEnum();
-        public var text:String;
+
         private var _rotation:RotateEnum = new RotateEnum(RotateEnum.NONE);
-        private var _animation:String;
+
         private var _stepFrame:int = 1;
         private var _effectMode:Boolean = true;
-        private var _stepFrameUpdated:Boolean;
-        private var _animationUpdated:Boolean;
-        private var _effectModeUpdated:Boolean;
-        private var _rotationUpdated:Boolean;
+        private var _animation:String;
 
         public function cleanUp():void {
 
         }
 
-        public function getQuery(animation:String, rotateOn:Boolean = true,
-                                 checkDuplicate:int = 0):AssetDataGetQuery {
+        public function getQuery(animation:String, rotateOn:Boolean = true, checkDuplicate:int = 0):AssetDataGetQuery {
             var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
             query.setAssetName(assetName)
                     .setSourceType(sourceType.value)
                     .setAnimationName(animation)
                     .setIsCheckDuplicateData(checkDuplicate)
                     .setIsFullAnimation(true)
-                    .setIsBitmapRendering(!vectorMode)
                     .setText(text)
                     .setStep(_stepFrame)
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
@@ -52,13 +52,6 @@ package com.berry.animation.core {
                     .setRenderPriority(priority)
                     .setRenderInTread(renderInTread);
             return query;
-        }
-
-        public function clearUpdates():void {
-            _stepFrameUpdated = false;
-            _animationUpdated = false;
-            _effectModeUpdated = false;
-            _rotationUpdated = false;
         }
 
         private function getCache(animation:String):Boolean {
@@ -74,7 +67,6 @@ package com.berry.animation.core {
 
         public function set stepFrame(value:int):void {
             if (_stepFrame != value) {
-                _stepFrameUpdated = true;
                 _stepFrame = value;
             }
         }
@@ -85,7 +77,6 @@ package com.berry.animation.core {
 
         public function set animation(value:String):void {
             if (_animation != value) {
-                _animationUpdated = true;
                 _animation = value;
             }
         }
@@ -96,7 +87,6 @@ package com.berry.animation.core {
 
         public function set effectMode(value:Boolean):void {
             if (_effectMode != value) {
-                _effectModeUpdated = true;
                 _effectMode = value;
             }
         }
@@ -107,7 +97,6 @@ package com.berry.animation.core {
 
         public function set rotation(value:String):void {
             if (_rotation.value != value) {
-                _rotationUpdated = true;
                 _rotation.setValue(value);
             }
         }
