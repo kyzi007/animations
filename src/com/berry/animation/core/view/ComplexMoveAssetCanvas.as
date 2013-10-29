@@ -19,60 +19,65 @@ package com.berry.animation.core.view {
         public var fullAnimation:Boolean = true;
         public var loadOneFrameFirst:Boolean = false;
         public var assetLibrary:AssetLibrary;
+
+        public var startRenderPromise:Promise = new Promise();
         public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
 
-        private var _nextToTimeAction:Action;
         private var _pauseAction:Action;
+        private var _nextToTimeAction:Action;
 
         private var _assetModel:AssetModel;
-        private var _animationModel:AnimationSequenceData;
         private var _currPreset:AnimationPart;
+        private var _animationModel:AnimationSequenceData;
 
         private var _loopCount:int;
         private var _loopList:Boolean;
+
         private var _rendered:Boolean;
-        public var startRenderPromise:Promise = new Promise();
 
         public function get isActive():Boolean {
-            return assetData && assetData.isRenderFinish
+            return assetData && assetData.isRenderFinish;
         }
 
         public function playAnimationSet(animationModel:AnimationSequenceData):void {
             _animationModel = animationModel;
-            _loopCount = _animationModel.sequenceLoopCount;
             _loopList = _animationModel.loop;
+            _loopCount = _animationModel.sequenceLoopCount;
             playPart(_animationModel.currentPart());
         }
 
         // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var nextAssetData:AssetData;
-            var query:AssetDataGetQuery = _assetModel.getQuery(currPreset.fullName);
+            var query:AssetDataGetQuery;
+
             _currPreset = currPreset;
-            if (!currPreset.isRotateSupport(query.rotate)) {
-                query.setRotate(RotateEnum.NONE);
-            }
-            //EffectViewer.log(_view.name + ' play part ' + currPreset.fullName);
 
-            if (loadOneFrameFirst && fullAnimation || isOneFrame) {
-                query.setIsFullAnimation(false).setIsAutoClear(false).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
-                nextAssetData = assetLibrary.getAssetData(query);
-                if (!isOneFrame) {
-                    if (nextAssetData.isRenderFinish) {
-                        query = _assetModel.getQuery(currPreset.fullName).setIsFullAnimation(true);
-                        if (!currPreset.isRotateSupport(query.rotate)) {
-                            query.setRotate(RotateEnum.NONE);
-                        }
-                        if (assetLibrary.assetRendered(query)) {
-                            nextAssetData = assetLibrary.getAssetData(query);
-                        } else {
-                            EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
-                        }
 
+            if (loadOneFrameFirst && fullAnimation) {
+                if (nextAssetData.isRenderFinish) {
+
+                    query = _assetModel.getQuery(currPreset).setIsFullAnimation(true);
+
+                    if (!currPreset.isRotateSupport(query.rotate)) {
+                        query.setRotate(RotateEnum.NONE);
                     }
+                    if (assetLibrary.assetRendered(query)) {
+                        nextAssetData = assetLibrary.getAssetData(query);
+                    } else {
+                        EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
+                    }
+
+                } else if (isOneFrame) {
+                    query.setIsFullAnimation(false)
+                            .setIsAutoClear(false)
+                            .setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_NONE);
+
+                    nextAssetData = assetLibrary.getAssetData(query);
                 }
             } else {
+                query = _assetModel.getQuery(currPreset);
                 query.setIsFullAnimation(fullAnimation);
                 nextAssetData = assetLibrary.getAssetData(query);
             }
@@ -124,7 +129,7 @@ package com.berry.animation.core.view {
         }
 
         private function getEffect():void {
-            var query:AssetDataGetQuery = _assetModel.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
+            var query:AssetDataGetQuery = _assetModel.getQuery(_animationModel.currentPart()).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
             if (!_currPreset.isRotateSupport(query.rotate)) {
                 query.setRotate(RotateEnum.NONE);
             }

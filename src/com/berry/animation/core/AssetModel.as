@@ -1,6 +1,7 @@
 package com.berry.animation.core {
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.data.SourceTypeEnum;
+    import com.berry.animation.library.AnimationPart;
     import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AssetDataGetQuery;
 
@@ -38,11 +39,11 @@ package com.berry.animation.core {
 
         }
 
-        public function getQuery(animation:String, rotateOn:Boolean = true, checkDuplicate:int = 0):AssetDataGetQuery {
+        public function getQuery(animationPart:AnimationPart, rotateOn:Boolean = true, checkDuplicate:int = 0):AssetDataGetQuery {
             var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
             query.setAssetName(assetName)
                     .setSourceType(sourceType.value)
-                    .setAnimationName(animation)
+                    .setAnimationName(animationPart.fullName)
                     .setIsCheckDuplicateData(checkDuplicate)
                     .setIsFullAnimation(true)
                     .setText(text)
@@ -50,7 +51,10 @@ package com.berry.animation.core {
                     .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
                     .setIsAutoClear(!getCache(animation))
                     .setRenderPriority(priority)
-                    .setRenderInTread(renderInTread);
+            if (!animationPart.isRotateSupport(query.rotate)) {
+                query.setRotate(RotateEnum.NONE);
+            }
+
             return query;
         }
 
