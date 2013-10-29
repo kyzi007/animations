@@ -45,7 +45,7 @@ package com.berry.animation.core.components {
                 return;
             }
             _parent.mainComponent.finishRenderPromise.callbackRemove(tryPlayCallback);
-            var assetData:AssetData = _parent.assetLibrary.getAssetData(_parent.data.getQuery(AnimationsList.SHADOW));
+            var assetData:AssetData = _parent.assetLibrary.getAssetData(_parent.data.getQueryByName(AnimationsList.SHADOW));
             if (_assetData && assetData != _assetData) {
                 _assetData.useCount--;
             }

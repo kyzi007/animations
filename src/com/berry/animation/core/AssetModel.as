@@ -58,6 +58,22 @@ package com.berry.animation.core {
             return query;
         }
 
+        public function getQueryByName(name:String, rotateOn:Boolean = true, checkDuplicate:int = 0):AssetDataGetQuery {
+            var query:AssetDataGetQuery = Pool.get(AssetDataGetQuery) as AssetDataGetQuery;
+            query.setAssetName(assetName)
+                    .setSourceType(sourceType.value)
+                    .setAnimationName(name)
+                    .setIsCheckDuplicateData(checkDuplicate)
+                    .setIsFullAnimation(true)
+                    .setText(text)
+                    .setStep(_stepFrame)
+                    .setRotate(rotateOn ? _rotation.value : RotateEnum.NONE)
+                    .setIsAutoClear(!getCache(animation))
+                    .setRenderPriority(priority)
+
+            return query;
+        }
+
         private function getCache(animation:String):Boolean {
             if (!cachedList) {
                 return cache;

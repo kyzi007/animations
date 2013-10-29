@@ -93,13 +93,14 @@ package com.berry.animation.library {
             nextByStack();
             update();
         }
+
         // TODO: move
         public function startRender(...params):void {
             if (_isRenderWork || frames.length) return;
 
-            var source : DisplayObject;
-            if(params.length){ // finish load callback run
-                if(params[0] is Bitmap){
+            var source:DisplayObject;
+            if (params.length) { // finish load callback run
+                if (params[0] is Bitmap) {
                     source = params[0];
                 } else {
                     source = new params[0];
@@ -121,21 +122,8 @@ package com.berry.animation.library {
 
             renderInstruct.init(renderInitParams);
             _isRenderWork = true;
-            if (_getQuery.isBitmapRendering) {
-                /*if (_getQuery.asynchRender) {
-                 _renderAction = EnterFrame.addAction(0, renderInstruct);
-                 _renderAction.name = "AssetData:render "+name;
-                 } else if (_getQuery.renderInTread) {*/
-                _renderAction = EnterFrame.addThread(_getQuery.renderPriority, 0, renderInstruct);
-                _renderAction.name = "AssetData:render " + name;
-                /*} else {
-                 while (renderInstruct.execute() == false) {}
-                 renderInstruct.finish();
-                 renderInstruct = null;
-                 }*/
-            } else {
-                finishRender();
-            }
+            _renderAction = EnterFrame.addThread(_getQuery.renderPriority, 0, renderInstruct);
+            _renderAction.name = "AssetData:render " + name;
         }
 
         public function update():void {
