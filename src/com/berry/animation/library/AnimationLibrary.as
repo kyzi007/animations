@@ -56,7 +56,7 @@ package com.berry.animation.library {
                     var animationModel:AnimationSequenceData = getAnimationModel(assetName, animationShotName);
                     if (animationModel) {
                         //while (!animationModel.isListEnd) {
-                        tempArray.push(animationModel.fullPartAnimationName);
+                        tempArray.push(animationModel.fullAnimationName);
                         // animationModel.nextPreset();
                         // }
                     }

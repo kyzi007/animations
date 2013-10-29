@@ -73,7 +73,6 @@ package com.berry.animation.library {
                 _animationState = 0;
                 _isListEnd = true;
             }
-
             _updateCurrent = true;
         }
 
@@ -103,13 +102,10 @@ package com.berry.animation.library {
         }
 
         public function get complex():Boolean {
-            return currentPart().complexSet ? currentPart().complex : complex;
+            return currentPart().complex;
         }
 
-        public function get fullPartAnimationName():String {
-            if (_animationSubState == 2 && _animationState == 2) {
-                trace()
-            }
+        public function get fullAnimationName():String {
             var name:String = _animationShotName;
             if (isState) {
                 name += '_state_' + _animationState;
