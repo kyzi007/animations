@@ -1,7 +1,7 @@
 package com.berry.animation.core.view {
     import com.berry.animation.core.*;
     import com.berry.animation.data.RotateEnum;
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AnimationPart;
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetDataGetQuery;
@@ -22,7 +22,7 @@ package com.berry.animation.core.view {
         public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
         private var _data:AssetModel;
-        private var _animationModel:AnimationModel;
+        private var _animationModel:AnimationSequenceData;
         private var _nextToTimeAction:Action;
         private var _loopCount:int;
         private var _loopList:Boolean;
@@ -36,9 +36,9 @@ package com.berry.animation.core.view {
             return assetData && assetData.isRenderFinish
         }
 
-        public function playAnimationSet(animationModel:AnimationModel):void {
+        public function playAnimationSet(animationModel:AnimationSequenceData):void {
             _animationModel = animationModel;
-            _loopCount = _animationModel.loopCount;
+            _loopCount = _animationModel.sequenceLoopCount;
             _loopList = _animationModel.loop;
             playPart(_animationModel.currentPart());
         }
@@ -183,7 +183,7 @@ package com.berry.animation.core.view {
             name = _data.assetName;
         }
 
-        public function get animationModel():AnimationModel {
+        public function get animationModel():AnimationSequenceData {
             return _animationModel;
         }
 

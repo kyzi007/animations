@@ -1,7 +1,7 @@
 package com.berry.animation.test {
     import com.berry.animation.core.AssetView;
     import com.berry.animation.data.RotateEnum;
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
 
     public class MyGameObjectView extends AssetView{
         private var _flip:Boolean;
@@ -41,7 +41,7 @@ package com.berry.animation.test {
         }
 
 
-        override public function playByModel(animationModel:AnimationModel):void {
+        override public function playByModel(animationModel:AnimationSequenceData):void {
             if(_flipWaitUpdate && animationModel){
                 data.animationModel = animationModel;
                 flip = _flip;

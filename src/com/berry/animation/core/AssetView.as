@@ -4,7 +4,7 @@ package com.berry.animation.core {
     import com.berry.animation.core.components.EffectComponent;
     import com.berry.animation.core.components.ShadowComponent;
     import com.berry.animation.library.AnimationLibrary;
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetLibrary;
 
@@ -157,17 +157,17 @@ package com.berry.animation.core {
             }
         }
 
-        public function playByModel(animationModel:AnimationModel):void {
+        public function playByModel(animationModel:AnimationSequenceData):void {
             if (animationModel) {
                 data.animationModel = animationModel;
-                data.animation = animationModel.shotName;
+                data.animation = animationModel.animationShotName;
                 ArrayUtils.map(getComponentList(), 'play');
             } else {
                 trace('no animationModel', data.id);
             }
         }
 
-        public function getAnimationModel(animation:String):AnimationModel {
+        public function getAnimationModel(animation:String):AnimationSequenceData {
             return animationLibrary.getAnimationModel(assetName, animation, data.stepFrame);
         }
 

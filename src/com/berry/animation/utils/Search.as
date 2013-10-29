@@ -23,5 +23,21 @@ package com.berry.animation.utils {
             }
             return null;
         }
+
+        public static function getCountClassInstance(obj:Object, classId:Class, conditionFunction:Function, ...keys):int {
+            if (!obj) {
+                return 0;
+            }
+            var count:int = 0;
+            var res:* = obj;
+            if (res is classId && (conditionFunction == null || conditionFunction(res))) count++;
+            for (var i:int = 0; i < keys.length; i++) {
+                var key:String = keys[i];
+                res = res.hasOwnProperty(key) ? res[key] : null;
+                if (res == null || res == undefined) continue;
+                if (res is classId && (conditionFunction == null || conditionFunction(res))) count++;
+            }
+            return count;
+        }
     }
 }

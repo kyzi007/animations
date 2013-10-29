@@ -1,7 +1,7 @@
 package com.berry.animation.core.components {
     import com.berry.animation.core.*;
     import com.berry.animation.core.view.ComplexMoveAssetCanvas;
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AssetData;
 
     import flash.display.DisplayObject;
@@ -51,7 +51,7 @@ package com.berry.animation.core.components {
                 return;
             }
             var effectModels:Object = _parent.animationLibrary.getAnimationEffects(_parent.assetName, _parent.data.animationModel.currentPart().fullName, _parent.data.stepFrame);
-            for each (var animationModel:AnimationModel in effectModels) {
+            for each (var animationModel:AnimationSequenceData in effectModels) {
                 effect = new ComplexMoveAssetCanvas(_parent.assetName + 'effect');
                 effect.assetLibrary = _parent.assetLibrary;
                 effect.data = _parent.data;

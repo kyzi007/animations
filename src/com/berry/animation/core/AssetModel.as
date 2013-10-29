@@ -1,7 +1,7 @@
 package com.berry.animation.core {
     import com.berry.animation.data.RotateEnum;
     import com.berry.animation.data.SourceTypeEnum;
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AssetDataGetQuery;
 
     import org.dzyga.pool.Pool;
@@ -16,7 +16,7 @@ package com.berry.animation.core {
         public var renderInTread:Boolean;
         public var id:String;
         public var assetName:String;
-        public var animationModel:AnimationModel;
+        public var animationModel:AnimationSequenceData;
         public var cache:Boolean;
         public var x:Number;
         public var y:Number;

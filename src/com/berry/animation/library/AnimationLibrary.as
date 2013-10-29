@@ -21,8 +21,8 @@ package com.berry.animation.library {
         private var _effectCache:Object = {};
         private var _partMode:Array = [];
 
-        public function getAnimationModel(assetName:String, animationName:String, step:uint = 1):AnimationModel {
-            var animationModel:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
+        public function getAnimationModel(assetName:String, animationName:String, step:uint = 1):AnimationSequenceData {
+            var animationModel:AnimationSequenceData = Pool.get(AnimationSequenceData) as AnimationSequenceData;
             var parts:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             if (!parts) {
@@ -32,9 +32,9 @@ package com.berry.animation.library {
                 return null;
             }
 
-            animationModel.step = step;
+            animationModel.assetFrame = step;
             animationModel.setPartList(parts);
-            animationModel.shotName = animationName;
+            animationModel.animationShotName = animationName;
             return animationModel;
         }
 
@@ -53,7 +53,7 @@ package com.berry.animation.library {
             if (list) {
                 tempArray = []
                 for each (var animationShotName:String in list) {
-                    var animationModel:AnimationModel = getAnimationModel(assetName, animationShotName);
+                    var animationModel:AnimationSequenceData = getAnimationModel(assetName, animationShotName);
                     if (animationModel) {
                         //while (!animationModel.isListEnd) {
                         tempArray.push(animationModel.fullPartAnimationName);
@@ -76,27 +76,27 @@ package com.berry.animation.library {
                     if (animationParts is AnimationPart) {
                         // плоская структура
                         if (animationParts.isEffect && animationParts.effectStates.indexOf(animationName) != -1) {
-                            var animationData:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-                            animationData.step = step;
+                            var animationData:AnimationSequenceData = Pool.get(AnimationSequenceData) as AnimationSequenceData;
+                            animationData.assetFrame = step;
                             animationData.setPartList(animationParts);
-                            animationData.shotName = animationParts.fullName;
-                            _effectCache[assetName + animationName + step][animationData.shotName] = animationData;
+                            animationData.animationShotName = animationParts.fullName;
+                            _effectCache[assetName + animationName + step][animationData.animationShotName] = animationData;
                         }
                     } else {
                         // TODO: временное
                         if (!(animationParts[0] is String) && animationParts[0][0] && AnimationPart(animationParts[0][0]).isEffect) {
-                            var animationDataAdvanced:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-                            animationDataAdvanced.step = step;
+                            var animationDataAdvanced:AnimationSequenceData = Pool.get(AnimationSequenceData) as AnimationSequenceData;
+                            animationDataAdvanced.assetFrame = step;
                             animationDataAdvanced.setPartList(animationParts);
-                            animationDataAdvanced.shotName = AnimationPart(animationParts[0][0]).fullName.split('_state')[0];// TODO наебнется на точном порядке
-                            _effectCache[assetName + animationName + step][animationDataAdvanced.shotName] = animationDataAdvanced;
+                            animationDataAdvanced.animationShotName = AnimationPart(animationParts[0][0]).fullName.split('_state')[0];// TODO наебнется на точном порядке
+                            _effectCache[assetName + animationName + step][animationDataAdvanced.animationShotName] = animationDataAdvanced;
                         }
                         if (!(animationParts[0] is String) && animationParts[0] is AnimationPart && AnimationPart(animationParts[0]).isEffect) {
-                            var animationDataAdvanced2:AnimationModel = Pool.get(AnimationModel) as AnimationModel;
-                            animationDataAdvanced2.step = step;
+                            var animationDataAdvanced2:AnimationSequenceData = Pool.get(AnimationSequenceData) as AnimationSequenceData;
+                            animationDataAdvanced2.assetFrame = step;
                             animationDataAdvanced2.setPartList(animationParts);
-                            animationDataAdvanced2.shotName = AnimationPart(animationParts[0]).fullName.split('_state')[0];
-                            _effectCache[assetName + animationName + step][animationDataAdvanced2.shotName] = animationDataAdvanced2;
+                            animationDataAdvanced2.animationShotName = AnimationPart(animationParts[0]).fullName.split('_state')[0];
+                            _effectCache[assetName + animationName + step][animationDataAdvanced2.animationShotName] = animationDataAdvanced2;
                         }
                     }
                 }

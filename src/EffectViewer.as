@@ -1,5 +1,5 @@
 package {
-    import com.berry.animation.library.AnimationModel;
+    import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AnimationsList;
     import animation.MidnightAssetView;
 
@@ -157,7 +157,7 @@ package {
 
 
                 //_asset.flip = true;
-                var animationModel:AnimationModel = _animLib.getAnimationModel(_name,'idle', int(_frame.text));
+                var animationModel:AnimationSequenceData = _animLib.getAnimationModel(_name,'idle', int(_frame.text));
                 animationModel.loop =false;
                 _asset.animationSpeed = 2;
                 _asset.playByModel(animationModel);
