@@ -37,10 +37,8 @@ package com.berry.animation.draw {
             _time = getTimer();
             //Mem.start();
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
-            //trace("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation)
-            _source.gotoAndStop(_query.step);
-            //trace(_query.step);
 
+            _source.gotoAndStop(_query.step);
             _timline = _assetData.frames;
 
             var name:String = _query.animation + _query.position + _query.rotate;
@@ -64,9 +62,8 @@ package com.berry.animation.draw {
                 falled();
                 return true;
             }
-            //trace('draw '+ _query.name + " " + _query.animation)
 
-            if (_query.optimise != 0 && frame % _query.optimise == 0 && frame !=0) {
+            if (_query.optimise != 0 && frame % _query.optimise == 0 && frame != 0) {
                 _timline[frame] = new AssetFrame(_timline[frame - 1].x, _timline[frame - 1].y, _timline[frame - 1].bitmap);
                 _timline[frame].dublicate = frame - 1;
                 return (frame + 1 == _totalFrames);
@@ -107,20 +104,10 @@ package com.berry.animation.draw {
             return (frame + 1 == _totalFrames);
         }
 
-        private function getMem2():int {
-            var sum:int;
-            for each (var assetFrame:AssetFrame in _timline) {
-                // sum+=assetFrame.bitmap.width * assetFrame.bitmap.height;
-                sum += getSize(assetFrame.bitmap)
-            }
-            return sum;
-        }
-
         private function getMem1():int {
             var sum:int;
             for each (var assetFrame:AssetFrame in _timline) {
                 sum += assetFrame.bitmap.width * assetFrame.bitmap.height;
-                //sum += getSize(assetFrame.bitmap)
             }
             return sum;
         }
@@ -129,9 +116,6 @@ package com.berry.animation.draw {
             for (var i:int = 0; i < _source.numChildren; i++) {
                 var item:DisplayObject = _source.getChildAt(i);
                 item.visible = item == _render;
-                if (item is MovieClip) {
-                    MovieClip(item).stop();
-                }
             }
         }
 

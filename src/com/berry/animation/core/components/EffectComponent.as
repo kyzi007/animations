@@ -54,7 +54,7 @@ package com.berry.animation.core.components {
             for each (var animationModel:AnimationSequenceData in effectModels) {
                 effect = new ComplexMoveAssetCanvas(_parent.assetName + 'effect');
                 effect.assetLibrary = _parent.assetLibrary;
-                effect.data = _parent.data;
+                effect.assetModel = _parent.data;
                 effect.fullAnimation = _filter ? false : _parent.data.effectMode;
                 effect.loadOneFrameFirst = true;
                 effect.playAnimationSet(animationModel);

@@ -21,16 +21,18 @@ package com.berry.animation.core.view {
         public var assetLibrary:AssetLibrary;
         public var renderCompletePromise:Promise = new Promise();
         public var animationPartFinishPromise:Promise = new Promise();
-        private var _data:AssetModel;
-        private var _animationModel:AnimationSequenceData;
+
         private var _nextToTimeAction:Action;
+        private var _pauseAction:Action;
+
+        private var _assetModel:AssetModel;
+        private var _animationModel:AnimationSequenceData;
+        private var _currPreset:AnimationPart;
+
         private var _loopCount:int;
         private var _loopList:Boolean;
-        private var _lastPreset:AnimationPart;
-        private var _pauseAction:Action;
         private var _rendered:Boolean;
         public var startRenderPromise:Promise = new Promise();
-        private var _currPreset:AnimationPart;
 
         public function get isActive():Boolean {
             return assetData && assetData.isRenderFinish
@@ -46,7 +48,7 @@ package com.berry.animation.core.view {
         // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var nextAssetData:AssetData;
-            var query:AssetDataGetQuery = _data.getQuery(currPreset.fullName);
+            var query:AssetDataGetQuery = _assetModel.getQuery(currPreset.fullName);
             _currPreset = currPreset;
             if (!currPreset.isRotateSupport(query.rotate)) {
                 query.setRotate(RotateEnum.NONE);
@@ -58,7 +60,7 @@ package com.berry.animation.core.view {
                 nextAssetData = assetLibrary.getAssetData(query);
                 if (!isOneFrame) {
                     if (nextAssetData.isRenderFinish) {
-                        query = _data.getQuery(currPreset.fullName).setIsFullAnimation(true);
+                        query = _assetModel.getQuery(currPreset.fullName).setIsFullAnimation(true);
                         if (!currPreset.isRotateSupport(query.rotate)) {
                             query.setRotate(RotateEnum.NONE);
                         }
@@ -109,7 +111,6 @@ package com.berry.animation.core.view {
                 } else {
                     // trace('no time or loop')
                 }
-                _lastPreset = currPreset;
             } else {
                 // wait to the end rendering
                 _rendered = false;
@@ -123,7 +124,7 @@ package com.berry.animation.core.view {
         }
 
         private function getEffect():void {
-            var query:AssetDataGetQuery = _data.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
+            var query:AssetDataGetQuery = _assetModel.getQuery(_animationModel.currentPart().fullName).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
             if (!_currPreset.isRotateSupport(query.rotate)) {
                 query.setRotate(RotateEnum.NONE);
             }
@@ -178,15 +179,15 @@ package com.berry.animation.core.view {
             }
         }
 
-        public function set data(value:AssetModel):void {
-            _data = value;
-            name = _data.assetName;
+        public function set assetModel(value:AssetModel):void {
+            _assetModel = value;
+            name = _assetModel.assetName;
         }
 
         public function get animationModel():AnimationSequenceData {
             return _animationModel;
         }
 
-        public function set renderPriority(priority:int):void {_data.priority = priority;}
+        public function set renderPriority(priority:int):void {_assetModel.priority = priority;}
     }
 }

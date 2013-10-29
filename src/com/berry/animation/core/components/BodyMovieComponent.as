@@ -96,7 +96,7 @@ package com.berry.animation.core.components {
 
         public function init():void {
             _main = new ComplexMoveAssetCanvas(_parent.data.assetName);
-            _main.data = _parent.data;
+            _main.assetModel = _parent.data;
             _main.assetLibrary = _parent.assetLibrary;
             _view.addChild(_main);
         }
