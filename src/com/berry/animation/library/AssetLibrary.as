@@ -108,7 +108,7 @@ package com.berry.animation.library {
             var data:* = _classHash[name] || _doHash[name];
 
             if (!data) {
-                var loader:AssetLoader = new AssetLoader(name, getUrl(name, type), null);
+                var loader:AssetLoader = new AssetLoader(name, getUrl(name, type));
                 _classHash[name] = loader;
                 loader.completePromise.callbackRegister(
                         function (loadedData:*, loaderContext:*):void {

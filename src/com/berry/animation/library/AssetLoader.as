@@ -13,12 +13,14 @@ package com.berry.animation.library {
 
     import log.logServer.KLog;
 
+    import org.dzyga.callbacks.Once;
+
     import org.dzyga.callbacks.Promise;
     import org.puremvc.as3.patterns.facade.Facade;
 
     public class AssetLoader extends Loader {
 
-        public function AssetLoader(name:String, url:String, callback:Function) {
+        public function AssetLoader(name:String, url:String) {
             _name = name;
 
             _context = new LoaderContext();
@@ -29,7 +31,6 @@ package com.berry.animation.library {
 
             contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
             contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
-            completePromise.callbackRegister(callback);
             loadSwf(url);
         }
 
@@ -38,7 +39,7 @@ package com.berry.animation.library {
         private var _url:String;
         private var _context:LoaderContext;
         private var _name:String;
-        public var completePromise:Promise = new Promise();
+        public var completePromise:Once = new Once();
 
         private function loadSwf(url:String):void {
             _url = url;
