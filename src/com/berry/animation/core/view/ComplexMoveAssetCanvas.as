@@ -24,7 +24,6 @@ package com.berry.animation.core.view {
         private var _data:AssetModel;
         private var _animationModel:AnimationModel;
         private var _nextToTimeAction:Action;
-        private var _isFinishToEndCurrent:Boolean;
         private var _loopCount:int;
         private var _loopList:Boolean;
         private var _lastPreset:AnimationPart;
