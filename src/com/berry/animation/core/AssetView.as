@@ -189,7 +189,7 @@ package com.berry.animation.core {
                     cacheAnimationFinishPromise.resolve();
                     play();
                 } else {
-                    assetData = assetLibrary.getAssetData(data.getQuery(_renderListBeforePlay.shift()));
+                    assetData = assetLibrary.getAssetData(data.getQueryByName(_renderListBeforePlay.shift()));
                     if (assetData.isRenderFinish) {
                         preRenderNext()
                     } else {

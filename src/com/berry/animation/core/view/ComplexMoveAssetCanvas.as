@@ -47,34 +47,18 @@ package com.berry.animation.core.view {
             playPart(_animationModel.currentPart());
         }
 
-        // ебучий ад, мне стыдно
         private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
             var nextAssetData:AssetData;
             var query:AssetDataGetQuery;
 
             _currPreset = currPreset;
 
-
             if (loadOneFrameFirst && fullAnimation) {
-                if (nextAssetData.isRenderFinish) {
-
-                    query = _assetModel.getQuery(currPreset).setIsFullAnimation(true);
-
-                    if (!currPreset.isRotateSupport(query.rotate)) {
-                        query.setRotate(RotateEnum.NONE);
-                    }
-                    if (assetLibrary.assetRendered(query)) {
-                        nextAssetData = assetLibrary.getAssetData(query);
-                    } else {
-                        EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
-                    }
-
-                } else if (isOneFrame) {
-                    query.setIsFullAnimation(false)
-                            .setIsAutoClear(false)
-                            .setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_NONE);
-
-                    nextAssetData = assetLibrary.getAssetData(query);
+                // если первый кадр уже отрисован
+                query = _assetModel.getQuery(currPreset).setIsFullAnimation(false);
+                nextAssetData = assetLibrary.getAssetData(query);
+                if (isOneFrame) {
+                    EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                 }
             } else {
                 query = _assetModel.getQuery(currPreset);
@@ -130,9 +114,6 @@ package com.berry.animation.core.view {
 
         private function getEffect():void {
             var query:AssetDataGetQuery = _assetModel.getQuery(_animationModel.currentPart()).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
-            if (!_currPreset.isRotateSupport(query.rotate)) {
-                query.setRotate(RotateEnum.NONE);
-            }
             var fullAssetData:AssetData = assetLibrary.getAssetData(query);
 
             if (fullAssetData.isRenderFinish) {
