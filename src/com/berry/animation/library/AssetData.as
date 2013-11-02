@@ -28,9 +28,9 @@ package com.berry.animation.library {
              }*/
             _getQuery = query;
         }
-
         private static var _renderedAndLock:Object = {};
         private static var _stack:Object = {};
+        public var memory:int;
         public var mc:MovieClip;
         public var frames:Vector.<AssetFrame> = new Vector.<AssetFrame>(); // чтобы не грузить запросами геттер
         public var completeRenderPromise:Promise = new Promise();
@@ -38,15 +38,9 @@ package com.berry.animation.library {
         //public var render:LoopTask;
         public var renderClass:Class;
         public var sourceCallback:Function;
-        private var _useCount:int = 0;
-        private var _maxBounds:Rect = new Rect();
         private var _isRenderWork:Boolean = false;
-        private var _isRenderFinish:Boolean = false;
-        private var _isDestroyed:Boolean = false;
-        private var _getQuery:AssetDataGetQuery;
         private var _renderAction:Action;
         private var _movies:Dictionary = new Dictionary();
-        private var _isFalled:Boolean;
 
         public function finishRender():void {
             _isRenderWork = false;
@@ -94,7 +88,6 @@ package com.berry.animation.library {
             update();
         }
 
-        // TODO: move
         public function startRender(...params):void {
             if (_isRenderWork || frames.length) return;
 
@@ -132,8 +125,6 @@ package com.berry.animation.library {
             completeRenderPromise.resolve(this);
         }
 
-        // не вычищаю из памяти инстансы
-
         private function nextByStack():void {
             _renderedAndLock[name] = false;
             if (_stack[name]) {
@@ -159,11 +150,33 @@ package com.berry.animation.library {
             }
         }
 
-        public function get getQuery():AssetDataGetQuery {return _getQuery;}
+        private var _useCount:int = 0;
 
-        public function set getQuery(value:AssetDataGetQuery):void {
-            _getQuery = value;
+        public function get useCount():int {
+            return _useCount;
         }
+
+        // TODO: move
+
+        public function set useCount(value:int):void {
+            _useCount = value;
+        }
+
+        private var _maxBounds:Rect = new Rect();
+
+        // не вычищаю из памяти инстансы
+
+        public function get maxBounds():Rect {
+            return _maxBounds;
+        }
+
+        private var _isRenderFinish:Boolean = false;
+
+        public function get isRenderFinish():Boolean {
+            return _isRenderFinish;
+        }
+
+        private var _isDestroyed:Boolean = false;
 
         /* public function get isBitmap():Boolean {
          return _getQuery.isBitmapRendering;
@@ -173,28 +186,22 @@ package com.berry.animation.library {
             return _isDestroyed;
         }
 
-        public function get isRenderFinish():Boolean {
-            return _isRenderFinish;
+        private var _getQuery:AssetDataGetQuery;
+
+        public function get getQuery():AssetDataGetQuery {return _getQuery;}
+
+        public function set getQuery(value:AssetDataGetQuery):void {
+            _getQuery = value;
         }
 
-        public function get maxBounds():Rect {
-            return _maxBounds;
+        private var _isFalled:Boolean;
+
+        public function get isFalled():Boolean {
+            return _isFalled;
         }
 
         public function get name():String {
             return _getQuery.name;
-        }
-
-        public function get useCount():int {
-            return _useCount;
-        }
-
-        public function set useCount(value:int):void {
-            _useCount = value;
-        }
-
-        public function get isFalled():Boolean {
-            return _isFalled;
         }
 
         internal function destroy():void {

@@ -29,7 +29,8 @@ package com.berry.animation.draw {
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            trace(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
+            //trace(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
+            _assetData.memory = getMem1();
             super.finish();
         }
 
