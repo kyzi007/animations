@@ -17,7 +17,7 @@ package com.berry.animation.core.view {
         }
 
         public var fullAnimation:Boolean = true;
-        public var loadOneFrameFirst:Boolean = false;
+        public var isEffect:Boolean = false;
         public var assetLibrary:AssetLibrary;
 
         public var startRenderPromise:Promise = new Promise();
@@ -53,12 +53,12 @@ package com.berry.animation.core.view {
 
             _currPreset = currPreset;
 
-            if (loadOneFrameFirst && fullAnimation) {
+            if (isEffect && fullAnimation) {
                 // если первый кадр уже отрисован
                 query = _assetModel.getQuery(currPreset).setIsFullAnimation(false);
                 nextAssetData = assetLibrary.getAssetData(query);
                 if (isOneFrame) {
-                    EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
+                   // EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                 }
             } else {
                 query = _assetModel.getQuery(currPreset);

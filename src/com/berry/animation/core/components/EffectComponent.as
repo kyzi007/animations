@@ -55,8 +55,8 @@ package com.berry.animation.core.components {
                 effect = new ComplexMoveAssetCanvas(_parent.assetName + 'effect');
                 effect.assetLibrary = _parent.assetLibrary;
                 effect.assetModel = _parent.data;
-                effect.fullAnimation = _filter ? false : _parent.data.effectMode;
-                effect.loadOneFrameFirst = true;
+                effect.fullAnimation = false; //_filter ? false : _parent.data.effectMode;
+                effect.isEffect = true;
                 effect.playAnimationSet(animationModel);
                 effect.renderPriority = 300;
                 effect.drawPriority = 200;

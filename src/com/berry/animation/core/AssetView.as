@@ -96,7 +96,7 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
-        public function getComponentList():Array {
+        /*public function getComponentList():Array {
             var aspectList:Array = [];
             if (mainComponent) {
                 aspectList.push(mainComponent);
@@ -108,7 +108,7 @@ package com.berry.animation.core {
                 aspectList.push(effectComponent);
             }
             return aspectList;
-        }
+        }*/
 
         public function getComponentViewList():Array {
             var viewList:Array = [];
@@ -137,7 +137,9 @@ package com.berry.animation.core {
             _assetLibrary = assetLibrary;
             _animationLibrary = animationLibrary;
 
-            ArrayUtils.map(getComponentList(), 'init');
+            if(mainComponent) mainComponent.init();
+            if(effectComponent) effectComponent.init();
+            if(shadowComponent) shadowComponent.init();
 
             if (effectComponent) {
                 _view = new Sprite();
@@ -161,7 +163,9 @@ package com.berry.animation.core {
             if (animationModel) {
                 data.animationModel = animationModel;
                 data.animation = animationModel.animationShotName;
-                ArrayUtils.map(getComponentList(), 'play');
+                if (shadowComponent) shadowComponent.play();
+                if (mainComponent) mainComponent.play();
+                if (effectComponent) effectComponent.play();
             } else {
                 trace('no animationModel', data.id);
             }
@@ -340,9 +344,9 @@ package com.berry.animation.core {
         }
 
         public function set smoothing(value:Boolean):void {
-            for each (var assetViewComponent:IAssetViewComponent in getComponentList()) {
-                assetViewComponent.smoothing = value;
-            }
+            if (shadowComponent) shadowComponent.smoothing = value;
+            if (mainComponent) mainComponent.smoothing = value;
+            if (effectComponent) effectComponent.smoothing = value;
         }
         
         override public function match(target:DisplayObject):IDisplayProxy {

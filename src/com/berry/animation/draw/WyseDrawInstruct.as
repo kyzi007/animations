@@ -2,6 +2,7 @@ package com.berry.animation.draw {
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetFrame;
+    import com.berry.animation.utils.MovieClipHelper;
 
     import flash.display.BitmapData;
     import flash.display.DisplayObject;
@@ -28,7 +29,7 @@ package com.berry.animation.draw {
         override public function finish():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            // EffectViewer.log(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
+            trace(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
             super.finish();
         }
 
@@ -39,6 +40,7 @@ package com.berry.animation.draw {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
 
             _source.gotoAndStop(_query.step);
+            MovieClipHelper.stopAllMovies(_source);
             _timline = _assetData.frames;
 
             var name:String = _query.animation + _query.position + _query.rotate;
