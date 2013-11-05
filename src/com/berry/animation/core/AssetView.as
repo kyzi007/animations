@@ -96,13 +96,11 @@ package com.berry.animation.core {
             return assetLibrary.createSourceInstance(assetName);
         }
 
+        // перфоманс похуй, создадим массив на каждый запрос ВАНЯ блять
+        // пс да еще и с ошибкой
         public function getComponentViewList():Array {
             var viewList:Array = [];
-            if (effectComponent) {
-                viewList.push(_view);
-            } else {
-                viewList.push(mainComponent.view);
-            }
+            viewList.push(_view);
             if (shadowComponent) {
                 viewList.push(shadowComponent.view);
             }
@@ -355,12 +353,18 @@ package com.berry.animation.core {
         }
 
         override public function show():IDisplayProxy {
-            ArrayUtils.map(getComponentViewList(), DisplayUtils.show);
+            if(shadow) {
+                shadow.visible = true;
+            }
+            _view.visible = true;
             return this;
         }
 
         override public function hide():IDisplayProxy {
-            ArrayUtils.map(getComponentViewList(), DisplayUtils.hide);
+            if (shadow) {
+                shadow.visible = false;
+            }
+            _view.visible = false;
             return this;
         }
 
