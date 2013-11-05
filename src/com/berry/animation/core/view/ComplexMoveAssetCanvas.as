@@ -58,7 +58,7 @@ package com.berry.animation.core.view {
                 query = _assetModel.getQuery(currPreset).setIsFullAnimation(false);
                 nextAssetData = assetLibrary.getAssetData(query);
                 if (isOneFrame) {
-                   // EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
+                    EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                 }
             } else {
                 query = _assetModel.getQuery(currPreset);

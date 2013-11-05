@@ -19,7 +19,7 @@ package com.berry.animation.library {
     import org.dzyga.pool.Pool;
 
     public class AssetLibrary {
-        public function AssetLibrary(baseUrl:String) {
+        public function AssetLibrary (baseUrl:String) {
             _baseUrl = baseUrl;
         }
 
@@ -32,7 +32,7 @@ package com.berry.animation.library {
         private var _partAsset:Object = {};
         private var _loop:Loop;
 
-        public function gcForce():void {
+        public function gcForce ():void {
             for (var assetsName:String in _assets) {
                 var assetsByName:Array = _assets[assetsName];
                 var count:int = 0;
@@ -57,17 +57,17 @@ package com.berry.animation.library {
             }
         }
 
-        public function init():void {
+        public function init ():void {
             // for override
-           // EnterFrame.scheduleAction(10000, gc);
+            EnterFrame.scheduleAction(10000, gc);
         }
 
-        public function getPreloader(assetName:String):AssetData {
+        public function getPreloader (assetName:String):AssetData {
             // for override
             return null;
         }
 
-        public function registerAsset(data:*, assetName:String, loaderInfo:LoaderInfo):void {
+        public function registerAsset (data:*, assetName:String, loaderInfo:LoaderInfo):void {
             if (data is Bitmap) {
                 _doHash[assetName] = data;
             } else {
@@ -75,7 +75,7 @@ package com.berry.animation.library {
             }
         }
 
-        public function gc():void {
+        public function gc ():void {
             EnterFrame.scheduleAction(10000, gc);
             if (EnterFrame.calculatedFps < 20) {
                 return;
@@ -104,17 +104,17 @@ package com.berry.animation.library {
             }
         }
 
-        public function loadData(name:String, type:String, finishCallback:Function):void {
+        public function loadData (name:String, type:String, finishCallback:Function):void {
             var data:* = _classHash[name] || _doHash[name];
 
             if (!data) {
                 var loader:AssetLoader = new AssetLoader(name, getUrl(name, type));
                 _classHash[name] = loader;
                 loader.completePromise.callbackRegister(
-                        function (loadedData:*, loaderContext:*):void {
-                            registerAsset(loadedData, name, loaderContext);
-                            finishCallback(loadedData, loaderContext);
-                        }
+                    function (loadedData:*, loaderContext:*):void {
+                        registerAsset(loadedData, name, loaderContext);
+                        finishCallback(loadedData, loaderContext);
+                    }
                 )
             } else if (data is AssetLoader) {
                 AssetLoader(data).completePromise.callbackRegister(function (loadedData:*, loaderContext:*):void {
@@ -125,15 +125,15 @@ package com.berry.animation.library {
             }
         }
 
-        public function loaded(name:String):Boolean {
+        public function loaded (name:String):Boolean {
             return _doHash[name] || (_classHash[name] && !(_classHash[name] is AssetLoader) );
         }
 
-        public function cleanUp(name:String):void {
+        public function cleanUp (name:String):void {
 
         }
 
-        public function getSource(name:String):DisplayObject {
+        public function getSource (name:String):DisplayObject {
             var source:DisplayObject = _doHash[name];
             if (!source) {
                 if (_classHash[name] is Bitmap) {
@@ -148,16 +148,16 @@ package com.berry.animation.library {
             return source;
         }
 
-        public function cacheSource(name:String):void {
+        public function cacheSource (name:String):void {
             _cached[name] = true;
         }
 
-        public function removeSourceFromCache(name:String):void {
+        public function removeSourceFromCache (name:String):void {
             delete _cached[name];
             delete _doHash[name];
         }
 
-        public function getAssetData(query:AssetDataGetQuery, renderProps:Array = null):AssetData {
+        public function getAssetData (query:AssetDataGetQuery, renderProps:Array = null):AssetData {
             var assetData:AssetData = findAssetData(query);
 
             if (!assetData || assetData.isDestroyed) {
@@ -167,10 +167,10 @@ package com.berry.animation.library {
                 assetData.renderClass = getRender(assetData);
                 assetData.sourceCallback = getSource;
                 var data:* = _classHash[query.name] || _doHash[query.name];
-                if(data is AssetLoader){
+                if (data is AssetLoader) {
                     AssetLoader(data).completePromise.callbackRegister(assetData.startRender);
-                }else if(!data){
-                    loadData(query.name,query.sourceType, assetData.startRender);
+                } else if (!data) {
+                    loadData(query.name, query.sourceType, assetData.startRender);
                 } else {
                     assetData.startRender();
                 }
@@ -183,7 +183,7 @@ package com.berry.animation.library {
             return assetData;
         }
 
-        public function assetRendered(query:AssetDataGetQuery):Boolean {
+        public function assetRendered (query:AssetDataGetQuery):Boolean {
             var assetData:AssetData = findAssetData(query);
 
             if (!assetData || assetData.isDestroyed) {
@@ -192,11 +192,11 @@ package com.berry.animation.library {
             return assetData.isRenderFinish;
         }
 
-        public function createSourceInstance(name:String):DisplayObject {
+        public function createSourceInstance (name:String):DisplayObject {
             return new _classHash[name]();
         }
 
-        protected function getRender(assetData:AssetData):Class {
+        protected function getRender (assetData:AssetData):Class {
             if (assetData.getQuery.sourceType == SourceTypeEnum.SOURCE_PNG) {
                 return TileDrawInstruct;
             } else {
@@ -204,38 +204,38 @@ package com.berry.animation.library {
             }
         }
 
-        public function getUrl(name:String, type:String):String {
+        public function getUrl (name:String, type:String):String {
             return _baseUrl + name + '.' + type;
         }
 
-        private function addAssetData(assetData:AssetData):void {
+        private function addAssetData (assetData:AssetData):void {
             if (!_assets[assetData.getQuery.name]) {
                 _assets[assetData.getQuery.name] = [];
             }
             _assets[assetData.getQuery.name].push(assetData);
         }
 
-        private function findAssetData(query:AssetDataGetQuery):AssetData {
+        private function findAssetData (query:AssetDataGetQuery):AssetData {
             var assetsByName:Array = _assets[query.name];
             var assetData:AssetData;
 
             for each (var assetDataTemp:AssetData in assetsByName) {
                 if (assetDataTemp.getQuery.step == query.step
-                        && assetDataTemp.getQuery.text == query.text
-                        && assetDataTemp.getQuery.rotate == query.rotate
-                        && assetDataTemp.getQuery.position == query.position
-                        && assetDataTemp.getQuery.animation == query.animation
-                        && assetDataTemp.getQuery.isFullAnimation == query.isFullAnimation
-                        ) {
+                    && assetDataTemp.getQuery.text == query.text
+                    && assetDataTemp.getQuery.rotate == query.rotate
+                    && assetDataTemp.getQuery.position == query.position
+                    && assetDataTemp.getQuery.animation == query.animation
+                    && assetDataTemp.getQuery.isFullAnimation == query.isFullAnimation
+                    ) {
                     assetData = assetDataTemp;
                     break;
                 }
             }
 
-            if(!assetData && AnimationSettings.saveMode && SharedObject.getLocal('midnight_').data['assets']){
+            if (!assetData && AnimationSettings.saveMode && SharedObject.getLocal('midnight_').data['assets']) {
 
                 var frames:* = SharedObject.getLocal('midnight_').data['assets'][query.toString()];
-                if(frames){
+                if (frames) {
                     assetData = new AssetData(query);
                     assetData.unpackSavedFrames(frames);
                 }
@@ -244,15 +244,15 @@ package com.berry.animation.library {
             return assetData;
         }
 
-        public function set baseUrl(value:String):void {
+        public function set baseUrl (value:String):void {
             _baseUrl = value;
         }
 
-        public function registerPartAsset(name:String, content:*):void {
+        public function registerPartAsset (name:String, content:*):void {
             _partAsset[name] = content;
         }
 
-        public function get loop():Loop{
+        public function get loop ():Loop {
             return _loop;
         }
     }

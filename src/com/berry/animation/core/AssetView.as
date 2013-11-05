@@ -43,7 +43,7 @@ package com.berry.animation.core {
         //
         internal var _isInit:Boolean;
         internal var _renderListBeforePlay:Array;
-        private var _lock:Boolean;
+        private var _isLockRender:Boolean;
 
         // create init preloader, init presets
         override public function hitTest(globalX:int, globalY:int):Boolean {
@@ -95,20 +95,6 @@ package com.berry.animation.core {
         public function createSourceInstance():DisplayObject {
             return assetLibrary.createSourceInstance(assetName);
         }
-
-        /*public function getComponentList():Array {
-            var aspectList:Array = [];
-            if (mainComponent) {
-                aspectList.push(mainComponent);
-            }
-            if (shadowComponent) {
-                aspectList.push(shadowComponent);
-            }
-            if (effectComponent) {
-                aspectList.push(effectComponent);
-            }
-            return aspectList;
-        }*/
 
         public function getComponentViewList():Array {
             var viewList:Array = [];
@@ -262,12 +248,16 @@ package com.berry.animation.core {
             mainComponent.animationSpeed = value;
         }
 
+
+        public var updateLockPromise:Promise = new Promise();
         public function renderLock():void {
-            _lock = true;
+            _isLockRender = true;
+            updateLockPromise.resolve(this);
         }
 
         public function renderUnLock():void {
-            _lock = false;
+            _isLockRender = false;
+            updateLockPromise.resolve(this);
         }
 
         public function get assetName():String {
@@ -362,7 +352,6 @@ package com.berry.animation.core {
         override public function offset(dx:Number, dy:Number, truncate:Boolean = false):IDisplayProxy {
             ArrayUtils.map(getComponentViewList(), DisplayUtils.offset, null, dx, dy, truncate);
             return this;
-
         }
 
         override public function show():IDisplayProxy {
@@ -392,6 +381,10 @@ package com.berry.animation.core {
 
         override public function removeChild(child:DisplayObject):IDisplayProxy {
             return super.removeChild(child);
+        }
+
+        public function get isLockRender ():Boolean {
+            return _isLockRender;
         }
     }
 }
