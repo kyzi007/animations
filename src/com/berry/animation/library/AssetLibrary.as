@@ -31,6 +31,7 @@ package com.berry.animation.library {
         private var _cached:Object = {};
         private var _partAsset:Object = {};
         private var _loop:Loop;
+        private var _tempHash:Object = {};
 
         public function gcForce ():void {
             for (var assetsName:String in _assets) {
@@ -59,7 +60,7 @@ package com.berry.animation.library {
 
         public function init ():void {
             // for override
-            EnterFrame.scheduleAction(10000, gc);
+            EnterFrame.scheduleAction(60000, gc);
         }
 
         public function getPreloader (assetName:String):AssetData {
@@ -76,7 +77,7 @@ package com.berry.animation.library {
         }
 
         public function gc ():void {
-            EnterFrame.scheduleAction(10000, gc);
+            EnterFrame.scheduleAction(20000, gc);
             if (EnterFrame.calculatedFps < 20) {
                 return;
             }
@@ -102,10 +103,11 @@ package com.berry.animation.library {
                     }
                 }
             }
+            _tempHash = {};
         }
 
         public function loadData (name:String, type:String, finishCallback:Function):void {
-            var data:* = _classHash[name] || _doHash[name];
+            var data:* = _classHash[name] || _doHash[name] || _tempHash[name];
 
             if (!data) {
                 var loader:AssetLoader = new AssetLoader(name, getUrl(name, type));
@@ -126,7 +128,7 @@ package com.berry.animation.library {
         }
 
         public function loaded (name:String):Boolean {
-            return _doHash[name] || (_classHash[name] && !(_classHash[name] is AssetLoader) );
+            return _tempHash[name] || _doHash[name] || (_classHash[name] && !(_classHash[name] is AssetLoader) );
         }
 
         public function cleanUp (name:String):void {
@@ -134,27 +136,27 @@ package com.berry.animation.library {
         }
 
         public function getSource (name:String):DisplayObject {
-            var source:DisplayObject = _doHash[name];
+            var source:DisplayObject = _doHash[name] || _tempHash[name];
             if (!source) {
                 if (_classHash[name] is Bitmap) {
                     source = _doHash[name] || _classHash[name];// fix me
                 } else {
-                    source = new _classHash[name]();
+                    _tempHash[name] = source = new _classHash[name]();
                 }
             }
-            if (_cached[name]) {
-                _doHash[name] = source;
-            }
+            //if (_cached[name]) {
+            //    _doHash[name] = source;
+            //}
             return source;
         }
 
         public function cacheSource (name:String):void {
-            _cached[name] = true;
+            //_cached[name] = true;
         }
 
         public function removeSourceFromCache (name:String):void {
-            delete _cached[name];
-            delete _doHash[name];
+            //delete _cached[name];
+            //delete _doHash[name];
         }
 
         public function getAssetData (query:AssetDataGetQuery, renderProps:Array = null):AssetData {
@@ -166,7 +168,7 @@ package com.berry.animation.library {
                 assetData.getQuery = query;
                 assetData.renderClass = getRender(assetData);
                 assetData.sourceCallback = getSource;
-                var data:* = _classHash[query.name] || _doHash[query.name];
+                var data:* = _classHash[query.name] || _doHash[query.name] || _tempHash[query.name];
                 if (data is AssetLoader) {
                     AssetLoader(data).completePromise.callbackRegister(assetData.startRender);
                 } else if (!data) {
@@ -193,7 +195,8 @@ package com.berry.animation.library {
         }
 
         public function createSourceInstance (name:String):DisplayObject {
-            return new _classHash[name]();
+            _tempHash[name] = _classHash[name] ? new _classHash[name]() : _doHash[name];
+            return _tempHash[name];
         }
 
         protected function getRender (assetData:AssetData):Class {
