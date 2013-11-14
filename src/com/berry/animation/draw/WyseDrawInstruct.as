@@ -17,7 +17,7 @@ package com.berry.animation.draw {
 
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
-        public function WyseDrawInstruct(assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
+        public function WyseDrawInstruct (assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
             super(assetData, config, source);
         }
 
@@ -26,19 +26,31 @@ package com.berry.animation.draw {
         private var _timline:Vector.<AssetFrame>;
         private var _time:int;
 
-        override public function finish():void {
+        private static var _stack:Object = {};
+
+        override public function finish ():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
             //trace(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
             _assetData.memory = getMem1();
+            next();
             super.finish();
         }
 
-        override public function init(...params):void {
+        override public function init (...params):void {
             super.init();
             _time = getTimer();
             //Mem.start();
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
+
+            if (_stack[_query.name] && _stack[_query.name].length > 0) {
+                _stack[_query.name].push(this);
+                return;
+            }
+            if (!_stack[_query.name]) {
+                _stack[_query.name] = [];
+            }
+            _stack[_query.name].push(this);
 
             _source.gotoAndStop(_query.step);
             MovieClipHelper.stopAllMovies(_source);
@@ -55,11 +67,13 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation + ' - ' + _query.name, KLog.ERROR); }
+                CONFIG::debug{
+                    KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation + ' - ' + _query.name, KLog.ERROR);
+                }
             }
         }
 
-        override protected function drawFrame(frame:int):Boolean {
+        override protected function drawFrame (frame:int):Boolean {
             super.drawFrame(frame);
             if (!_render) {
                 falled();
@@ -107,7 +121,7 @@ package com.berry.animation.draw {
             return (frame + 1 == _totalFrames);
         }
 
-        private function getMem1():int {
+        private function getMem1 ():int {
             var sum:int;
             for each (var assetFrame:AssetFrame in _timline) {
                 sum += assetFrame.bitmap.width * assetFrame.bitmap.height;
@@ -115,20 +129,37 @@ package com.berry.animation.draw {
             return sum;
         }
 
-        private function hideClips():void {
+        private function hideClips ():void {
             for (var i:int = 0; i < _source.numChildren; i++) {
                 var item:DisplayObject = _source.getChildAt(i);
                 item.visible = item == _render;
             }
         }
 
-        private function setText():void {
+        private function setText ():void {
             if (_query.text != null) {
                 var textMc:MovieClip = _render[TEXT_MC_NAME];
                 if (textMc) {
                     textMc[TEXT_NAME].text = _query.text;
                     textMc[TEXT_SHADOW_NAME].text = _query.text;
                 }
+            }
+        }
+
+        override public function falled ():void {
+            next();
+            super.falled();
+        }
+
+        private function next ():void {
+            var arr:Array = _stack[_query.name];
+            var index:int = arr.indexOf(this);
+            if (index != -1) {
+                arr.splice(index, 1);
+            }
+            var wyseDrawInstruct:WyseDrawInstruct = arr.shift();
+            if(wyseDrawInstruct){
+                wyseDrawInstruct.init();
             }
         }
     }
