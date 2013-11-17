@@ -2,11 +2,11 @@ package com.berry.animation.draw {
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetDataGetQuery;
     import com.berry.animation.library.AssetFrame;
-    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.BitmapData;
     import flash.geom.Rectangle;
 
+    import org.dzyga.callbacks.Once;
     import org.dzyga.events.IInstruct;
 
     public class BaseDrawInstruct implements IInstruct {
@@ -17,12 +17,9 @@ package com.berry.animation.draw {
             _source = source;
         }
 
-        public static const FINISH:String = 'finish';
-        public static const FALLED:String = 'falled';
         protected static const TEXT_MC_NAME:String = 'textMc';
         protected static const TEXT_NAME:String = 'text';
         protected static const TEXT_SHADOW_NAME:String = 'shadowText';
-        public var dispather:SimpleEventDispatcher = new SimpleEventDispatcher();
         protected var _currentFrame:int = 0;
         protected var _totalFrames:int = 0;
         protected var _query:AssetDataGetQuery;
@@ -30,7 +27,6 @@ package com.berry.animation.draw {
         protected var _assetData:AssetData;
         private var _falled:Boolean;
         private var _inited:Boolean;
-        // todo render progress
 
         public function execute():Boolean {
             var complete:Boolean = drawFrame(_currentFrame);
@@ -41,7 +37,6 @@ package com.berry.animation.draw {
         public function finish():void {
             _source = null;
             if (!_falled) {
-                dispather.dispatchEvent(FINISH);
                 _assetData.finishRender();
             }
         }
@@ -49,7 +44,6 @@ package com.berry.animation.draw {
         public function falled():void {
             _falled = true;
             _assetData.falledRender();
-            dispather.dispatchEvent(FALLED);
         }
 
         /**

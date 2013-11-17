@@ -1,21 +1,14 @@
 package com.berry.animation.library {
-    import com.berry.animation.data.AnimationSettings;
     import com.berry.animation.data.SourceTypeEnum;
-    import com.berry.animation.draw.BaseDrawInstruct;
     import com.berry.animation.draw.TileDrawInstruct;
     import com.berry.animation.draw.WyseDrawInstruct;
-    import com.berry.events.SimpleEventDispatcher;
 
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
     import flash.display.LoaderInfo;
-    import flash.display.Sprite;
-    import flash.net.SharedObject;
 
     import org.dzyga.eventloop.Loop;
-
     import org.dzyga.events.EnterFrame;
-    import org.dzyga.events.IInstruct;
     import org.dzyga.pool.Pool;
 
     public class AssetLibrary {
@@ -49,7 +42,6 @@ package com.berry.animation.library {
                 }
                 // if asset unused delete source
                 if (count == 0) {
-                    //delete _classHash[assetsName];
                     delete _cached[assetsName];
                     if (!(_doHash is Bitmap)) {
                         delete _doHash[assetsName];
@@ -59,7 +51,6 @@ package com.berry.animation.library {
         }
 
         public function init ():void {
-            // for override
             EnterFrame.scheduleAction(60000, gc);
         }
 
@@ -78,9 +69,10 @@ package com.berry.animation.library {
 
         public function gc ():void {
             EnterFrame.scheduleAction(20000, gc);
-            if (EnterFrame.calculatedFps < 20) {
+            if (EnterFrame.calculatedFps < 15) {
                 return;
             }
+            trace('GC RUN')
             for (var assetsName:String in _assets) {
                 var assetsByName:Array = _assets[assetsName];
                 var count:int = 0;
@@ -96,7 +88,7 @@ package com.berry.animation.library {
                 }
                 // if asset unused delete source
                 if (count == 0) {
-                    //delete _classHash[assetsName];
+                    trace('GC, delete ' + assetsName);
                     delete _cached[assetsName];
                     if (!(_doHash is Bitmap)) {
                         delete _doHash[assetsName];
@@ -131,10 +123,6 @@ package com.berry.animation.library {
             return _tempHash[name] || _doHash[name] || (_classHash[name] && !(_classHash[name] is AssetLoader) );
         }
 
-        public function cleanUp (name:String):void {
-
-        }
-
         public function getSource (name:String):DisplayObject {
             var source:DisplayObject = _doHash[name] || _tempHash[name];
             if (!source) {
@@ -144,19 +132,7 @@ package com.berry.animation.library {
                     _tempHash[name] = source = new _classHash[name]();
                 }
             }
-            //if (_cached[name]) {
-            //    _doHash[name] = source;
-            //}
             return source;
-        }
-
-        public function cacheSource (name:String):void {
-            //_cached[name] = true;
-        }
-
-        public function removeSourceFromCache (name:String):void {
-            //delete _cached[name];
-            //delete _doHash[name];
         }
 
         public function getAssetData (query:AssetDataGetQuery, renderProps:Array = null):AssetData {
@@ -176,22 +152,12 @@ package com.berry.animation.library {
                 } else {
                     assetData.startRender();
                 }
-                //assetData.startRender(getRender(assetData));
                 addAssetData(assetData);
             } else {
                 Pool.put(query);
             }
 
             return assetData;
-        }
-
-        public function assetRendered (query:AssetDataGetQuery):Boolean {
-            var assetData:AssetData = findAssetData(query);
-
-            if (!assetData || assetData.isDestroyed) {
-                return false;
-            }
-            return assetData.isRenderFinish;
         }
 
         public function createSourceInstance (name:String):DisplayObject {
@@ -224,23 +190,14 @@ package com.berry.animation.library {
 
             for each (var assetDataTemp:AssetData in assetsByName) {
                 if (assetDataTemp.getQuery.step == query.step
+                    && assetDataTemp.getQuery.animation == query.animation
+                    && assetDataTemp.getQuery.isFullAnimation == query.isFullAnimation
                     && assetDataTemp.getQuery.text == query.text
                     && assetDataTemp.getQuery.rotate == query.rotate
                     && assetDataTemp.getQuery.position == query.position
-                    && assetDataTemp.getQuery.animation == query.animation
-                    && assetDataTemp.getQuery.isFullAnimation == query.isFullAnimation
                     ) {
                     assetData = assetDataTemp;
                     break;
-                }
-            }
-
-            if (!assetData && AnimationSettings.saveMode && SharedObject.getLocal('midnight_').data['assets']) {
-
-                var frames:* = SharedObject.getLocal('midnight_').data['assets'][query.toString()];
-                if (frames) {
-                    assetData = new AssetData(query);
-                    assetData.unpackSavedFrames(frames);
                 }
             }
 

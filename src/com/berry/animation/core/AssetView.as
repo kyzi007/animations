@@ -44,6 +44,7 @@ package com.berry.animation.core {
         internal var _isInit:Boolean;
         internal var _renderListBeforePlay:Array;
         private var _isLockRender:Boolean;
+        private var _countInRenderFinish:uint;
 
         // create init preloader, init presets
         override public function hitTest(globalX:int, globalY:int):Boolean {
@@ -169,41 +170,32 @@ package com.berry.animation.core {
             }
         }
 
-        protected function preRenderNext(e:* = null):void {
-            var assetData:AssetData;
-            if (_renderListBeforePlay) {
-                if (_renderListBeforePlay.length == 0) {
-                    _renderListBeforePlay = null;
-                    cacheAnimationFinishPromise.resolve();
-                    play();
-                } else {
-                    assetData = assetLibrary.getAssetData(data.getQueryByName(_renderListBeforePlay.shift()));
-                    if (assetData.isRenderFinish) {
-                        preRenderNext()
-                    } else {
-                        assetData.completeRenderPromise.callbackRegister(preRenderNext);
-                    }
-                }
-            }
-
-            if (!_renderListBeforePlay) {
-                assetLibrary.removeSourceFromCache(assetName);
-            }
-        }
-
         protected function onLoadCallback(source:*, content:*):void {
             animationLibrary.parseAsset(assetName, assetLibrary.getSource(assetName));
             if (animationLibrary.getIsComplexAsset(data.assetName)) {
                 assetLibrary.registerPartAsset(data.assetName, source);
             } else {
                 if (_renderListBeforePlay) {
-                    assetLibrary.cacheSource(data.assetName);
                     _renderListBeforePlay = animationLibrary.getFullNames(assetName, _renderListBeforePlay);
-                    preRenderNext();
+                    _countInRenderFinish = _renderListBeforePlay.length;
+                    while(_renderListBeforePlay.length){
+                        assetLibrary
+                            .getAssetData(data.getQueryByName(_renderListBeforePlay.shift()))
+                            .completeRenderPromise.callbackRegister(finishPreRenderCallback);
+                    }
                 }
             }
             loadCompletePromise.resolve();
                 play();
+        }
+
+        private function finishPreRenderCallback (data:*):void {
+            _countInRenderFinish--;
+            if(_countInRenderFinish == 0){
+                _renderListBeforePlay = null;
+                cacheAnimationFinishPromise.resolve();
+                play();
+            }
         }
 
         protected function failIfInit():void {

@@ -26,15 +26,19 @@ package com.berry.animation.draw {
         private var _timline:Vector.<AssetFrame>;
         private var _time:int;
 
-        private static var _stack:Object = {};
 
         override public function finish ():void {
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            //trace(_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024)  + ' kb');
+            trace('finish render',_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024) + ' kb');
             _assetData.memory = getMem1();
-            next();
             super.finish();
+        }
+
+
+        override public function falled ():void {
+            trace('falled render', _query.name, _query.animation)
+            super.falled();
         }
 
         override public function init (...params):void {
@@ -42,15 +46,7 @@ package com.berry.animation.draw {
             _time = getTimer();
             //Mem.start();
             //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
-
-            if (_stack[_query.name] && _stack[_query.name].length > 0) {
-                _stack[_query.name].push(this);
-                return;
-            }
-            if (!_stack[_query.name]) {
-                _stack[_query.name] = [];
-            }
-            _stack[_query.name].push(this);
+            trace('init', _query.name, _query.animation);
 
             _source.gotoAndStop(_query.step);
             MovieClipHelper.stopAllMovies(_source);
@@ -143,23 +139,6 @@ package com.berry.animation.draw {
                     textMc[TEXT_NAME].text = _query.text;
                     textMc[TEXT_SHADOW_NAME].text = _query.text;
                 }
-            }
-        }
-
-        override public function falled ():void {
-            next();
-            super.falled();
-        }
-
-        private function next ():void {
-            var arr:Array = _stack[_query.name];
-            var index:int = arr.indexOf(this);
-            if (index != -1) {
-                arr.splice(index, 1);
-            }
-            var wyseDrawInstruct:WyseDrawInstruct = arr.shift();
-            if(wyseDrawInstruct){
-                wyseDrawInstruct.init();
             }
         }
     }
