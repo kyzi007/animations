@@ -51,13 +51,9 @@ package com.berry.animation.library {
         }
 
         private function next ():void {
-
-            if (name == 'DEFAULT_FEMALE') {
-                trace()
-            }
             var index:int = _STACK[name].indexOf(this);
             _STACK[name].splice(index, 1);
-            trace('next', name, _getQuery.animation);
+            //trace('next', name, _getQuery.animation);
             if (_STACK[name].length) {
                 var data:AssetData = _STACK[name].shift();
                 data._fromStack = true;
@@ -93,7 +89,7 @@ package com.berry.animation.library {
             }
             params ||= _params;
 
-            trace('start render', name, _getQuery.animation)
+            //trace('start render', name, _getQuery.animation)
 
             var source:DisplayObject;
             if (params.length) { // finish load callback run
@@ -189,7 +185,7 @@ package com.berry.animation.library {
             CONFIG::debug{
                 KLog.log("AssetData:destroy " + getQuery.toString(), KLog.METHODS);
             }
-            trace("AssetData:destroy " + getQuery.toString());
+            //trace("AssetData:destroy " + getQuery.toString());
             _isDestroyed = true;
 
             for each (var assetFrame:AssetFrame in frames) {
