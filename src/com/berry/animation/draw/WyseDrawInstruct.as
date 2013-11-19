@@ -37,7 +37,7 @@ package com.berry.animation.draw {
 
 
         override public function falled ():void {
-            //trace('falled render', _query.name, _query.animation)
+            trace('falled render', _query.name, _query.animation)
             super.falled();
         }
 
@@ -75,7 +75,6 @@ package com.berry.animation.draw {
                 falled();
                 return true;
             }
-
             if (_query.optimise != 0 && frame % _query.optimise == 0 && frame != 0) {
                 _timline[frame] = new AssetFrame(_timline[frame - 1].x, _timline[frame - 1].y, _timline[frame - 1].bitmap);
                 _timline[frame].dublicate = frame - 1;

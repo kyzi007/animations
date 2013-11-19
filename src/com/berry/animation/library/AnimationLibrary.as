@@ -20,6 +20,7 @@ package com.berry.animation.library {
         private var _animationPresetList:Object = {};
         private var _effectCache:Object = {};
         private var _partMode:Array = [];
+        private var _parced:Array;
 
         public function getAnimationModel(assetName:String, animationName:String, step:uint = 1):AnimationSequenceData {
             var animationModel:AnimationSequenceData = Pool.get(AnimationSequenceData) as AnimationSequenceData;
@@ -105,6 +106,10 @@ package com.berry.animation.library {
         }
 
         public function parseAsset(assetName:String, source:*):void {
+            if(_parced[assetName]){
+                return;
+            }
+            _parced[assetName] = true;
             _animationPresetList[assetName] = [];
             if (source is MovieClip) {
                 source.gotoAndStop(1);

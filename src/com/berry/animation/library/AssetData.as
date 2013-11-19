@@ -40,7 +40,6 @@ package com.berry.animation.library {
         private var _renderAction:Action;
         private var _movies:Dictionary = new Dictionary();
         private static const _STACK:Object = {};
-        private var _params:Array;
 
         public function finishRender ():void {
             _isRenderWork = false;
@@ -72,7 +71,7 @@ package com.berry.animation.library {
             next();
         }
 
-        public function startRender (...params):void {
+        public function startRender ():void {
             if (_isRenderWork || frames.length) return;
             if (!_STACK[name]) {
                 _STACK[name] = [];
@@ -84,28 +83,18 @@ package com.berry.animation.library {
                 }
             }
             if (_STACK[name].length > 1 && !_fromStack) {
-                _params = params;
                 return;
             }
-            params ||= _params;
+            _isRenderWork = true;
 
-            //trace('start render', name, _getQuery.animation)
+            var source:DisplayObject = sourceCallback(name);
 
-            var source:DisplayObject;
-            if (params.length) { // finish load callback run
-                if (params[0] is Bitmap) {
-                    source = params[0];
-                } else {
-                    source = new params[0];
-                }
-            } else {
-                source = sourceCallback(getQuery.name);
-            }
             var renderInstruct:BaseDrawInstruct = new renderClass(this, getQuery, source);
             renderInstruct.init(renderInitParams);
-            _isRenderWork = true;
-            _renderAction = EnterFrame.addThread(_getQuery.renderPriority, 0, renderInstruct);
-            _renderAction.name = "AssetData:render " + name;
+            if (!_isFalled) {
+                _renderAction = EnterFrame.addThread(_getQuery.renderPriority, 0, renderInstruct);
+                _renderAction.name = "AssetData:render " + name;
+            }
         }
 
         public function update ():void {
