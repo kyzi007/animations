@@ -71,7 +71,7 @@ package com.berry.animation.library {
             next();
         }
 
-        public function startRender ():void {
+        public function startRender (...args):void {
             if (_isRenderWork || frames.length) return;
             if (!_STACK[name]) {
                 _STACK[name] = [];
