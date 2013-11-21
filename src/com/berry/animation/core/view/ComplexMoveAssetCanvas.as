@@ -12,7 +12,7 @@ package com.berry.animation.core.view {
     import org.dzyga.events.EnterFrame;
 
     public class ComplexMoveAssetCanvas extends MovieAssetCanvas {
-        public function ComplexMoveAssetCanvas(name:String) {
+        public function ComplexMoveAssetCanvas (name:String) {
             super(name);
         }
 
@@ -36,34 +36,39 @@ package com.berry.animation.core.view {
 
         private var _rendered:Boolean;
 
-        public function get isActive():Boolean {
+        public function get isActive ():Boolean {
             return assetData && assetData.isRenderFinish;
         }
 
-        public function playAnimationSet(animationModel:AnimationSequenceData):void {
+        public function playAnimationSet (animationModel:AnimationSequenceData):void {
             _animationModel = animationModel;
             _loopList = _animationModel.loop;
             _loopCount = _animationModel.sequenceLoopCount;
             playPart(_animationModel.currentPart());
         }
 
-        private function playPart(currPreset:AnimationPart, isOneFrame:Boolean = false):void {
+        private function playPart (currPreset:AnimationPart):void {
             var nextAssetData:AssetData;
             var query:AssetDataGetQuery;
 
             _currPreset = currPreset;
 
             if (isEffect && fullAnimation) {
-                // если первый кадр уже отрисован
+
                 query = _assetModel.getQuery(currPreset).setIsFullAnimation(false);
-                nextAssetData = assetLibrary.getAssetData(query);
-                if (isOneFrame) {
+                nextAssetData = assetLibrary.getAndInitAssetData(query);
+                query = _assetModel.getQuery(currPreset).setIsFullAnimation(true);
+
+                // если первый кадр уже отрисован и полная анимация тоже
+                if(nextAssetData.isRenderFinish && assetLibrary.assetDataExistAndRendered(query)){
+                    nextAssetData = assetLibrary.getAndInitAssetData(query);
+                } else {
                     EnterFrame.scheduleAction(3000 + 3000 * Math.random(), getEffect);
                 }
             } else {
                 query = _assetModel.getQuery(currPreset);
                 query.setIsFullAnimation(fullAnimation);
-                nextAssetData = assetLibrary.getAssetData(query);
+                nextAssetData = assetLibrary.getAndInitAssetData(query);
             }
 
             EnterFrame.removeScheduledAction(_pauseAction);
@@ -108,13 +113,15 @@ package com.berry.animation.core.view {
             }
         }
 
-        public function get isRenderFinish():Boolean {
+        public function get isRenderFinish ():Boolean {
             return assetData && assetData.isRenderFinish;
         }
 
-        private function getEffect():void {
-            var query:AssetDataGetQuery = _assetModel.getQuery(_animationModel.currentPart()).setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
-            var fullAssetData:AssetData = assetLibrary.getAssetData(query);
+        private function getEffect ():void {
+            var query:AssetDataGetQuery = _assetModel
+                .getQuery(_animationModel.currentPart())
+                .setIsCheckDuplicateData(AssetDataGetQuery.CHECK_DUPLICATE_ONE_FRAME);
+            var fullAssetData:AssetData = assetLibrary.getAndInitAssetData(query);
 
             if (fullAssetData.isRenderFinish) {
                 playCurrentPart();
@@ -123,12 +130,12 @@ package com.berry.animation.core.view {
             }
         }
 
-        private function loadOneFrame():void {
+        private function loadOneFrame ():void {
             animationFinishPromise.callbackRemove(loadOneFrame);
-            playPart(_animationModel.currentPart(), true)
+            playPart(_animationModel.currentPart())
         }
 
-        private function newAssetRendered(e:* = null):void {
+        private function newAssetRendered (e:* = null):void {
             _rendered = true;
             if (loop && isPlay) {
                 // wait end animation
@@ -140,12 +147,12 @@ package com.berry.animation.core.view {
             renderCompletePromise.resolve();
         }
 
-        private function playCurrentPart(e:* = null):void {
+        private function playCurrentPart (e:* = null):void {
             animationFinishPromise.callbackRemove(playCurrentPart);
             playPart(_animationModel.currentPart());
         }
 
-        private function next():void {
+        private function next ():void {
             animationFinishPromise.callbackRemove(next);
             animationPartFinishPromise.resolve();
             if (_animationModel.isListEnd) {
@@ -165,15 +172,17 @@ package com.berry.animation.core.view {
             }
         }
 
-        public function set assetModel(value:AssetModel):void {
+        public function set assetModel (value:AssetModel):void {
             _assetModel = value;
             name = _assetModel.assetName;
         }
 
-        public function get animationModel():AnimationSequenceData {
+        public function get animationModel ():AnimationSequenceData {
             return _animationModel;
         }
 
-        public function set renderPriority(priority:int):void {_assetModel.priority = priority;}
+        public function set renderPriority (priority:int):void {
+            _assetModel.priority = priority;
+        }
     }
 }

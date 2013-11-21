@@ -51,7 +51,7 @@ package com.berry.animation.core.components {
         public function init():void {
             _canvas = new AssetCanvas(_parent.data.assetName);
             _view = _canvas;
-            _assetData = _parent.assetLibrary.getAssetData(_parent.data.getQueryByName(AnimationsList.IDLE));
+            _assetData = _parent.assetLibrary.getAndInitAssetData(_parent.data.getQueryByName(AnimationsList.IDLE));
             _assetData.useCount++;
             if (_assetData.isRenderFinish) {
                 play();

@@ -180,7 +180,7 @@ package com.berry.animation.core {
                     _countInRenderFinish = _renderListBeforePlay.length;
                     while(_renderListBeforePlay.length){
                         assetLibrary
-                            .getAssetData(data.getQueryByName(_renderListBeforePlay.shift()))
+                            .getAndInitAssetData(data.getQueryByName(_renderListBeforePlay.shift()))
                             .completeRenderPromise.callbackRegister(finishPreRenderCallback);
                     }
                 }

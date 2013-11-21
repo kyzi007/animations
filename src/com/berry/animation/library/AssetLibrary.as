@@ -26,6 +26,12 @@ package com.berry.animation.library {
         private var _loop:Loop;
         private var _tempHash:Object = {};
 
+
+        public function assetDataExistAndRendered(query:AssetDataGetQuery):Boolean{
+            var assetData:AssetData = findAssetData(query);
+            return assetData && assetData.isRenderFinish;
+        }
+
         public function gcForce ():void {
             for (var assetsName:String in _assets) {
                 var assetsByName:Array = _assets[assetsName];
@@ -135,7 +141,7 @@ package com.berry.animation.library {
             return source;
         }
 
-        public function getAssetData (query:AssetDataGetQuery, renderProps:Array = null):AssetData {
+        public function getAndInitAssetData (query:AssetDataGetQuery, renderProps:Array = null):AssetData {
             var assetData:AssetData = findAssetData(query);
 
             if (!assetData || assetData.isDestroyed) {
