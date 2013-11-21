@@ -23,6 +23,10 @@ package com.berry.animation.draw {
         override protected function drawFrame(frame:int):Boolean {
             super.drawFrame(frame);
             var matrix:Matrix = new Matrix();
+            if(_frameWidth < 1 || _source.height < 1){
+                falled();
+                return true;
+            }
             var bitmap:BitmapData = new BitmapData(_frameWidth, _source.height, true, 0);
             matrix.identity();
             matrix.tx = -_frameWidth * frame;
