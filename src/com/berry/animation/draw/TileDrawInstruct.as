@@ -19,17 +19,16 @@ package com.berry.animation.draw {
         override protected function drawFrame (frame:int):Boolean {
             super.drawFrame(frame);
             var matrix:Matrix = new Matrix();
-            try {
-                var bitmap:BitmapData = new BitmapData(_frameWidth, _source.height, true, 0);
-                matrix.identity();
-                matrix.tx = -_frameWidth * frame;
-                bitmap.draw(_source, matrix);
-                _assetData.frames[frame] = new AssetFrame(-bitmap.width / 2, -bitmap.height / 2, bitmap);
-            } catch (e:Error) {
-                bitmap = new BitmapData(5, 5, true, 0);
-                _assetData.frames[frame] = new AssetFrame(-bitmap.width / 2, -bitmap.height / 2, bitmap);
+            if (_frameWidth < 1 || _source.height < 1) {
+                falled();
                 return true;
             }
+            var bitmap:BitmapData = new BitmapData(_frameWidth, _source.height, true, 0);
+            matrix.identity();
+            matrix.tx = -_frameWidth * frame;
+            bitmap.draw(_source, matrix);
+
+            _assetData.frames[frame] = new AssetFrame(-bitmap.width / 2, -bitmap.height / 2, bitmap);
             return (frame + 1 == _totalFrames);
         }
 
@@ -37,6 +36,9 @@ package com.berry.animation.draw {
             super.init();
             _frameWidth = params[0] ? params[0] : AnimationSettings.tileWidth;
             _totalFrames = _source.width / _frameWidth;
+            if (_totalFrames == 0) {
+                _totalFrames = 1;
+            }
         }
     }
 }
