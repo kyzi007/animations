@@ -37,7 +37,7 @@ package com.berry.animation.draw {
 
 
         override public function falled ():void {
-            trace('falled render', _query.name, _query.animation)
+//            trace('falled render', _query.name, _query.animation)
             super.falled();
         }
 

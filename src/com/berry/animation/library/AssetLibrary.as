@@ -78,7 +78,7 @@ package com.berry.animation.library {
             if (EnterFrame.calculatedFps < 15) {
                 return;
             }
-            trace('GC RUN')
+//            trace('GC RUN')
             for (var assetsName:String in _assets) {
                 var assetsByName:Array = _assets[assetsName];
                 var count:int = 0;
@@ -94,7 +94,7 @@ package com.berry.animation.library {
                 }
                 // if asset unused delete source
                 if (count == 0) {
-                    trace('GC, delete ' + assetsName);
+//                    trace('GC, delete ' + assetsName);
                     delete _cached[assetsName];
                     if (!(_doHash is Bitmap)) {
                         delete _doHash[assetsName];
