@@ -15,6 +15,8 @@ package com.berry.animation.draw {
 
     import log.logServer.KLog;
 
+    import utils.Logger;
+
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
         public function WyseDrawInstruct (assetData:AssetData, config:AssetDataGetQuery, source:Sprite) {
@@ -28,25 +30,19 @@ package com.berry.animation.draw {
 
 
         override public function finish ():void {
-            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : finish  " + _query.name + " " + _query.animation, KLog.METHODS); }
             _render = null;
-            //trace('finish render',_query.name + ', ' + _query.animation + ', fr ' + _timline.length + ' : ' + (getTimer() - _time) + ' ms,', int(getMem1() * 4 / 1024) + ' kb');
             _assetData.memory = getMem1();
             super.finish();
         }
 
 
         override public function falled ():void {
-//            trace('falled render', _query.name, _query.animation)
             super.falled();
         }
 
         override public function init (...params):void {
             super.init();
             _time = getTimer();
-            //Mem.start();
-            //CONFIG::debug{ KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  " + _query.name + " " + _query.animation, KLog.METHODS); }
-            //trace('init', _query.name, _query.animation);
 
             _source.gotoAndStop(_query.step);
             MovieClipHelper.stopAllMovies(_source);
@@ -63,9 +59,7 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                CONFIG::debug{
-                    KLog.log("com.berry.animation.draw.WyseDrawInstruct : init  INVALID ANIMATION " + _query.animation + ' - ' + _query.name, KLog.ERROR);
-                }
+                Logger.error('[WyseDrawInstruct] : init(); ', _query.animation + ' - ' + _query.name, ' INVALID ANIMATION');
             }
         }
 

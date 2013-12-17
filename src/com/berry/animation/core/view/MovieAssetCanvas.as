@@ -1,16 +1,15 @@
 package com.berry.animation.core.view {
-    import com.berry.animation.core.view.AssetCanvas;
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetFrame;
 
     import flash.display.BitmapData;
 
-    import log.logServer.KLog;
-
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
+
+    import utils.Logger;
 
     public class MovieAssetCanvas extends AssetCanvas {
 
@@ -66,7 +65,7 @@ package com.berry.animation.core.view {
             _frames = _assetData.frames;
 
             if (_frames.length == 0 && !_assetData.mc) {
-                CONFIG::debug{ KLog.log("AssetMovieClip : gotoAndStop  " + _assetName + ' invalid animation - 0 frames', KLog.ERROR); }
+                Logger.error("MovieAssetCanvas -> gotoAndPlay : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
                 return;
             }
 
@@ -90,7 +89,7 @@ package com.berry.animation.core.view {
             _frames = _assetData.frames;
 
             if (_frames.length == 0 && !_assetData.mc) {
-                CONFIG::debug{ KLog.log("AssetMovieClip : gotoAndStop  " + _assetName + ' invalid animation - 0 frames', KLog.ERROR); }
+                Logger.error("MovieAssetCanvas -> gotoAndStop : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
                 return;
             }
             draw(_frames[_currentFrame], true);

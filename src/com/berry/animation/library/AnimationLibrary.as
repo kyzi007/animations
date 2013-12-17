@@ -1,14 +1,12 @@
 package com.berry.animation.library {
-    import com.berry.animation.library.AnimationsList;
-
     import com.berry.animation.data.RotateEnum;
 
     import flash.display.Bitmap;
     import flash.display.MovieClip;
 
-    import log.logServer.KLog;
-
     import org.dzyga.pool.Pool;
+
+    import utils.Logger;
 
     public class AnimationLibrary {
         public function AnimationLibrary() {
@@ -27,9 +25,7 @@ package com.berry.animation.library {
             var parts:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             if (!parts) {
-                CONFIG::debug{
-                    KLog.log('AnimationLibrary : getAnimationQueryInstance invalid animation ( ' + assetName + '/' + animationName + '/' + step + ' )', KLog.ERROR);
-                }
+                Logger.error('AnimationLibrary : getAnimationModel():', parts, '( ' + assetName + '/' + animationName + '/' + step +' ) getAnimationQueryInstance invalid animation');
                 return null;
             }
 
