@@ -10,12 +10,7 @@ package com.berry.animation.draw {
     import flash.display.Sprite;
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
-    import flash.sampler.getSize;
     import flash.utils.getTimer;
-
-    import log.logServer.KLog;
-
-    import utils.Logger;
 
     public class WyseDrawInstruct extends BaseDrawInstruct {
 
@@ -59,7 +54,7 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                Logger.error('[WyseDrawInstruct] : init(); ' + _query.animation + ' - ' + _query.name + ' INVALID ANIMATION', this);
+                trace('[WyseDrawInstruct] : init(); ' + _query.animation + ' - ' + _query.name + ' INVALID ANIMATION', this);
             }
         }
 
