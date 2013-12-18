@@ -9,8 +9,6 @@ package com.berry.animation.core.view {
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
 
-    import utils.Logger;
-
     public class MovieAssetCanvas extends AssetCanvas {
 
         public function MovieAssetCanvas(name:String) {
@@ -65,7 +63,7 @@ package com.berry.animation.core.view {
             _frames = _assetData.frames;
 
             if (_frames.length == 0 && !_assetData.mc) {
-                Logger.error("MovieAssetCanvas -> gotoAndPlay : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
+                trace("MovieAssetCanvas -> gotoAndPlay : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
                 return;
             }
 
@@ -89,7 +87,7 @@ package com.berry.animation.core.view {
             _frames = _assetData.frames;
 
             if (_frames.length == 0 && !_assetData.mc) {
-                Logger.error("MovieAssetCanvas -> gotoAndStop : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
+                trace("MovieAssetCanvas -> gotoAndStop : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
                 return;
             }
             draw(_frames[_currentFrame], true);
