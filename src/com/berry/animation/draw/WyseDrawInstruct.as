@@ -59,7 +59,7 @@ package com.berry.animation.draw {
                 _totalFrames = _query.isFullAnimation ? _render.totalFrames : 1;
             } else {
                 falled();
-                Logger.error('[WyseDrawInstruct] : init(); ', _query.animation + ' - ' + _query.name, ' INVALID ANIMATION');
+                Logger.error('[WyseDrawInstruct] : init(); ' + _query.animation + ' - ' + _query.name + ' INVALID ANIMATION', this);
             }
         }
 
