@@ -12,8 +12,6 @@ package com.berry.animation.core.components {
     import flash.display.Bitmap;
     import flash.display.DisplayObject;
 
-    import log.logServer.KLog;
-
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
     import org.dzyga.display.DisplayUtils;
@@ -94,17 +92,14 @@ package com.berry.animation.core.components {
         }
 
         public function get finishRenderPromise():Promise {
-            CONFIG::debug{ KLog.log("ShadowComponent : finishRenderPromise  " + "not work", KLog.ERROR); }
             return null;
         }
 
         public function get bounds():Rect {
-            CONFIG::debug{ KLog.log("ShadowComponent : bounds  " + "not work", KLog.ERROR); }
             return null;
         }
 
         public function get boundsUpdatePromise():Promise {
-            CONFIG::debug{ KLog.log("ShadowComponent : boundsUpdatePromise  " + "not work", KLog.ERROR); }
             return null;
         }
 
@@ -117,7 +112,6 @@ package com.berry.animation.core.components {
         }
 
         public function set animationSpeed(value:Number):void {
-            CONFIG::debug{ KLog.log("ShadowComponent : animationSpeed  " + "not work", KLog.ERROR); }
         }
 
         public function renderAndDrawLock():void {

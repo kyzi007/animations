@@ -11,8 +11,6 @@ package com.berry.animation.library {
     import flash.system.LoaderContext;
     import flash.system.SecurityDomain;
 
-    import log.logServer.KLog;
-
     import org.dzyga.callbacks.Once;
 
     import org.dzyga.callbacks.Promise;
@@ -27,7 +25,6 @@ package com.berry.animation.library {
             _context.checkPolicyFile = true;
             _context.allowCodeImport = true;
             _context.securityDomain = SecurityDomain.currentDomain;
-            CONFIG::debug{ _context.securityDomain = null; }
 
             contentLoaderInfo.addEventListener(Event.COMPLETE, complete);
             contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, error);
@@ -59,7 +56,6 @@ package com.berry.animation.library {
                         }
                     }
             );
-            CONFIG::debug{ KLog.log("SwfLoader:error " + event.toString() + ' url=' + _url, KLog.ERROR); }
             complete(null);
         }
 

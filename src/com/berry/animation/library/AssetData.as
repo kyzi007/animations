@@ -1,31 +1,20 @@
 package com.berry.animation.library {
-    import com.berry.animation.data.AnimationSettings;
     import com.berry.animation.draw.BaseDrawInstruct;
-
-    import flash.display.Bitmap;
 
     import flash.display.DisplayObject;
 
     import flash.display.MovieClip;
     import flash.display.Sprite;
-    import flash.net.SharedObject;
     import flash.utils.Dictionary;
 
-    import log.logServer.KLog;
-
     import org.dzyga.callbacks.Promise;
-    import org.dzyga.eventloop.LoopTask;
     import org.dzyga.events.Action;
     import org.dzyga.events.EnterFrame;
-    import org.dzyga.events.IInstruct;
     import org.dzyga.events.Thread;
     import org.dzyga.geom.Rect;
 
     public class AssetData {
         public function AssetData (query:AssetDataGetQuery = null) {
-            /*CONFIG::debug{
-             if (query) KLog.log("AssetData:AssetData " + query.fullAnimationName, KLog.CREATE);
-             }*/
             _getQuery = query;
         }
 
@@ -98,7 +87,6 @@ package com.berry.animation.library {
         }
 
         public function update ():void {
-            //CONFIG::debug{ KLog.log("AssetData:update " + getQuery.fullAnimationName, KLog.METHODS);}
             updateMaxBounds();
             completeRenderPromise.resolve(this);
         }
@@ -171,9 +159,6 @@ package com.berry.animation.library {
         }
 
         internal function destroy ():void {
-            CONFIG::debug{
-                KLog.log("AssetData:destroy " + getQuery.toString(), KLog.METHODS);
-            }
             //trace("AssetData:destroy " + getQuery.toString());
             _isDestroyed = true;
 

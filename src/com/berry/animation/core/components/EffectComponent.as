@@ -2,12 +2,9 @@ package com.berry.animation.core.components {
     import com.berry.animation.core.*;
     import com.berry.animation.core.view.ComplexMoveAssetCanvas;
     import com.berry.animation.library.AnimationSequenceData;
-    import com.berry.animation.library.AssetData;
 
     import flash.display.DisplayObject;
     import flash.display.Sprite;
-
-    import log.logServer.KLog;
 
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
@@ -92,12 +89,10 @@ package com.berry.animation.core.components {
         }
 
         public function get isRendered():Boolean {
-            CONFIG::debug{ KLog.log("EffectAspect : isRendered  " + 'not work', KLog.CRITICAL); }
             return false;
         }
 
         public function get finishRenderPromise():Promise {
-            CONFIG::debug{ KLog.log("EffectAspect : get finishRenderPromise  " + 'not work', KLog.CRITICAL); }
             return null;
         }
 
@@ -106,7 +101,6 @@ package com.berry.animation.core.components {
         }
 
         public function get bounds():Rect {
-            CONFIG::debug{ KLog.log("EffectAspect : get bounds" + 'not work', KLog.CRITICAL); }
             return null;
         }
 
@@ -121,9 +115,11 @@ package com.berry.animation.core.components {
 
         public function get boundsUpdatePromise():Promise {return null;}
 
-        public function set x(value:int):void {CONFIG::debug{ KLog.log("EffectAspect : set x  " + 'not work', KLog.CRITICAL); }}
+        public function set x(value:int):void {
+        }
 
-        public function set y(value:int):void {CONFIG::debug{ KLog.log("EffectAspect : set y  " + 'not work', KLog.CRITICAL); }}
+        public function set y(value:int):void {
+        }
 
         public function applyFilter(value:ColorMatrix):void {
             _filter = value;
@@ -135,6 +131,7 @@ package com.berry.animation.core.components {
             play();
         }
 
-        public function set animationSpeed(value:Number):void {CONFIG::debug{ KLog.log("EffectAspect : animationSpeed  " + 'not work', KLog.CRITICAL); }}
+        public function set animationSpeed(value:Number):void {
+        }
     }
 }

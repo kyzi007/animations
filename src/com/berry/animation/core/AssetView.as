@@ -11,7 +11,6 @@ package com.berry.animation.core {
     import flash.display.DisplayObject;
     import flash.display.Sprite;
 
-    import log.logServer.KLog;
 
     import org.ColorMatrix;
     import org.dzyga.callbacks.Promise;
@@ -199,9 +198,6 @@ package com.berry.animation.core {
         }
 
         protected function failIfInit():void {
-            CONFIG::debug{
-                if (_isInit) {KLog.log("BaseAssetView : set value  " + "already init", KLog.CRITICAL); }
-            }
         }
 
         public function set text(value:String):void {
