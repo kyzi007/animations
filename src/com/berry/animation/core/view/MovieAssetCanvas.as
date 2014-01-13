@@ -63,7 +63,7 @@ package com.berry.animation.core.view {
             _frames = _assetData.frames;
 
             if (_frames.length == 0 && !_assetData.mc) {
-                trace("MovieAssetCanvas -> gotoAndPlay : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
+//                trace("MovieAssetCanvas -> gotoAndPlay : AssetMovieClip : gotoAndStop  ", _assetName, ' invalid animation - 0 frames');
                 return;
             }
 
