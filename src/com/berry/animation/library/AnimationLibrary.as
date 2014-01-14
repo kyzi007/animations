@@ -6,7 +6,7 @@ package com.berry.animation.library {
 
     import org.dzyga.pool.Pool;
 
-    import utils.Logger;
+    import com.berry.logging.Logger;
 
     public class AnimationLibrary {
         public function AnimationLibrary() {
