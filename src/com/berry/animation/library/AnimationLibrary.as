@@ -25,7 +25,9 @@ package com.berry.animation.library {
             var parts:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             if (!parts) {
-                Logger.error('AnimationLibrary : getAnimationModel():', parts, '( ' + assetName + '/' + animationName + '/' + step +' ) getAnimationQueryInstance invalid animation');
+                Logger.errorCh(
+                    'animation', this, 'getAnimationModel: model not found',
+                    parts, assetName, animationName, step);
                 return null;
             }
 
