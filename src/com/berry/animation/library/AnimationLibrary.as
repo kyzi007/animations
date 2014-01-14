@@ -6,7 +6,7 @@ package com.berry.animation.library {
 
     import org.dzyga.pool.Pool;
 
-    import com.berry.logging.Logger;
+//    import com.berry.logging.Logger;
 
     public class AnimationLibrary {
         public function AnimationLibrary() {
@@ -25,9 +25,9 @@ package com.berry.animation.library {
             var parts:* = findInPath(_animationPresetList, assetName, step, animationName);
 
             if (!parts) {
-                Logger.errorCh(
+               /* Logger.errorCh(
                     'animation', this, 'getAnimationModel: model not found',
-                    parts, assetName, animationName, step);
+                    parts, assetName, animationName, step);*/
                 return null;
             }
 
