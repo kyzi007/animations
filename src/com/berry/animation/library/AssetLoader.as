@@ -1,7 +1,4 @@
 package com.berry.animation.library {
-    import common.GameNotifications;
-    import common.debug.controller.server.DLogError;
-    import common.debug.model.ServerErrorList;
 
     import flash.display.Bitmap;
     import flash.display.Loader;
@@ -11,10 +8,8 @@ package com.berry.animation.library {
     import flash.system.LoaderContext;
     import flash.system.SecurityDomain;
 
-    import org.dzyga.callbacks.Once;
 
-    import org.dzyga.callbacks.Promise;
-    import org.puremvc.as3.patterns.facade.Facade;
+    import org.dzyga.callbacks.Once;
 
     public class AssetLoader extends Loader {
 
@@ -49,13 +44,6 @@ package com.berry.animation.library {
         }
 
         private function error(event:IOErrorEvent):void {
-            Facade.getInstance().sendNotification(
-                    GameNotifications.RUN_DIRECTIVE, {
-                        name: DLogError.NAME, args: {
-                            errorId: ServerErrorList.DOWNLOAD_FAIL, description:_url
-                        }
-                    }
-            );
             complete(null);
         }
 
