@@ -7,6 +7,7 @@ package com.berry.animation.core {
     import com.berry.animation.library.AnimationSequenceData;
     import com.berry.animation.library.AssetData;
     import com.berry.animation.library.AssetLibrary;
+    import com.berry.logging.Logger;
 
     import flash.display.DisplayObject;
     import flash.display.Sprite;
@@ -151,7 +152,7 @@ package com.berry.animation.core {
                 if (mainComponent) mainComponent.play();
                 if (effectComponent) effectComponent.play();
             } else {
-                trace('no animationModel', data.id);
+                Logger.errorCh('animation', this, 'Animation model not found', data.id);
             }
         }
 
@@ -184,8 +185,9 @@ package com.berry.animation.core {
                     }
                 }
             }
+
             loadCompletePromise.resolve();
-                play();
+            play();
         }
 
         private function finishPreRenderCallback (data:*):void {
@@ -198,6 +200,7 @@ package com.berry.animation.core {
         }
 
         protected function failIfInit():void {
+            // Logger.info(this, 'Already init');
         }
 
         public function set text(value:String):void {
